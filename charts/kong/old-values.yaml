@@ -1,0 +1,46 @@
+#helm install kong kong/kong --create-namespace --namespace=kong -f values.yaml
+
+
+image:
+  repository: hfjcmwgl.gra5.container-registry.ovh.net/snapearth/kong
+  tag: 
+  pullPolicy: "Always"
+  pullSecrets:
+    - harborcs??????????,
+
+env:
+  database: "postgres"
+  plugins: bundled,oidc
+
+postgresql:
+  enabled: true
+  postgresqlUsername: kong
+  postgresqlPassword: kong
+  postgresqlDatabase: kong
+
+ingressController:
+  enabled: true
+  installCRDs: false
+
+proxy:
+  enabled: true
+  type: LoadBalancer
+
+admin:
+  enabled: true
+  http:
+    enabled: true
+  ingress:
+    enabled: false
+
+plugins: 
+  configMaps:
+  - name: kong-http-to-https-redirect
+    pluginName: http-to-https-redirect
+
+serviceMonitor:
+  enabled: true
+  interval: 10s
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
