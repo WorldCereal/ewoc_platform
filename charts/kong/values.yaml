@@ -1,0 +1,20 @@
+
+env:
+  database: "off"
+
+ingressController:
+  enabled: true
+  installCRDs: false
+
+proxy:
+  enabled: true
+  type: LoadBalancer
+  externalIPs:
+    -185.178.84.236
+
+serviceMonitor:
+  enabled: true
+  interval: 10s
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack  
