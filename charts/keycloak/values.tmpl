@@ -2,7 +2,7 @@
 image:
   registry: docker.io
   repository: bitnami/keycloak
-  tag: {{charts/keycloak/keycloak}}  
+  tag: VALUE1  
   debug: true
 
 extraEnv:
@@ -19,14 +19,14 @@ ingress:
     kubernetes.io/ingress.class: kong
     konghq.com/strip-path: "false"
     kubernetes.io/tls-acme: "true"
-  hostname: auth.
+  hostname: VALUE2
   path: /
   tls: true
 
 auth:
   createAdminUser: true
   adminUser: admin
-  adminPassword: d29ybGRjZXJlYWwyMDIxCg==
+  adminPassword: Sc5g^@igT6N%9$Kxt8V=96
 
 
 extraEnvVars:

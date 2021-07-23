@@ -1,6 +1,7 @@
 # 1) Add CSI Plugin & Update Helm repo
 
 Go to your master host -> lien vers safescale procedure
++ lien vers l'article 5.1 de la doc
 
 ```
 helm repo add cpo https://kubernetes.github.io/cloud-provider-openstack
