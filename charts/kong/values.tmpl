@@ -1,4 +1,8 @@
 
+image:
+  repository: kong
+  tag: VALUE1
+
 env:
   database: "off"
 
@@ -10,7 +14,7 @@ proxy:
   enabled: true
   type: LoadBalancer
   externalIPs:
-    -185.178.84.236
+    - VALUE2
 
 serviceMonitor:
   enabled: true
