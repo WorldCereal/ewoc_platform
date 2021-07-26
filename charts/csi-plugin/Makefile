@@ -13,6 +13,6 @@ deploy:
 
 delete:
 	echo "Deleting CSI Plugin on cluster:$(TARGET_CLUSTER)"
-	safescale cluster kubectl $(TARGET_CLUSTER) delete -f privileged-namespace-csi.yaml
 	safescale cluster helm $(TARGET_CLUSTER) uninstall cinder-csi -n csi
+	safescale cluster kubectl $(TARGET_CLUSTER) delete -f privileged-namespace-csi.yaml
 
