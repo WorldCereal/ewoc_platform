@@ -13,6 +13,11 @@ extraEnv:
 - name: ROOT_LOG_LEVEL
   value: DEBUG
 
+service:
+  type: ClusterIP
+  port: 80
+  nodePort: 443  
+
 ingress:
   enabled: true
   annotations:
@@ -31,14 +36,14 @@ extraEnvVars:
   - name: KEYCLOAK_LOG_LEVEL
     value: INFO  
 
-metrics:
-  enabled: true
-  serviceMonitor:
-    enabled: true
-    namespace: monitoring
-    interval: 10s
-    scrapeTimeout: 10s
-    honorLabels: false
-    additionalLabels:
-      release: kube-prometheus-stack
+#metrics:
+#  enabled: true
+#  serviceMonitor:
+#    enabled: true
+#    namespace: monitoring
+#    interval: 10s
+#    scrapeTimeout: 10s
+#    honorLabels: false
+#    additionalLabels:
+#      release: kube-prometheus-stack
     
