@@ -4,7 +4,8 @@
 # set env variable for Prod cluster
 if [ "$USER" == "ewoc-prod" ]; then
     export TARGET_CLUSTER="ewoc-prod"
-    export HOSTNAME="prod.esa-worldcereal.org"
+    #export HOSTNAME="prod.esa-worldcereal.org"
+    export HOSTNAME="185.178.84.50"
     export FLOATING_IP="185.178.84.50"
     echo "test"
 
@@ -26,3 +27,6 @@ export KONG_VERSION="2.4"
 # Keycloak conf
 export KEYCLOAK_CHART_VERSION="2.4.7"
 export KEYCLOAK_VERSION="12.0.4-debian-10-r69" 
+
+# Kube-Prometheus-Stack
+export KUBE_PROMETHEUS_STACK_CHART_VERSION="17.0.2"

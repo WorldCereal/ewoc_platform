@@ -1,0 +1,18 @@
+
+TODO List
+----------
+
+### keycloak Setting ###
+-> Créer Worldcereal Prod realm
+-> Créer Token pour le plugin OIDC
+-> Ajouter App
+-> Créer Users & Roles
+-> RBAC ???
+
+### Kong ###
+-> Post Routes sur le Gateway (script)
+-> TLS ???
+
+
+### prometheus ###
+
