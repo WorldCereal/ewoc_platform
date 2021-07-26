@@ -18,10 +18,8 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: kong
     konghq.com/strip-path: "false"
-    kubernetes.io/tls-acme: "true"
   hostname: auth.VALUE2
   path: /
-  tls: true
 
 auth:
   createAdminUser: true
