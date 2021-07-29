@@ -11,7 +11,7 @@ curl -kSsl -X POST \
 ### Add keycloak route
 
 curl -kSsl -X POST \
---url http://localhost:8001/services/testApi/routes \
+--url https://localhost:8444/services/keycloak/routes \
 --data 'hosts[]='$HOSTNAME \
 --data 'paths[]=/' \
 --data 'strip_path=false' \
