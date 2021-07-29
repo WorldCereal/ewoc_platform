@@ -1,4 +1,4 @@
-.PHONY: build deploy  
+.PHONY: build deploy  build2
 
 
 build:
@@ -30,5 +30,13 @@ deploy:
 	# keycloak build 
 	cd charts/keycloak && make deploy
 
+build2:
+	# 1. faire sed ou voir pour exporter variables.	
+
+	# 2. copy script from aws machine to gateway
+	safescale ssh copy kong-routes-services.sh  gw-ewoc-prod:/tmp/
+ 
+	# 3. execute script 
+	safescale run -c "bash /tmp/kong-routes-services.sh" gw-ewoc-prod
 
 	
