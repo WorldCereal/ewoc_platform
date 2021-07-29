@@ -9,7 +9,7 @@ build:
 	
 deploy:
 	echo "Deploy CSI Plugin on cluster:$(TARGET_CLUSTER)"
-	safescale cluster helm $(TARGET_CLUSTER) install cinder-csi cpo/openstack-cinder-csi -f values.yaml -n csi
+	safescale cluster helm $(TARGET_CLUSTER) install cinder-csi cpo/openstack-cinder-csi --version=1.3.8 -f values.yaml -n csi
 
 delete:
 	echo "Deleting CSI Plugin on cluster:$(TARGET_CLUSTER)"

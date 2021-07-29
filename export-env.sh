@@ -5,8 +5,8 @@
 if [ "$USER" == "ewoc-prod" ]; then
     export TARGET_CLUSTER="ewoc-prod"
     #export HOSTNAME="prod.esa-worldcereal.org"
-    export HOSTNAME="185.178.84.50"
-    export FLOATING_IP="185.178.84.50"
+    export HOSTNAME="185.178.85.22"
+    export FLOATING_IP="185.178.85.22"
     echo "test"
 
 # set env variable for Test cluster
@@ -19,6 +19,7 @@ else
     echo "USER env variable is missing, it's mandatory, you must run the script with the safescale ewoc user: prod or test"
     exit 0 
 fi
+
 
 # Kong conf
 export KONG_CHART_VERSION="2.1.0"
