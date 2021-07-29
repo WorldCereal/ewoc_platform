@@ -13,5 +13,3 @@ curl -kSsl -X POST \
 --url https://localhost:8444/services/keycloak/routes \
 --data 'paths[]=/auth"' \
 --data 'strip_path=false' \
-
-touch toto.test
