@@ -20,11 +20,15 @@ service:
 
 ingress:
   enabled: true
-  annotations:
-    kubernetes.io/ingress.class: kong
-    konghq.com/strip-path: "false"
-  hostname: auth.VALUE2
+  certManager: false
+  #hostname: auth.VALUE2
+  hostname: keycloak.local
+  ingressClassName: kong
   path: /
+  pathType: ImplementationSpecific
+  annotations:
+    konghq.com/strip-path: "false"
+
 
 auth:
   createAdminUser: true
