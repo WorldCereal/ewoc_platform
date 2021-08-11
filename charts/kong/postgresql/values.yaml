@@ -1,0 +1,14 @@
+postgresqlUsername: postgres
+postgresqlPassword: postgres
+postgresqlDatabase: kong
+
+volumePermissions:
+  enabled: true
+
+shmVolume:
+  enabled: true
+  chmod:
+    enabled: true
+
+persistence:
+  enabled: true

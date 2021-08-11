@@ -1,0 +1,51 @@
+
+deployment:
+  kong:
+    # Enable or disable Kong itself
+    # Setting this to false with ingressController.enabled=true will create a
+    # controller-only release.
+    enabled: false
+
+image:
+  repository: kong
+  tag: VALUE1
+
+env:
+  database: "off"
+
+ingressController:
+  enabled: true
+  installCRDs: false
+
+proxy:
+  enabled: true
+  type: LoadBalancer
+  externalIPs:
+    - VALUE2
+
+serviceMonitor:
+  enabled: true
+  interval: 10s
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack  
+
+
+    cladm@ewoc-prod-master-1:~$ kubectl get svc -n kong 
+NAME              TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                      AGE
+kong-kong-proxy   LoadBalancer   10.102.187.105   185.178.85.22   80:30259/TCP,443:32063/TCP   4d3h
+cladm@ewoc-prod-master-1:~$ kubectl get ingress 
+No resources found in default namespace.
+cladm@ewoc-prod-master-1:~$ kubectl get ingress -A 
+NAMESPACE   NAME       CLASS   HOSTS            ADDRESS         PORTS   AGE
+keycloak    keycloak   kong    keycloak.local   185.178.85.22   80      2d23h
+cladm@ewoc-prod-master-1:~$ kubectl get svc -A 
+NAMESPACE     NAME                                    TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                      AGE
+csi           openstack-cinder-csi-controllerplugin   ClusterIP      None             <none>          <none>                       4d4h
+default       kubernetes                              ClusterIP      10.96.0.1        <none>          443/TCP                      4d17h
+keycloak      keycloak                                ClusterIP      10.97.24.122     <none>          80/TCP,443/TCP               2d23h
+keycloak      keycloak-headless                       ClusterIP      None             <none>          80/TCP                       2d23h
+keycloak      keycloak-postgresql                     ClusterIP      10.98.247.183    <none>          5432/TCP                     2d23h
+keycloak      keycloak-postgresql-headless            ClusterIP      None             <none>          5432/TCP                     2d23h
+kong          kong-kong-proxy                         LoadBalancer   10.102.187.105   185.178.85.22   80:30259/TCP,443:32063/TCP   4d3h
+kube-system   kube-dns                                ClusterIP      10.96.0.10       <none>          53/UDP,53/TCP,9153/TCP       4d17h
