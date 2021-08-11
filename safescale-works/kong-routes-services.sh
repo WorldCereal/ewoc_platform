@@ -16,11 +16,12 @@ curl -kSsl -X POST \
 
 curl -kSsl -X POST \
 --url https://localhost:8444/services/keycloak/routes \
---data 'hosts[]=185.178.85.22'
+--data 'hosts[]=185.178.85.22' \
+--data 'methods[]=GET' \
 --data 'paths[]=/auth' \
 --data 'strip_path=false' \
 --data 'protocols[]=http' \
---data 'preserve_host:false'
+--data 'preserve_host=false'
 
 
 ### Add Grafana Service ###
