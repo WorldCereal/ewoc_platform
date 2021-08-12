@@ -21,12 +21,12 @@ service:
   nodePort: 443  
 
 ingress:
-  enabled: true
+  enabled: false
   certManager: false
   #hostname: auth.VALUE2
-  hostname: keycloak.local
+  hostname: ""
+  path: /auth
   ingressClassName: kong
-  path: /
   pathType: ImplementationSpecific
   annotations:
     konghq.com/strip-path: "false"
