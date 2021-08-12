@@ -12,7 +12,7 @@ deploy:
 	# Deploy all components for Kong
 	
 	# Genarate values.yaml from template file
-	@sed "s:VALUE1:$(KONG_VERSION):;s:VALUE2:$(FLOATING_IP):" values.tmpl > values.yaml
+	@sed "s:VALUE1:$(KONG_VERSION):" values.tmpl > values.yaml
 
 	# Create namespace & secrets
 	kubectl apply -f init/init-deployment.yaml
