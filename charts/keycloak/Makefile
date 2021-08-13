@@ -17,9 +17,11 @@ deploy:
 	#TODO: Import Worldcereal realm.
 
 	helm install keycloak bitnami/keycloak --version=$(KEYCLOAK_CHART_VERSION) --create-namespace --namespace=keycloak -f values.yaml
+	kubectl apply -f keycloak-ingress.yaml
 
 delete:
 	# Delete Keycloack component
 	helm uninstall keycloak -n keycloak
+	kubectl delete -f keycloak-ingress.yaml
 
 

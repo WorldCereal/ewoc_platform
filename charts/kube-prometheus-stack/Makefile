@@ -14,9 +14,11 @@ deploy:
 
 	
 	helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack  --version=$(KUBE_PROMETHEUS_STACK_CHART_VERSION) --create-namespace --namespace=monitoring  -f values.yaml
-	
+	kubectl apply -f prometheus-stack-ingress.yaml
 
 delete:
 	# Delete Kube Prometheus Stack
 
 	helm uninstall kube-prometheus-stack -n monitoring
+	kubectl delete -f prometheus-stack-ingress.yaml
+
