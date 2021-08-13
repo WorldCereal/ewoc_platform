@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: devtool
+  namespace: kong
+spec:
+  containers:
+  - name: alpine
+    image: alpine:3.14.1
+    command: ["bin/sh", "-c", "--"]
+    args: ["sleep infinity"]
+  restartPolicy: OnFailure
