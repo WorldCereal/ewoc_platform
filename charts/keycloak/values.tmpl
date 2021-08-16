@@ -21,11 +21,11 @@ service:
   nodePort: 443  
 
 ingress:
-  enabled: false
+  enabled: true
   certManager: false
-  #hostname: auth.VALUE2
+  hostname: auth.VALUE2
   hostname: ""
-  path: /auth
+  path: /
   ingressClassName: kong
   pathType: ImplementationSpecific
   annotations:
