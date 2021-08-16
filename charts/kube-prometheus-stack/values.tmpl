@@ -28,7 +28,7 @@ grafana:
       annotations: {}
 
   ingress:
-    enabled: false
+    enabled: true
     annotations: 
       kubernetes.io/ingress.class: kong
       konghq.com/strip-path: "false"
@@ -56,7 +56,7 @@ prometheus:
 
     annotations: 
       konghq.com/strip-path: "false"
-
+      kubernetes.io/ingress.class: kong
     hosts: 
       - prometheus.VALUE1
     paths: 
