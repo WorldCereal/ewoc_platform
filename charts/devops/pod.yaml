@@ -1,12 +1,15 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: devtool
+  name: kong-oidc-tool
   namespace: kong
 spec:
   containers:
   - name: alpine
-    image: alpine:3.14.1
-    command: ["bin/sh", "-c", "--"]
+    image:  hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/kong-oidc-tool:1.0
+    command: ["bin/sh", "-c"]
     args: ["sleep infinity"]
   restartPolicy: OnFailure
+  imagePullSecrets:
+        - name: harborcs
+
