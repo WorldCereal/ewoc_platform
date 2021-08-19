@@ -24,7 +24,6 @@ ingress:
   enabled: true
   certManager: false
   hostname: auth.VALUE2
-  hostname: ""
   path: /
   ingressClassName: kong
   pathType: ImplementationSpecific
@@ -42,14 +41,14 @@ extraEnvVars:
   - name: KEYCLOAK_LOG_LEVEL
     value: INFO  
 
-metrics:
-  enabled: true
-  serviceMonitor:
-    enabled: true
-    namespace: monitoring
-    interval: 10s
-    scrapeTimeout: 10s
-    honorLabels: false
-    additionalLabels:
-      release: kube-prometheus-stack
+#metrics:
+#  enabled: true
+#  serviceMonitor:
+#    enabled: true
+#    namespace: monitoring
+#    interval: 10s
+#    scrapeTimeout: 10s
+#    honorLabels: false
+#    additionalLabels:
+#      release: kube-prometheus-stack
     
