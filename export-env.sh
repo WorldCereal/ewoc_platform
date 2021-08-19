@@ -3,7 +3,6 @@
 
 export TARGET_CLUSTER="ewoc-prod"
 export HOSTNAME="worldcereal.csgroup.space"
-export FLOATING_IP="45.130.29.65"
 
 # Kong conf
 export KONG_CHART_VERSION="2.1.0"

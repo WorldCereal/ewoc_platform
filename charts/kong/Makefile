@@ -26,10 +26,13 @@ deploy:
 	# Add Prometheus plugin
 	#kubectl  apply -f kong-prometheus-plugin/kong-prometheus-plugin.yaml
 
+	# Deploy a tool pod for Kong
+	kubectl apply -f tool/pod.yaml
 
 delete:
 
 	# Deleting all components for Kong
 	helm  uninstall kong -n kong
 	helm delete kong-postgresql -n kong
+	kubectl delete -f tool/pod.yaml
 
