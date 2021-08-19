@@ -36,12 +36,12 @@ ingressController:
 
 proxy:
   enabled: true
-  type: Loadbalancer
-  #http:
-    #nodePort: 32080
+  type: NodePort
+  http:
+    nodePort: 32080
 
-  #tls:
-    #nodePort: 32443  
+  tls:
+    nodePort: 32443  
  
 
 admin:
