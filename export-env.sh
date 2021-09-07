@@ -11,8 +11,8 @@ export KONG_VERSION="2.4-ubuntu"
 export POSTGRESQL_CHART_VERSION="10.3.15"
 
 # Keycloak conf
-export KEYCLOAK_CHART_VERSION="2.4.7"
-export KEYCLOAK_VERSION="12.0.4-debian-10-r69" 
+export KEYCLOAK_CHART_VERSION="5.0.6"
+export KEYCLOAK_VERSION="15.0.2-debian-10-r15" 
 
 # Kube-Prometheus-Stack
 export KUBE_PROMETHEUS_STACK_CHART_VERSION="17.0.2"
