@@ -16,7 +16,7 @@ docker build . -t hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/[Reposit
 ```
 example:
 ```
-docker build . -t hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/suggest-engine:dev -f Dockerfile-from-java-8-jdk-alpine .
+docker build . -t hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/suggest-engine:dev -f Dockerfile-from-java-8-jdk-alpine
 ```
 
 ## Push image on Harbor registry
