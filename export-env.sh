@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-export TARGET_CLUSTER="ewoc-prod"
 export HOSTNAME="worldcereal.csgroup.space"
 
 # Kong conf
