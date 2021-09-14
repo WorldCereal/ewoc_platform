@@ -27,7 +27,7 @@ deploy:
 	#kubectl  apply -f kong-prometheus-plugin/kong-prometheus-plugin.yaml
 
 	# Deploy a tool pod for Kong
-	kubectl apply -f tool/pod.yaml
+	kubectl apply -f tools/pod.yaml
 
 delete:
 

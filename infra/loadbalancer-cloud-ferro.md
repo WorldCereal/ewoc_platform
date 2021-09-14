@@ -1,15 +1,32 @@
 
-# LB seting on Cloud ferro
+# LB seting on Cloud ferro & K8s
 
-## Prerequires
-Go to openstack UI (Horizon) for Cloud Ferro ->  https://cf2.cloudferro.com
 
-## 1.1
-Go to network/loadbalancer & create an LB.
+# 1. On K8s cluster, setup Kong proxy
 
-## 1.2 
+Deploy Kong proxy with an service type on Nodeport, go to values.yaml:
+```yaml
+proxy:
+  enabled: true
+  type: NodePort
+  http:
+    nodePort: 32080
 
-## 1.3
+  tls:
+    nodePort: 32443  
+```
 
-## 1.4
+# 2  On Cloud Ferro , setup LB
+
+1) Create an Load Balancer on the network where the cluster is deployed.
+2) add to pool , all your node on port 32080.
+3) Disabling the heath monitoring.
+
+
+
+Enjoy your LB :) 
+
+curl -H "Authorization: Bearer xxxxxxxxx" http://auth.worldcereal.csgroup.space/auth/realms/worldcereal/protocol/openid-connect/userinfo
+
+http://auth.worldcereal.csgroup.space/auth/realms/worldceral/protocol/openid-connect/userinfo
 
