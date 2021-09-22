@@ -1,4 +1,4 @@
-.PHONY: build deploy delete 
+.PHONY: build deploy delete
 
 build:
 	
@@ -11,12 +11,14 @@ deploy:
 
 	# Deploy Keycloack component
 
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+
+
 	# Genarate values.yaml from template file
 	@sed "s:VALUE1:$(KEYCLOAK_VERSION):;s:VALUE2:$(HOSTNAME):" values.tmpl > values.yaml
 
-	#TODO: Import Worldcereal realm.
-
 	helm install keycloak bitnami/keycloak --version=$(KEYCLOAK_CHART_VERSION) --create-namespace --namespace=keycloak -f values.yaml
+	
 
 delete:
 	# Delete Keycloack component
