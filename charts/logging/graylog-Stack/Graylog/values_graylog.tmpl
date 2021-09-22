@@ -1,0 +1,42 @@
+imagePullSecrets:
+   - name: harborcs
+
+tags:
+  install-elasticsearch: false
+  install-mongodb: false
+
+graylog:
+
+  image:
+    repository: hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/graylog:VALUE1
+    pullPolicy: "Always"
+
+  replicas: 1
+
+  # TOCHANGE PROD
+  persistence:
+    enabled: true
+    size: "10Gi" # 30 S1
+
+# ON S1PDGS
+#GRAYLOG_LIMITS_CPU=2000m
+#GRAYLOG_LIMITS_MEMORY=8096Mi
+#GRAYLOG_REQUEST_CPU=500m
+#GRAYLOG_REQUEST_MEMORY=3072Mi
+
+  resources:     
+    limits:
+      cpu: 2000m
+      memory: 4096Mi
+    requests:
+      cpu: 500m
+      memory: 3072Mi
+
+  # TOCHANGE PROD
+  heapSize: "2g"
+
+  metrics:
+    enabled: true
+
+  rootUsername: "admin"
+  rootPassword: "adminadminpassword"

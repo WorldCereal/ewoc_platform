@@ -14,3 +14,21 @@ export KEYCLOAK_VERSION="15.0.2-debian-10-r15"
 
 # Kube-Prometheus-Stack
 export KUBE_PROMETHEUS_STACK_CHART_VERSION="17.0.2"
+
+# FluentBit
+export FLUENTBIT_CHART_VERSION="0.16.6"
+export FLUENTBIT_VERSION="1.8"
+
+# Kafka 
+export KAFKA_CHART_VERSION="14.1.0"
+export KAFKA_VERSION="2.8.0-debian-10-r84"
+
+# Graylog STACK (elastic+mongo+graylog)
+export MONGO_CHART_VERSION="10.26.1"
+export MONGO_VERSION="4.4.9-debian-10-r0"
+
+export ELASTIC_CHART_VERSION="17.0.3"
+export ELASTIC_VERSION="7.14.1-debian-10-r8"
+
+export GRAYLOG_CHART_VERSION="1.8.5"
+export GRAYLOG_VERSION="4.1.3-1"

@@ -1,0 +1,20 @@
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: graylog
+  namespace: logging
+  annotations:
+    konghq.com/strip-path: "false"
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: graylog.worldcereal.csgroup.space
+    http:
+      paths:
+      - backend:
+          serviceName: graylog
+          servicePort: 9000
+        path: /
+        pathType: Prefix
+

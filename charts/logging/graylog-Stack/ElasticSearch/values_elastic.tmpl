@@ -1,0 +1,51 @@
+# https://github.com/elastic/helm-charts/tree/master/elasticsearch
+
+# DEV 
+#  PERSISTENT_VOLUME_SIZE_LOG="15Gi"
+#  PERSISTENT_VOLUME_SIZE_TRACE="5Gi"
+#  NB_ES_TRACE_REPLICA=1
+#  NB_ES_LOG_REPLICA=1
+#  NB_COORDINATING_REPLICA=1
+
+# PROD 
+#  PERSISTENT_VOLUME_SIZE_LOG="500Gi"
+#  PERSISTENT_VOLUME_SIZE_TRACE="40Gi"
+#  NB_ES_TRACE_REPLICA=3
+#  NB_ES_LOG_REPLICA=3
+#  NB_COORDINATING_REPLICA=2
+
+image:
+  registry: hfjcmwgl.gra5.container-registry.ovh.net
+  repository: world-cereal/elasticsearch
+  tag: VALUE1
+  pullPolicy: Always
+  pullSecrets:
+    - harborcs
+
+master:
+  replicas: 1
+  heapSize: 128m
+  podAffinityPreset: ""
+  podAntiAffinityPreset: ""
+  #nodeAffinityPreset:
+  affinity: {}
+  nodeSelector: {}
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+
+data:
+  replicas: 1
+  heapSize: 1024m
+  podAffinityPreset: ""
+  podAntiAffinityPreset: ""
+  #nodeAffinityPreset:
+  affinity: {}
+  nodeSelector: {}
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
