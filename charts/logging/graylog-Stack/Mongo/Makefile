@@ -8,6 +8,7 @@ build:
 	
 deploy:
 	# Deploy all components for Graylog
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
 	# Genarate values.yaml from template file
 	@sed "s:VALUE1:$(MONGO_VERSION):" values_mongo.tmpl > values_mongo.yaml

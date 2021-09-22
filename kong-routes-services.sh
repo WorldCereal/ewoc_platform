@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## all  routes for oidc plugins 
+
 # Prometheus
 curl -kSsl -X POST \
 --url http://kong-kong-admin:8001/routes/monitoring.kube-prometheus-stack-prometheus.00/plugins \
@@ -32,7 +34,7 @@ curl -kSsl -X POST \
 --data 'config.session_secret=null' \
 --data 'config.ssl_verify="no"' \
 --data 'config.token_endpoint_auth_method=client_secret_post' \
---data 'enabled=true' \
+--data 'enabled=true'
 
 # Graylog
 curl -kSsl -X POST \
@@ -48,7 +50,7 @@ curl -kSsl -X POST \
 --data 'config.session_secret=null' \
 --data 'config.ssl_verify="no"' \
 --data 'config.token_endpoint_auth_method=client_secret_post' \
---data 'enabled=true' \
+--data 'enabled=true'
 
 
 # RDM  API
@@ -65,7 +67,7 @@ curl -kSsl -X POST \
 --data 'config.session_secret=null' \
 --data 'config.ssl_verify="no"' \
 --data 'config.token_endpoint_auth_method=client_secret_post' \
---data 'enabled=true' \
+--data 'enabled=true' 
 
 
 # RDM  UI endpoint
@@ -82,4 +84,4 @@ curl -kSsl -X POST \
 --data 'config.session_secret=null' \
 --data 'config.ssl_verify="no"' \
 --data 'config.token_endpoint_auth_method=client_secret_post' \
---data 'enabled=true' \
+--data 'enabled=true' 
