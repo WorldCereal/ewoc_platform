@@ -36,7 +36,7 @@ curl -kSsl -X POST \
 
 # Graylog
 curl -kSsl -X POST \
---url http://kong-kong-admin:8001/routes/{routes.xxxx}/plugins \
+--url http://kong-kong-admin:8001/routes/logging.graylog.00/plugins \
 --data 'name=oidc' \
 --data 'config.bearer_only=no' \
 --data 'config.client_id=graylog' \
