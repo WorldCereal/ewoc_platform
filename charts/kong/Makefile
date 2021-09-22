@@ -24,7 +24,7 @@ deploy:
 	helm install kong kong/kong --version=$(KONG_CHART_VERSION) --namespace=kong -f values.yaml
 
 	# Add Prometheus plugin
-	#kubectl  apply -f kong-prometheus-plugin/kong-prometheus-plugin.yaml
+	kubectl  apply -f plugins/kong-prometheus-plugin.yaml
 
 	# Deploy a tool pod for Kong
 	kubectl apply -f tools/pod.yaml
@@ -34,5 +34,5 @@ delete:
 	# Deleting all components for Kong
 	helm  uninstall kong -n kong
 	helm delete kong-postgresql -n kong
-	kubectl delete -f tool/pod.yaml
-
+	kubectl delete -f tools/pod.yaml
+	kubectl delete -f plugins/kong-prometheus-plugin.yaml

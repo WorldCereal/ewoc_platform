@@ -14,3 +14,9 @@ export KEYCLOAK_VERSION="15.0.2-debian-10-r15"
 
 # Kube-Prometheus-Stack
 export KUBE_PROMETHEUS_STACK_CHART_VERSION="17.0.2"
+
+
+
+NSyWOGW1rU
+
+JvIcpxswVT

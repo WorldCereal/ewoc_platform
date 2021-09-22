@@ -68,8 +68,6 @@ curl -kSsl -X POST \
 --data 'enabled=true' \
 
 
-rdmui.dev.worldcereal.csgroup.space 
-
 # RDM  UI endpoint
 curl -kSsl -X POST \
 --url http://kong-kong-admin:8001/routes/rdm.rdmui-nginx.00/plugins \
