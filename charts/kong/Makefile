@@ -10,6 +10,7 @@ build:
 	
 deploy:
 	# Deploy all components for Kong
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 	
 	# Genarate values.yaml from template file
 	@sed "s:VALUE1:$(KONG_VERSION):" values.tmpl > values.yaml
