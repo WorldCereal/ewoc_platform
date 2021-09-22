@@ -105,6 +105,8 @@ Go to *chart/logging/graylog-stack/Mongodb* and execute the following commands :
 `make build && make deploy`
 This chart create one user graylog with a password present in the chart for the graylog database. If you change the password, think to change in on the graylog Makefile.
 
+The password for graylog user is generated randomly and stored as secret.
+
 To delete (PVC not included) use `make delete`.
 
  **TODO**
@@ -125,6 +127,10 @@ Once the application is online, connect to it and create the input with the foll
 - Bootstrap Server: kafka.logging.svc.cluster.local:9092
 - Topic filter regex: ^preprocessing.logs$
 - Legacy mode: OFF
+
+The password is random generated and to get it you have to use the following commands.
+`$(kubectl get secret --namespace logging graylog -o "jsonpath={.data['graylog-password-secret']}" | base64 --decode)`
+It allow you yo access the graylog web app.
 
 To delete (PVC not included) use `make delete`.
 
