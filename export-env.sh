@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CLUSTER_ENV_LOADED="true"
+
 export HOSTNAME="worldcereal.csgroup.space"
 
 # Kong conf
