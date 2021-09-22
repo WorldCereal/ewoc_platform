@@ -9,6 +9,7 @@ build:
 deploy:
 
 	# Deploy Kafka component
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
 	# Create namespace & secrets
 	#kubectl apply -f init/init-deployment.yaml
