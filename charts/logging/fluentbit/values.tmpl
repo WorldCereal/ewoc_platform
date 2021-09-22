@@ -1,0 +1,35 @@
+image:
+  repository: hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/fluent-bit
+  tag: VALUE1
+  pullPolicy: "Always"
+
+imagePullSecrets:
+    - name: harborcs
+
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+
+
+config:
+  inputs: |
+    [INPUT]
+        Name tail
+        Tag preprocessing.*
+        Path /var/log/containers/*.log
+        Exclude_Path /var/log/containers/*fluent*.log
+        DB /var/log/fluentbit_processing.db
+        DB.Sync Normal
+        Rotate_Wait 10
+        Mem_Buf_Limit 10MB
+
+  outputs: |
+    [OUTPUT]
+        Name kafka
+        Format json
+        Match preprocessing.*
+        Brokers kafka.logging.svc.cluster.local:9092
+        Topics preprocessing.logs
+
+       
+
