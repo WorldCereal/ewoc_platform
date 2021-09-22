@@ -1,0 +1,29 @@
+image:
+  registry: hfjcmwgl.gra5.container-registry.ovh.net
+  repository: world-cereal/kafka
+  tag: VALUE1
+  pullPolicy: Always
+  pullSecrets: 
+    - harborcs
+
+persistence: 
+  enabled: true
+  # TOCHANGE
+  size: "5Gi" 
+
+replicaCount: 3
+
+livenessProbe:
+  initialDelaySeconds: 60
+
+readinessProbe:
+  initialDelaySeconds: 60
+
+#TOCHANGE
+heapOpts: -Xmx1024m -Xms1024m
+
+autoCreateTopicsEnable: false
+
+
+
+
