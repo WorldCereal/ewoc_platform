@@ -10,6 +10,7 @@ deploy:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
 	@sed "s:VALUE1:$(GRAYLOG_VERSION):" values_graylog.tmpl > values_graylog.yaml
+	@sed "s:VALUE1:$(HOSTNAME):" ingress_graylog.tmlp > ingress_graylog.yaml
 
 	helm install graylog --namespace logging --wait kongz/graylog --version $(GRAYLOG_CHART_VERSION) \
 	--set tags.install-mongodb=false \
@@ -33,7 +34,7 @@ deploy:
 	--data 'config.bearer_only=no' \
 	--data 'config.client_id=graylog' \
 	--data 'config.client_secret=25acbd19-afe0-49d7-81b4-580010df28c7' \
-	--data 'config.discovery=http://auth.worldcereal.csgroup.space/auth/realms/worldcereal/.well-known/openid-configuration' \
+	--data 'config.discovery=http://auth.$(HOSTNAME)/auth/realms/worldcereal/.well-known/openid-configuration' \
 	--data 'config.realm=worldcereal' \
 	--data 'config.response_type=code' \
 	--data 'config.scope=openid' \
