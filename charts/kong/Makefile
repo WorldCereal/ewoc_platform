@@ -34,6 +34,6 @@ delete:
 
 	# Deleting all components for Kong
 	helm  uninstall kong -n kong
-	helm delete kong-postgresql -n kong
+	helm uninstall kong-postgresql -n kong
 	kubectl delete -f tools/pod.yaml
 	kubectl delete -f plugins/kong-prometheus-plugin.yaml
