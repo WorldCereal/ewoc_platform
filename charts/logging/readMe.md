@@ -32,6 +32,9 @@ KAFKA_VERSION="2.8.0-debian-10-r84"
 https://bitnami.com/stack/kafka/helm
 
 #### Steps
+Go to *chart/logging/
+`kubectl apply -f init/init-deployment.yaml`
+
 Go to *chart/logging/kafka* and execute the following commands:
 `make build && make deploy`
 The deploy step will use the *init-deployment.yaml* in *chart/logging/init* that creates the namespace **logging** and the the sercret **harborcs** allocated for this namespace.
