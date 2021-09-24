@@ -35,6 +35,10 @@ ingressController:
   enabled: true
   installCRDs: false
 
+
+nodeSelector:
+  role: kong
+
 proxy:
   enabled: true
   type: NodePort
