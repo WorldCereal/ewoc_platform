@@ -12,4 +12,7 @@ dump:
 restore:
 	# restore keycloak backup database
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
-	@cat keycloak-db-22-09-2021.sql | kubectl exec -i keycloak-postgresql-0 -- psql -U bn_keycloak -d bitnami_keycloak
+	cat keycloak-db-22-09-2021.sql | kubectl exec -i keycloak-postgresql-0 -n keycloak -- bash -c "PGPASSWORD=$(password) psql -U bn_keycloak -d bitnami_keycloak"
+
+	
+	

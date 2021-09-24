@@ -2,7 +2,7 @@
 
 export CLUSTER_ENV_LOADED="true"
 
-export HOSTNAME="worldcereal.csgroup.space"
+export HOSTNAME="demo.worldcereal.csgroup.space"
 
 # Kong conf
 export KONG_CHART_VERSION="2.1.0"
