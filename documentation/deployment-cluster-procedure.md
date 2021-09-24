@@ -13,8 +13,9 @@
 
 - [1. Kong](#1-.-kong-deployment)
 - [2. Keycloak](#2.-keycloak-deployment)
-- [3. Kube-Prometheus-Stack](#3.-Kube-Prometheus-Stack-Deployment)
-- [4. Logging-Stack](#./charts/logging/readMe.md#deploy-log-stack-worldcereal)
+- [2. Keycloak-Database-Setup](#.3.-Keycloak-Setup-Database:-Init-or-Restore-Procedure)
+- [4. Kube-Prometheus-Stack](#4.-Kube-Prometheus-Stack-Deployment)
+- [5. Logging-Stack](#./charts/logging/readMe.md#deploy-log-stack-worldcereal)
 
 4/ Logging-Stack Deployment
 5/ wctiller
@@ -72,39 +73,58 @@ keycloak-0              1/1     Running   0          15d
 keycloak-postgresql-0   1/1     Running   0          15d
 ```
 
-2.4. Dump & Restore Keycloak database
-
+### 3. Keycloak Setup Database: Init or Restore Procedure
 ```sh
 cd backup
 ```
-for make a pg_dump:
+
+3.4 First deployment (use a new cluster)
+
+a) drop the database
+```sh
+make drop
+```
+b) init the database with the init conf
+```sh
+make init
+```
+
+c) Go on keycloak admin endpoint, change URI redirect for this clients with your new DNS:
+    - Grafana
+    - Prometheus
+    - Graylog
+
+
+3.5 Restore the database (on a cluster already using) after by example rebuild a Keycloak instance by helm.
+a) drop the database
+```sh
+make drop
+```
+b) restore the database with current conf
+```sh
+make init
+```
+
+3.6 Dump the DB 
+
 ```sh
 make dump
 ```
-now a file named keycloak-database.sql shoulded be created in the current directory.
+now a file named YOUR-DNS-keycloak-database.sql shoulded be created in the current directory.
 
-for make a pg_restore:
-```sh
-make restore
-```
-2.5 First deployment instruction: init database
 
-Init the postgres database with keycloak config already setup:
-That the inital data from keycloak-db-22-09-2021.sql.
-just use make command for restore a DB(2.4).
-
-### 3. Kube-Prometheus-Stack Deployment
-3.1 Go to Kube-Prometheus-Stack directory:
+### 4. Kube-Prometheus-Stack Deployment
+4.1 Go to Kube-Prometheus-Stack directory:
 ```sh
 cd ewoc_platform/charts/kube-prometheus-stack  
 ```
 
-3.2 Build & deploy via Make
+4.2 Build & deploy via Make
 ```sh
 make build
 make deploy
 ```
-3.3 check if all keycloak's pod are running & up:
+4.3 check if all keycloak's pod are running & up:
 ```sh
 kubectl get pod -n monitoring
 ```

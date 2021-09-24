@@ -58,10 +58,10 @@ admin:
     # Enable/disable exposure using ingress.
     enabled: false
 
-#serviceMonitor:
-#  enabled: true
-#  interval: 10s
-#  namespace: monitoring
-#  labels:
-#    release: kube-prometheus-stack
+serviceMonitor:
+  enabled: false
+  interval: 10s
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
 
