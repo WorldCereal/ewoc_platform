@@ -9,8 +9,8 @@ deploy:
 	# Deploy all components for Graylog
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
-	@sed "s:VALUE1:$(GRAYLOG_VERSION):" values_graylog.tmpl > values_graylog.yaml
-	@sed "s:VALUE1:$(HOSTNAME):" ingress_graylog.tmlp > ingress_graylog.yaml
+	@sed "s:VALUE1:$(GRAYLOG_VERSION):" values-graylog.tmpl > values-graylog.yaml
+	@sed "s:VALUE1:$(HOSTNAME):" ingress-graylog.tmpl > ingress-graylog.yaml
 
 	helm install graylog --namespace logging --wait kongz/graylog --version $(GRAYLOG_CHART_VERSION) \
 	--set tags.install-mongodb=false \
@@ -19,13 +19,13 @@ deploy:
 	--set graylog.elasticsearch.hosts=http://elastic-elasticsearch-master.logging.svc.cluster.local:9200 \
 	--set graylog.elasticsearch.version=7 \
 	--set graylog.persistence.size="10Gi" \
-    -f values_graylog.yaml
+    -f values-graylog.yaml
 
 	# Create Ingress
-		kubectl apply -f ingress-graylog.yaml -n logging
+	kubectl apply -f ingress-graylog.yaml
 	
 	# waiting 20 secondes before install oidc plugin
-	#sleep 20
+	sleep 20
 
 	# install oidc plugin on prometheus route
 	@kubectl exec kong-oidc-tool -n kong -- sh -c "curl -kSsl -X POST \
@@ -47,6 +47,7 @@ deploy:
 delete:
 	# Deleting all components for graylog
 	helm uninstall graylog -n logging 
+	kubectl delete -f ingress-graylog.yaml
 
 
 
