@@ -1,6 +1,8 @@
-.PHONY: build deploy delete 
+.PHONY: build deploy delete config install_pack
 
 password= $(shell kubectl get secrets -n logging mongo-mongodb -o json | jq  -r '.data["mongodb-password"] ' | base64 --decode )
+password_admin= $(shell kubectl get secrets -n logging graylog -o json | jq  -r '.data["graylog-password-secret"] ' | base64 --decode )
+content_pack_id= $(shell kubectl exec -it -n kong kong-oidc-tool -- curl -s -X GET -u "admin":$(password_admin) -H "X-Requested-By: graylog" -H "Content-Type: application/json" "graylog.logging.svc.cluster.local:9000/api/system/content_packs?pretty=true" | jq -r '.content_packs[] | select(.name=="Kafka").id')
 
 build:
 	# Build all components for Graylog
@@ -31,7 +33,7 @@ deploy:
 
 	# install oidc plugin on prometheus route
 	@kubectl exec kong-oidc-tool -n kong -- sh -c "curl -kSsl -X POST \
-	--url http://kong-kong-admin:8001/routes/logging.graylog.00/plugins \
+	--url http://kong-kong-admin:app.kubernetes.io/name=mongodb8001/routes/logging.graylog.00/plugins \
 	--data 'name=oidc' \
 	--data 'config.bearer_only=no' \
 	--data 'config.client_id=graylog' \
@@ -45,6 +47,20 @@ deploy:
 	--data 'config.token_endpoint_auth_method=client_secret_post' \
 	--data 'enabled=true'"
 
+
+config:
+ 	# SET INPUTS FOR GRAYLOG
+	kubectl exec -it -n kong kong-oidc-tool -- apk update
+	kubectl exec -it -n kong kong-oidc-tool -- apk add jq
+
+	kubectl cp kafka.json -n kong kong-oidc-tool:/tmp 
+
+	#Upload content pack
+	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u admin:$(password_admin) -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs" -d @"/tmp/kafka.json"
+
+install_pack:
+	# Install the content pack 
+	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u "admin":"adminadminpassword" -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs/${content_pack_id}/1/installations" -d '{"parameters": {},"comment": ""}'
 
 delete:
 	# Deleting all components for graylog
