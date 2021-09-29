@@ -34,3 +34,6 @@ export ELASTIC_VERSION="7.14.1-debian-10-r8"
 
 export GRAYLOG_CHART_VERSION="1.8.5"
 export GRAYLOG_VERSION="4.1.3-1"
+
+#World Cover Tiller
+export WCT_VERSION="1.0.0"

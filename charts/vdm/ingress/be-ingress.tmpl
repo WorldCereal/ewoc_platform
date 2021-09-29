@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: be-ingress
+  namespace: vdm
+  annotations:
+    kubernetes.io/ingress.class: kong 
+spec:
+  rules:
+  - host: vdm.VALUE1
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: be-service
+          servicePort: 80
