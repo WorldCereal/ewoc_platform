@@ -6,6 +6,9 @@ image:
   pullSecrets:
     - harborcs
 
+nodeSelector:
+  role: kong 
+
 auth:
   enabled: true
   rootUser: root

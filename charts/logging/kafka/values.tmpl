@@ -19,6 +19,9 @@ livenessProbe:
 readinessProbe:
   initialDelaySeconds: 60
 
+nodeSelector:
+  role: kong 
+
 #TOCHANGE
 heapOpts: -Xmx1024m -Xms1024m
 
