@@ -1,4 +1,3 @@
-wip-test/
 infra/kubespray-2.13/
 infra/venv/
 values.yaml

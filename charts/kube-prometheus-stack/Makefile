@@ -18,7 +18,7 @@ deploy:
 	helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack  --version=$(KUBE_PROMETHEUS_STACK_CHART_VERSION) --create-namespace --namespace=monitoring  -f values.yaml
 
 	# waiting 20 secondes before install oidc plugin
-	#sleep 20
+	sleep 20
 
 	# install oidc plugin on prometheus route
 	@kubectl exec kong-oidc-tool -n kong -- sh -c "curl -kSsl -X POST \

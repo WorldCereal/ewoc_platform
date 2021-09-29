@@ -13,12 +13,13 @@
 
 - [1. Kong](#1-.-kong-deployment)
 - [2. Keycloak](#2.-keycloak-deployment)
-- [2. Keycloak-Database-Setup](#.3.-Keycloak-Setup-Database:-Init-or-Restore-Procedure)
+- [3. Keycloak-Database-Setup](#.3.-Keycloak-Setup-Database:-Init-or-Restore-Procedure)
 - [4. Kube-Prometheus-Stack](#4.-Kube-Prometheus-Stack-Deployment)
 - [5. Logging-Stack](#./charts/logging/readMe.md#deploy-log-stack-worldcereal)
+- [6. WCTiller](#.6.-Keycloak-Setup-Database:-Init-or-Restore-Procedur)
+- [7. RDM Oidc plugin setup](#7.-RDM-Oidc-plugin-setup)
+- [8. VDM-stack](#7.-RDM-Oidc-plugin-setup)
 
-4/ Logging-Stack Deployment
-5/ wctiller
 
 ### 1. Kong Deployment 
 
@@ -146,3 +147,38 @@ for infomation:
 - kube-prometheus-stack-grafana is the UI endpoint for the monitoring 
 - kube-prometheus-stack-prometheus-node-exporter-* is a DaemonSet(deploy a instance on every nodes) that allow to expose metrics to Prometheus. 
 - prometheus-kube-prometheus-stack-prometheus-0  this is the heart of prometheus, it fetches the metrics exposed by node-exporter.
+
+### 6. WCTiller
+Currently this deployment is in WIP status, that mean:
+- Waiting to add 'geometry' column on Tille schema
+
+After that we have need to update the configuration for works on our system.
+
+Go to use wctiller directory, use Makefile for in step:
+- Build
+- Deploy
+- Delete
+
+
+### 7. RDM Oidc plugin setup
+
+After the deployment of the RDM component, go to charts/rdm for installs oidc plugin on RDM route and use make:
+```sh
+make deploy
+```
+
+### 8. VDM-Stack Deployment
+
+Currently this  VDM-Stack Deployment is in WIP status, that mean:
+- The GISAT image will should push on CS Harbor
+- Waiting GISAT response about the volume strategy
+
+
+Go to use vdm directory, use Makefile for in step:
+- Build
+- Deploy
+- Delete
+
+Note:
+Be careful when removing the component not to delete the pvc otherwise volumes will be deleted on Cloud Ferro .
+

@@ -4,6 +4,10 @@ local utils = require("kong.plugins.oidc.utils")
 local filter = require("kong.plugins.oidc.filter")
 local session = require("kong.plugins.oidc.session")
 
+local userInfo = "X-User-Info"
+local userName = "X-Username"
+local userGroup= "X-User-Group"
+
 OidcHandler.PRIORITY = 1000
 
 
@@ -39,10 +43,13 @@ function handle(oidcConfig)
     response = make_oidc(oidcConfig)
 
     --inject user attribute in header
-    if oidcConfig.client_id == "prometheus" or  oidcConfig.client_id == "rdm"  then
-       ngx.header["X-User-Info"] = response.user.attribute
-       ngx.header["X-Username"] = response.user.username
-       ngx.header["X-User-Group"] =  response.user.group
+    if oidcConfig.client_id == "dissemination" or  oidcConfig.client_id == "rdm"  then
+       ngx.header[userInfo] = response.user.attribute
+       ngx.req.set_header(userInfo, response.user.attribute)
+       ngx.header[userName] = response.user.username
+       ngx.req.set_header(userName, response.user.username)
+       ngx.header[userGroup] =  response.user.group
+       ngx.req.set_header(userGroup, response.user.group)
     end
     if response and response.user then
       utils.injectUser(response.user)
