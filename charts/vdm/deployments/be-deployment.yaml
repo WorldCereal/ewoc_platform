@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: be
+  namespace: vdm
+  labels:
+    app: be
+spec:
+  replicas: 4
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: be
+    spec:
+      containers:
+      - name: be
+        image: gisat/be-core:performance
+        env:
+        - name: TZ
+          value: Europe/Prague
+        volumeMounts:
+        - mountPath: /usr/src/app/config.js # to check
+          name: be-claim0 # to check
+          readOnly: true # to check
+        - mountPath: /mnt/shared # to check
+          name: be-claim1 # to check
+        - mountPath: /srv # to check
+          name: be-data # to check
+        ports:
+         - containerPort: 9850  
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: worldcereal-harbor-secrets 
+      volumes: 
+      - name: be-data # to check
+        persistentVolumeClaim:
+          claimName: be-data # to check
+---          
+apiVersion: v1
+kind: Service
+metadata:
+  name: be-service
+  namespace: vdm
+spec:
+  selector:
+    app: be
+  ports:
+    - port: 80
+      targetPort: 9850  
+  type: ClusterIP    
+        

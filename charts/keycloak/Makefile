@@ -21,5 +21,8 @@ deploy:
 	
 
 delete:
+	# Dump database before remove Keycloak instance
+	cd backup & make dump
+
 	# Delete Keycloack component
 	helm uninstall keycloak -n keycloak

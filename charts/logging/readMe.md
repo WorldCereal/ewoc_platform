@@ -1,6 +1,5 @@
 # Deploy log stack WorldCereal
 
-  
 
 ## Purpose :
 
@@ -17,7 +16,6 @@ The logging system repose on following product to store logs.
 **TODO**
 First, the stack needs 2 specifics VM with at least 16Go of ram
 in order to welcome elasticsearch and one replica.
-**ADD gestion selecteur qui est attribué a quoi**
 
 ## Steps :
 - Install Kafka
@@ -32,6 +30,9 @@ KAFKA_VERSION="2.8.0-debian-10-r84"
 https://bitnami.com/stack/kafka/helm
 
 #### Steps
+Go to *chart/logging/
+`kubectl apply -f init/init-deployment.yaml`
+
 Go to *chart/logging/kafka* and execute the following commands:
 `make build && make deploy`
 The deploy step will use the *init-deployment.yaml* in *chart/logging/init* that creates the namespace **logging** and the the sercret **harborcs** allocated for this namespace.
@@ -105,11 +106,14 @@ Go to *chart/logging/graylog-stack/Mongodb* and execute the following commands :
 `make build && make deploy`
 This chart create one user graylog with a password present in the chart for the graylog database. If you change the password, think to change in on the graylog Makefile.
 
+The password for graylog user is generated randomly and stored as secret.
+
 To delete (PVC not included) use `make delete`.
 
  **TODO**
 - Node affinity
 - Volume size
+- config graylog with true container names
 
 ### Install Graylog
 #### Info
@@ -121,10 +125,18 @@ https://github.com/KongZ/charts
 Go to *chart/logging/graylog-stack/Graylog* and execute the following commands :
 `make build && make deploy`
 
-Once the application is online, connect to it and create the input with the following parameters : 
-- Bootstrap Server: kafka.logging.svc.cluster.local:9092
-- Topic filter regex: ^preprocessing.logs$
-- Legacy mode: OFF
+
+Once the application is online, we have to create the input object that is used by 
+graylog to retrieve events from Kafka. 
+To do so, execute the following command: 
+`make config` then `make install_pack`
+
+Then connect to Graylog then check that the input kafka is present and running.
+
+
+The password is random generated and to get it you have to use the following commands.
+`$(kubectl get secret --namespace logging graylog -o "jsonpath={.data['graylog-password-secret']}" | base64 --decode)`
+It allow you yo access the graylog web app.
 
 To delete (PVC not included) use `make delete`.
 
@@ -132,4 +144,5 @@ To delete (PVC not included) use `make delete`.
 - Node affinity
 - Volume size
 - Heap size 
-- Elasticsearch auth
+- Input config graylog
+

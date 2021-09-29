@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wctiller
+  namespace: wctiller
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: wctiller.VALUE1
+    http:
+      paths:
+      - backend:
+          serviceName: mapproxy
+          servicePort: 8080
+        path: /
+        pathType: Prefix
+

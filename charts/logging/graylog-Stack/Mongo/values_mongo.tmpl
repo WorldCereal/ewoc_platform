@@ -6,10 +6,11 @@ image:
   pullSecrets:
     - harborcs
 
+nodeSelector:
+  role: kong 
+
 auth:
   enabled: true
   rootUser: root
-  rootPassword: "World_Cereal_root"
   username: "graylog"
-  password: "graylog_World_Cereal_2021"
   database: "graylog"

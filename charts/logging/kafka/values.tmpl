@@ -9,7 +9,7 @@ image:
 persistence: 
   enabled: true
   # TOCHANGE
-  size: "5Gi" 
+  size: "30Gi" 
 
 replicaCount: 3
 
@@ -19,8 +19,11 @@ livenessProbe:
 readinessProbe:
   initialDelaySeconds: 60
 
+nodeSelector:
+  role: kong 
+
 #TOCHANGE
-heapOpts: -Xmx1024m -Xms1024m
+#heapOpts: -Xmx1024m -Xms1024m
 
 autoCreateTopicsEnable: false
 

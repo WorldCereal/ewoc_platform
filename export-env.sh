@@ -2,7 +2,7 @@
 
 export CLUSTER_ENV_LOADED="true"
 
-export HOSTNAME="worldcereal.csgroup.space"
+export HOSTNAME="demo.worldcereal.csgroup.space"
 
 # Kong conf
 export KONG_CHART_VERSION="2.1.0"
@@ -34,3 +34,6 @@ export ELASTIC_VERSION="7.14.1-debian-10-r8"
 
 export GRAYLOG_CHART_VERSION="1.8.5"
 export GRAYLOG_VERSION="4.1.3-1"
+
+#World Cover Tiller
+export WCT_VERSION="1.0.0"
