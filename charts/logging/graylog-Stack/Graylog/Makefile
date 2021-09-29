@@ -33,7 +33,7 @@ deploy:
 
 	# install oidc plugin on prometheus route
 	@kubectl exec kong-oidc-tool -n kong -- sh -c "curl -kSsl -X POST \
-	--url http://kong-kong-admin:app.kubernetes.io/name=mongodb8001/routes/logging.graylog.00/plugins \
+	--url http://kong-kong-admin:8001/routes/logging.graylog.00/plugins \
 	--data 'name=oidc' \
 	--data 'config.bearer_only=no' \
 	--data 'config.client_id=graylog' \
@@ -55,7 +55,7 @@ config:
 
 	kubectl cp kafka.json -n kong kong-oidc-tool:/tmp 
 
-	#Upload content pack
+	# Upload content pack
 	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u admin:$(password_admin) -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs" -d @"/tmp/kafka.json"
 
 install_pack:
