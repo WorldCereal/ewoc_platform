@@ -36,14 +36,14 @@ master:
       - ReadWriteOnce
     size: 8Gi
 
+  nodeSelector:
+    role: kong 
+
 data:
   replicas: 1
   heapSize: 1024m
-  podAffinityPreset: ""
-  podAntiAffinityPreset: ""
-  #nodeAffinityPreset:
-  affinity: {}
-  nodeSelector: {}
+  nodeSelector:
+    role: kong 
   persistence:
     enabled: true
     accessModes:
