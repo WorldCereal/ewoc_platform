@@ -18,6 +18,9 @@ graylog:
     enabled: true
     size: "10Gi" # 30 S1
 
+  nodeSelector:
+    role: kong 
+
 # ON S1PDGS
 #GRAYLOG_LIMITS_CPU=2000m
 #GRAYLOG_LIMITS_MEMORY=8096Mi
