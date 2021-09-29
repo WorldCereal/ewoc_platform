@@ -16,7 +16,7 @@ config:
     [INPUT]
         Name tail
         Tag preprocessing.*
-        Path /var/log/containers/*.log
+        Path /var/log/containers/*argo*.log
         Exclude_Path /var/log/containers/*fluent*.log
         DB /var/log/fluentbit_processing.db
         DB.Sync Normal
