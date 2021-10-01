@@ -2,14 +2,14 @@
 
 build:
 	# Build helm repo for  WCTiller 
-	@docker build  helm/ -t hfjcmwgl.gra5.container-registry.ovh.net/worldcereal/wctiller:$(WCT_VERSION) 
+	@docker build  wcereal-tiler/ -t hfjcmwgl.gra5.container-registry.ovh.net/worldcereal/wctiller:$(WCT_VERSION) 
 
 deploy:
 	# Deploy WCTiller 
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 	@sed "s:VALUE1:$(HOSTNAME):" ingress.tmpl > ingress.yaml
 
-	@helm install mapproxy  helm/wcereal-tiler/mapproxy  --namespace=argo --wait -f values.yaml 
+	@helm install mapproxy  wcereal-tiler/mapproxy  --namespace=argo --wait -f values.yaml 
 
 	# create ingress for WCTiller
 	@kubectl delete -f ingress.yaml
@@ -40,5 +40,5 @@ deploy:
 delete :
 	# Deploy WCTiller
 	kubectl delete -f ingress.yaml
-	@helm uninstall mapproxy  helm/wcereal-tiler/mapprox  -n wctiller 
+	@helm uninstall mapproxy  wcereal-tiler/mapprox  -n wctiller 
 
