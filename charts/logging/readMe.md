@@ -9,13 +9,10 @@ The logging system repose on following product to store logs.
 
 - First, fluent-bit pods are placed on each node and send the logs to a kafka topic.
 - The kafka topics keeps the events until a consumer come to read them.
--  Graylog is the consumer and use kafka to retrieve events and store them in his elasticsearch DB
+-  Graylog is the consumer and use kafka to retrieve events and store them in his elasticsearch DB.
 
-## Requirements :
+![logging architecture](index.jpeg)
 
-**TODO**
-First, the stack needs 2 specifics VM with at least 16Go of ram
-in order to welcome elasticsearch and one replica.
 
 ## Steps :
 - Install Kafka
@@ -45,11 +42,6 @@ If you wish to add topic you can modify the Makefile and add your topic by using
 
 To delete the install ( PVC not included) use `make delete`.
 
-**TODO**
-
-- ADD attribution node affinity when cluster prod ready 
-- persistence size
-
 ### Install Fluent-bit
 #### Info
 FLUENTBIT_CHART_VERSION="0.16.6"
@@ -65,9 +57,6 @@ If you wish to add logs in the workflow, you should delete the daemonset by usin
 
 **Be carefull the rules syntax is tricky, respect the current format in order to avoid issues**
 To delete the install use `make delete`.
-
-**TODO**
-- Config output and input with the right name of container to monitor
 
 ### Install Graylog stack
 The graylog stack depends on 3 elements to works properly.
@@ -88,8 +77,6 @@ Go to *chart/logging/graylog-stack/ElasticSearch* and execute the following comm
 To delete (PVC not included) use `make delete`.
 
  **TODO**
-- Set security auth
-- Node affinity
 - Volume size
 - Heap size 8go
 
@@ -110,10 +97,6 @@ The password for graylog user is generated randomly and stored as secret.
 
 To delete (PVC not included) use `make delete`.
 
- **TODO**
-- Node affinity
-- Volume size
-- config graylog with true container names
 
 ### Install Graylog
 #### Info
@@ -141,8 +124,6 @@ It allow you yo access the graylog web app.
 To delete (PVC not included) use `make delete`.
 
  **TODO**
-- Node affinity
 - Volume size
 - Heap size 
-- Input config graylog
 
