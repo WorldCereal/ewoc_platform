@@ -11,17 +11,17 @@
 ## summary
 
 
-- [1. Kong](#1-.-kong-deployment)
-- [2. Keycloak](#2.-keycloak-deployment)
-- [3. Keycloak-Database-Setup](#.3.-Keycloak-Setup-Database:-Init-or-Restore-Procedure)
-- [4. Kube-Prometheus-Stack](#4.-Kube-Prometheus-Stack-Deployment)
+- [1. Kong](#kong-deployment)
+- [2. Keycloak](#keycloak-deployment)
+- [3. Keycloak-Database-Setup](#keycloak-setup-database-init-or-restore-procedure)
+- [4. Kube-Prometheus-Stack](#kube-prometheus-stack-deployment)
 - [5. Logging-Stack](#./charts/logging/readMe.md#deploy-log-stack-worldcereal)
-- [6. WCTiller](#.6.-Keycloak-Setup-Database:-Init-or-Restore-Procedur)
-- [7. RDM Oidc plugin setup](#7.-RDM-Oidc-plugin-setup)
-- [8. VDM-stack](#7.-RDM-Oidc-plugin-setup)
+- [6. WCTiller](#)
+- [7. RDM Oidc plugin setup](#rdm-oidc-plugin-setup)
+- [8. VDM-stack](#)
 
 
-### 1. Kong Deployment 
+### Kong Deployment 
 
 1.1 Go to kong direcory:
 ```sh
@@ -52,7 +52,7 @@ for infomation:
 - kong-postgresql-postgresql-0 pod  containt a postgres database (used by Kong Admin Api for the oidc plugin, routes , svc , etc)
 - kong-oidc-tool is a custom pod that allow to post & update via curl request the Kong Admin Api.
 
-### 2. Keycloak Deployment 
+### Keycloak Deployment 
 
 2.1 Go to Keycloak directory:
 ```sh
@@ -74,7 +74,7 @@ keycloak-0              1/1     Running   0          15d
 keycloak-postgresql-0   1/1     Running   0          15d
 ```
 
-### 3. Keycloak Setup Database: Init or Restore Procedure
+### Keycloak Setup Database: Init or Restore Procedure
 ```sh
 cd backup
 ```

@@ -43,7 +43,7 @@ function handle(oidcConfig)
     response = make_oidc(oidcConfig)
 
     --inject user attribute in header
-    if oidcConfig.client_id == "dissemination" or  oidcConfig.client_id == "rdm"  then
+    if oidcConfig.client_id == "vdm" or  oidcConfig.client_id == "rdm"  then
        ngx.header[userInfo] = response.user.attribute
        ngx.req.set_header(userInfo, response.user.attribute)
        ngx.header[userName] = response.user.username
