@@ -10,26 +10,34 @@ tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
 
+logLevel: debug
 
 config:
   inputs: |
     [INPUT]
         Name tail
-        Tag preprocessing.*
+        Tag argo.*
         Path /var/log/containers/*argo*.log
-        Exclude_Path /var/log/containers/*fluent*.log
-        DB /var/log/fluentbit_processing.db
+        DB /var/log/argo.db
         DB.Sync Normal
         Rotate_Wait 10
         Mem_Buf_Limit 10MB
+        Parser  docker
 
+  filters: |
+    [FILTER]
+        Name kubernetes
+        Match argo.*
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
+        Kube_Tag_Prefix argo.var.log.containers
+    
   outputs: |
     [OUTPUT]
         Name kafka
         Format json
-        Match preprocessing.*
+        Match argo.*
         Brokers kafka.logging.svc.cluster.local:9092
         Topics preprocessing.logs
-
-       
-
