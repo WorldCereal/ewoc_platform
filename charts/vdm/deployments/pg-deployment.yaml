@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pg
@@ -6,55 +6,58 @@ metadata:
   labels:
     app: pg
 spec:
-  replicas: 1
-  strategy:
-    type: Recreate
+  #replicas: 3
+  selector:
+    matchLabels:
+      app: pg
   template:
     metadata:
       labels:
-        io.kompose.service: pg
+        app: pg
     spec:
-      containers:
-      - name: pg
-        image: gisat/postgis:13-backup
-        args:
-        - postgres
-        - -c
-        - config_file=/etc/postgresql/postgresql.conf
-        env:
-        - name: BACKUP_PATH
-          value: /mnt/archive
-        - name: POSTGRES_CONFIG
-          value: /etc/postgresql/postgresql.conf
-        - name: POSTGRES_PASSWORD
-          value: postgres
-        - name: TZ
-          value: Europe/Prague
-        volumeMounts:
-        - mountPath: /var/lib/postgresql/data
-          name: pg-data
-        - mountPath: /etc/postgresql/postgresql.conf
-          name: pg-claim1
-          readOnly: true
-        - mountPath: /mnt/archive
-          name: pg-claim2
-      restartPolicy: Always
       imagePullSecrets:
-        - name: worldcereal-harbor-secrets 
+      - name: harborcs 
+      containers:
+        - args:
+            - postgres
+            - -c
+            - config_file=/etc/postgresql/postgresql.conf
+          env:
+            - name: POSTGRES_CONFIG
+              value: /etc/postgresql/postgresql.conf
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: TZ
+              value: Europe/Prague    
+          name: pg
+          image: hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/gisat/postgis:13-backup
+          ports:
+          - containerPort: 5432
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: pg-data
+              subPath: postgres
+            - mountPath: "/etc/postgresql/postgresql.conf"
+              name: pg-hostpath1
+              subPath: "postgresql.conf"
+              readOnly: true
       volumes:
       - name: pg-data
         persistentVolumeClaim:
           claimName: pg-data
+      - name: pg-hostpath1
+        configMap:  
+          name: pg-hostpath1
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: pg-service
+  name: pg
   namespace: vdm
 spec:
   selector:
-    app: be
+    app: pg
   ports:
-    - port: 5432
-      targetPort: 5432  
-  type: ClusterIP          
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

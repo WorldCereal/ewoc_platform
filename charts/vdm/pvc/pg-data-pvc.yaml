@@ -5,7 +5,8 @@ metadata:
   name: pg-data
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 8Gio
+      storage: 8Gi
+
