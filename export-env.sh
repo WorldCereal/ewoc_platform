@@ -4,6 +4,9 @@ export CLUSTER_ENV_LOADED="true"
 
 export HOSTNAME="demo.worldcereal.csgroup.space"
 
+# Cert Manager 
+export CERT_MANAGER_CHART_VERSION="1.5.4"
+export CERT_MANAGER_MAIL="quentin.maraval@csgroup.eu"
 # Kong conf
 export KONG_CHART_VERSION="2.1.0"
 export KONG_VERSION="2.4-ubuntu"

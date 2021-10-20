@@ -1,0 +1,63 @@
+MAP
+    DEBUG 3
+    EXTENT -180.0 -90.0 180.0 90.0
+    PROJECTION
+        "init=epsg:4326"
+    END
+    WEB
+        METADATA 
+            "ows_title" "worldcereal"
+            "ows_onlineresource" "http://{{ include "mapserver.fullname" . }}:{{ .Values.mapserver.service.port.port }}?MAP=/usr/src/mapfiles/mapfile.map"
+            "ows_srs" "EPSG:3857 EPSG:4326"
+            "ows_enable_request" "*"
+            "wms_feature_info_mime_type" "text/html"
+            "wfs_getfeature_formatlist" "ogrgml,geojson"
+        END
+    END
+    #  Tile status
+    LAYER
+        NAME "worldcereal_status"
+        TYPE POLYGON
+        INCLUDE "includes/postgres_connection.inc.map"
+        CONNECTIONTYPE postgis
+        DATA "geometry from (select (id, wp_id) as gid, status, epsg, geometry from tile) as subquery using unique gid"
+        TILESRS "epsg"
+        PROJECTION
+            "init=epsg:4326"
+        END
+        METADATA
+            "ows_title"	"worldcereal_status"
+        END
+        CLASSITEM status
+        CLASS
+            EXPRESSION "scheduled"
+            STYLE
+                COLOR "#4363d880"
+            END
+        END
+        CLASS
+            EXPRESSION "processing"
+            STYLE
+                COLOR "#ffe11980"
+            END
+        END
+        CLASS
+            EXPRESSION "done"
+            STYLE
+                COLOR "#3cb44b80"
+            END
+        END
+        CLASS
+            EXPRESSION "error"
+            STYLE
+                COLOR "#e6194B80"
+            END
+        END
+        CLASS
+            EXPRESSION "pre-processing-error"
+            STYLE
+                COLOR "#ff830080"
+            END
+        END
+    END
+END

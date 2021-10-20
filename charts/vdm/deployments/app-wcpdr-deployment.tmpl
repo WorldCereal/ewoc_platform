@@ -1,45 +1,48 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-wcpdr
+  namespace: vdm
   labels:
     app: app-wcpdr
-  namespace: vdm
 spec:
-  replicas: 1
-  strategy:
-    type: Recreate
+  #replicas: 3
+  selector:
+    matchLabels:
+      app: app-wcpdr
   template:
     metadata:
       labels:
         app: app-wcpdr
     spec:
-      containers:
-      - name: app-wcpdr
-        image: gisat/app-world_cereal_preliminary_data_review:dev
-        imagePullPolicy: Always
-        ports:
-         - containerPort: 9000
-        env:
-        - name: REACT_APP_apiBackendHost
-          value: vdm.VALUE1
-        - name: REACT_APP_apiBackendPath
-          value: backend
-        - name: REACT_APP_apiBackendProtocol
-          value: http
-        - name: TZ
-          value: Europe/Prague 
-        volumeMounts:
-        - mountPath: /usr/src/app/client/static/js/runtimeConfig.js
-          name: app-wcpdr-claim0  #to change
-          readOnly: true
-      restartPolicy: Always
       imagePullSecrets:
-        - name: worldcereal-harbor-secrets 
+      - name: harborcs 
+      containers:
+        - env:
+            - name: REACT_APP_apiBackendHost
+              value: vdm.VALUE1
+            - name: REACT_APP_apiBackendPath
+              value: backend
+            - name: REACT_APP_apiBackendProtocol
+              value: http
+            - name: TZ
+              value: Europe/Prague
+          image: hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/gisat/app-esa_world_cereal_product_viewer:dev
+          name: app-wcpdr
+          ports:
+            - containerPort: 9000
+          resources: {}
+          volumeMounts:
+            - mountPath: "/usr/src/app/client/static/js/runtimeConfig.js"
+              name: app-wcpdr-hostpath0
+              subPath: "runtimeConfig.js"
+              readOnly: true
+      restartPolicy: Always
       volumes:
-      - name: app-wcpdr-claim0  #to change
-        persistentVolumeClaim:
-          claimName: app-wcpdr-claim0 # to change
+        - name: app-wcpdr-hostpath0
+          configMap:
+            name: app-wcpdr-hostpath0
+    
 ---
 apiVersion: v1
 kind: Service
@@ -50,6 +53,6 @@ spec:
   selector:
     app: app-wcpdr
   ports:
-    - port: 80
-      targetPort: 9000  
-  type: ClusterIP
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000

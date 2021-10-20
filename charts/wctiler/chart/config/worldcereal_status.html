@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+    </head>
+    <style>
+        html, body { height: 100% }
+        .legend {
+            line-height: 18px;
+            color: #555;
+        }
+        .info {
+            padding: 6px 8px;
+            /* font: 14px/16px Arial, Helvetica, sans-serif; */
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .info h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            /* opacity: 0.7; */
+        }
+    </style>
+
+    <body onload="initialize()">
+        <div id="map" style="width:100%; height:100%"></div>
+    </body>
+</html>
+<script type="text/javascript">
+    function initialize() {
+        var map = L.map('map').setView([19, 0], 2);
+
+        var osmLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: 'OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // var wmsLayer = L.tileLayer.wms('http://geoservices.brgm.fr/geologie?', {
+        //     layers: 'SCAN_H_RELIEF_GEOL50_PERIMETRE',
+        //     format: 'image/png',
+        //     transparent: true,
+        // }).addTo(map);
+
+        var wmsLayer = L.tileLayer.wms('http://ec2-18-192-120-83.eu-central-1.compute.amazonaws.com:32390/map/service?', {
+            layers: 'worldcereal_status',
+            format: 'image/png',
+            transparent: true,
+        }).addTo(map);
+    
+        var legend = L.control({position: 'bottomright'});
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend');
+            div.innerHTML += '<i style="background:#4363d880"></i> scheduled<br>';
+            div.innerHTML += '<i style="background:#ffe11980"></i> processing<br>';
+            div.innerHTML += '<i style="background:#3cb44b80"></i> done<br>';
+            div.innerHTML += '<i style="background:#e6194B80"></i> error<br>';
+            div.innerHTML += '<i style="background:#ff830080"></i> pre-processing-error<br>';
+            return div;
+        };
+        legend.addTo(map);
+    }
+</script>

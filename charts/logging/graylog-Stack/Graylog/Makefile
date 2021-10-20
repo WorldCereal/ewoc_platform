@@ -23,7 +23,7 @@ deploy:
 		--set graylog.elasticsearch.hosts=http://elastic-elasticsearch-master.logging.svc.cluster.local:9200 \
 		--set graylog.elasticsearch.version=7 \
 		--set graylog.persistence.size="10Gi" \
-    	-f values_graylog.yaml
+    	-f values-graylog.yaml
 
 	# Create Ingress
 	kubectl apply -f ingress-graylog.yaml
