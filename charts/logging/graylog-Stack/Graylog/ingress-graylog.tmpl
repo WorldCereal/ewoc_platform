@@ -7,7 +7,15 @@ metadata:
   annotations:
     konghq.com/strip-path: "false"
     kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/protocols: https
+    konghq.com/https-redirect-status-code: "302"
 spec:
+  tls:
+  - secretName: graylog-tls
+    hosts:
+    - graylog.VALUE1
   rules:
   - host: graylog.VALUE1
     http:
