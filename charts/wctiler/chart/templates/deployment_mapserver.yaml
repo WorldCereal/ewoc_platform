@@ -16,7 +16,6 @@ spec:
       annotations:
         checksum/mapserver-mapfiles: {{ tpl (.Files.Get "config/mapfiles/mapfile.map" ) . | sha256sum }}
         checksum/mapserver-secret: {{ (.Values.mapserver.mapfiles.postgresConnection | b64enc) | sha256sum }}
-        # checksum/mapserver-secret: {{ printf "%s-%s" (.Values.mapserver.mapfiles.awsCredentials | b64enc) (.Values.mapserver.mapfiles.postgresConnection | b64enc) | sha256sum }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

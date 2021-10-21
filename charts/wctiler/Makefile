@@ -1,19 +1,27 @@
-.PHONY: build deploy delete
+.PHONY: deploy delete
 
-build:
-	# Build helm repo for  WCTiller 
-	@docker build  wcereal-tiler/ -t hfjcmwgl.gra5.container-registry.ovh.net/worldcereal/wctiller:$(WCT_VERSION) 
+host=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_host"] ' | base64 --decode )
+port=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_port"] ' | base64 --decode ) 
+dbname=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_database"] ' | base64 --decode )
+user=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_user"] ' | base64 --decode )
+password=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_password"] ' | base64 --decode )
 
 deploy:
-	# Deploy WCTiller 
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
-	@sed "s:VALUE1:$(HOSTNAME):" ingress.tmpl > ingress.yaml
-
-	@helm install mapproxy  wcereal-tiler/mapproxy  --namespace=argo --wait -f values.yaml 
+	# Deploy WCTiler 
+	#@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+	
+	# Init env
+	@kubectl apply -f init.yaml
+	
+	#@sed "s:VALUE1:$(HOSTNAME):" ingress.tmpl > ingress.yaml
 
 	# create ingress for WCTiller
-	@kubectl delete -f ingress.yaml
+	#@kubectl apply -f ingress.yaml -n wctiler
 
+	# Create pgsql configmaps
+	@sed "s:HOST:$(host):;s:PORT:$(port):;s:DBNAME:$(dbname):;s:USER:$(user):;s:PASSWORD:$(password):" chart/config/mapfiles/postgres_connection.inc.map.tmpl > chart/config/mapfiles/postgres_connection.inc.map.sample
+
+	@helm install mapproxy  chart/  --namespace=wctiler --wait  --set-file mapserver.mapfiles.postgresConnection=chart/config/mapfiles/postgres_connection.inc.map.sample
 
 	# waiting 20 secondes before install oidc plugin
 	sleep 20
@@ -35,10 +43,8 @@ deploy:
 	--data 'enabled=true'"
 
 
-
-
 delete :
 	# Deploy WCTiller
-	kubectl delete -f ingress.yaml
-	@helm uninstall mapproxy  wcereal-tiler/mapprox  -n wctiller 
+	#kubectl delete -f ingress.yaml
+	#@helm uninstall mapproxy  wcereal-tiler/mapprox  -n wctiller 
 

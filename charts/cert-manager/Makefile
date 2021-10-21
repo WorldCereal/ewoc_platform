@@ -18,7 +18,9 @@ deploy:
   	--namespace cert-manager \
   	--create-namespace \
   	--version v$(CERT_MANAGER_CHART_VERSION) \
-  	--set installCRDs=true
+  	--set installCRDs=true \
+	-f values.yaml 
+
 
 	# Genarate values.yaml from template file
 	@sed "s:VALUE1:$(CERT_MANAGER_MAIL):" issuer.tmpl > issuer.yaml
