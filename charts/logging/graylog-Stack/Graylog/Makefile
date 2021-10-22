@@ -26,7 +26,7 @@ deploy:
     	-f values-graylog.yaml
 
 	# Create Ingress
-	kubectl apply -f ingress-graylog.yaml
+	kubectl apply -f ingress-graylog.yaml -n logging
 	
 	# waiting 20 secondes before install oidc plugin
 	sleep 20
@@ -60,12 +60,12 @@ config:
 
 install_pack:
 	# Install the content pack 
-	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u "admin":"adminadminpassword" -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs/${content_pack_id}/1/installations" -d '{"parameters": {},"comment": ""}'
+	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u "admin":$(password_admin) -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs/${content_pack_id}/1/installations" -d '{"parameters": {},"comment": ""}'
 
 delete:
 	# Deleting all components for graylog
 	helm uninstall graylog -n logging 
-	kubectl delete -f ingress-graylog.yaml
+	kubectl delete ingress -n logging graylog
 
 
 
