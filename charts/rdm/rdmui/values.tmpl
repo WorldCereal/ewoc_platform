@@ -1,0 +1,27 @@
+image:
+  registry: hfjcmwgl.gra5.container-registry.ovh.net
+  repository: world-cereal/rdm/web
+  tag: stable
+  pullPolicy: "Always"
+  pullSecrets:
+    - harborcs
+
+extraEnvVars:
+  - name: "NEXT_PUBLIC_API_BASE_URL"
+    value: "http://VALUE1/data"
+  - name: "NEXT_TELEMETRY_DISABLED"
+    value: "1"   
+
+containerPorts:
+  http: 80
+
+service:
+  ## @param service.type Service type
+  ##
+  type: ClusterIP
+  ## @param service.port Service HTTP port
+  ##
+  port: 80
+
+ingress:
+  enabled: false
