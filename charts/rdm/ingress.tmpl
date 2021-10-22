@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/protocols: https
+    konghq.com/https-redirect-status-code: "302"
+  name: rdm-ingress
+  namespace: rdm
+spec:
+  tls:
+  - secretName: rdm-tls
+    hosts:
+    - rdm.VALUE1
+  rules:
+  - host: rdm.VALUE1
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: rdmui-nginx
+          servicePort: 80
+      - path: /data/*
+        backend:
+          serviceName: rdmapi
+          servicePort: 80

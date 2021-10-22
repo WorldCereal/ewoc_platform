@@ -21,5 +21,3 @@
 .idea/
 *.tmproj
 .vscode/
-
-config/aws_credentials.inc.map.sample
