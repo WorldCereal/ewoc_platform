@@ -53,10 +53,10 @@ config:
 	kubectl exec -it -n kong kong-oidc-tool -- apk update
 	kubectl exec -it -n kong kong-oidc-tool -- apk add jq
 
-	kubectl cp kafka.json -n kong kong-oidc-tool:/tmp 
+	kubectl cp worldcereal_inputs.json -n kong kong-oidc-tool:/tmp 
 
 	# Upload content pack
-	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u admin:$(password_admin) -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs" -d @"/tmp/kafka.json"
+	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u admin:$(password_admin) -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs" -d @"/tmp/worldcereal_inputs.json"
 
 install_pack:
 	# Install the content pack 

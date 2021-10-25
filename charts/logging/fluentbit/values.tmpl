@@ -22,6 +22,42 @@ config:
         DB.Sync Normal
         Rotate_Wait 10
         Mem_Buf_Limit 10MB
+        Parser docker
+    [INPUT]
+        Name tail
+        Tag vdm.*
+        Path /var/log/containers/*vdm*.log
+        DB /var/log/vdm.db
+        DB.Sync Normal
+        Rotate_Wait 10
+        Mem_Buf_Limit 10MB
+        Parser  docker
+    [INPUT]
+        Name tail
+        Tag vdm.*
+        Path /var/log/containers/*wctiler*.log
+        DB /var/log/wctiler.db
+        DB.Sync Normal
+        Rotate_Wait 10
+        Mem_Buf_Limit 10MB
+        Parser  docker
+    [INPUT]
+        Name tail
+        Tag rdm.*
+        Path /var/log/containers/*rdm*.log
+        DB /var/log/rdm.db
+        DB.Sync Normal
+        Rotate_Wait 10
+        Mem_Buf_Limit 10MB
+        Parser  docker
+    [INPUT]
+        Name tail
+        Tag keycloak.*
+        Path /var/log/containers/*keycloak*.log
+        DB /var/log/keycloak.db
+        DB.Sync Normal
+        Rotate_Wait 10
+        Mem_Buf_Limit 10MB
         Parser  docker
 
   filters: |
@@ -33,7 +69,39 @@ config:
         K8S-Logging.Parser On
         K8S-Logging.Exclude On
         Kube_Tag_Prefix argo.var.log.containers
-    
+    [FILTER]
+        Name kubernetes
+        Match vdm.*
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
+        Kube_Tag_Prefix vdm.var.log.containers
+    [FILTER]
+        Name kubernetes
+        Match wctiler.*
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
+        Kube_Tag_Prefix wctiler.var.log.containers
+    [FILTER]
+        Name kubernetes
+        Match rdm.*
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
+        Kube_Tag_Prefix rdm.var.log.containers
+    [FILTER]
+        Name kubernetes
+        Match keycloak.*
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
+        Kube_Tag_Prefix keycloak.var.log.containers
+
   outputs: |
     [OUTPUT]
         Name kafka
@@ -41,3 +109,27 @@ config:
         Match argo.*
         Brokers kafka.logging.svc.cluster.local:9092
         Topics preprocessing.logs
+    [OUTPUT]
+        Name kafka
+        Format json
+        Match vdm.*
+        Brokers kafka.logging.svc.cluster.local:9092
+        Topics vdm.logs
+    [OUTPUT]
+        Name kafka
+        Format json
+        Match wctiler.*
+        Brokers kafka.logging.svc.cluster.local:9092
+        Topics wctiler.logs
+    [OUTPUT]
+        Name kafka
+        Format json
+        Match rdm.*
+        Brokers kafka.logging.svc.cluster.local:9092
+        Topics rdm.logs
+    [OUTPUT]
+        Name kafka
+        Format json
+        Match keycloak.*
+        Brokers kafka.logging.svc.cluster.local:9092
+        Topics keycloak.logs

@@ -33,13 +33,13 @@ master:
     role: kong
   
   heapSize: 2048m
-  resources:
-    limits:
-      cpu: 300m
-      memory: 6146Mi
-    requests:
-      cpu: 100m
-      memory: 2048Mi
+#  resources:
+#    limits:
+#      cpu: 300m
+#      memory: 4096Mi
+#    requests:
+#      cpu: 100m
+#      memory: 2048Mi
 
 
 data:
@@ -53,25 +53,25 @@ data:
     size: 100Gi
 
   heapSize: 2048m
-  resources:
-    limits:
-      cpu: 300m
-      memory: 6146Mi
-    requests:
-      cpu: 100m
-      memory: 2048Mi
+#  resources:
+#    limits:
+#      memory: 4096Mi
+#    requests:
+#      memory: 2048Mi
 
 
 coordinating:
-  heapSize: 4096m
   nodeSelector:
     role: kong
 
-  heapSize: 2048m
-  resources:
-    limits:
-      cpu: 400m
-      memory: 8192Mi
-    requests:
-      cpu: 100m
-      memory: 2048Mi
+  heapSize: 4096m
+#  resources:
+#    limits:
+#      memory: 4096Mi
+#    requests:
+#      memory: 2048Mi
+
+metrics:
+  enabled: true
+  nodeSelector:
+    role: kong
