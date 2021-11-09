@@ -42,7 +42,8 @@ spec:
         - name: app-wcpdr-hostpath0
           configMap:
             name: app-wcpdr-hostpath0
-    
+      nodeSelector:
+        role: kong
 ---
 apiVersion: v1
 kind: Service

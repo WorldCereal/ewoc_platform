@@ -25,6 +25,8 @@ spec:
           image: hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/gisat/redis:latest
           ports:
           - containerPort: 6379
+      nodeSelector:
+        role: kong
 
 ---
 apiVersion: v1

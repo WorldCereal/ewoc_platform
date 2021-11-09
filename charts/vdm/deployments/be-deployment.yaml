@@ -35,6 +35,8 @@ spec:
         - name: be-hostpath0
           configMap:
             name: be-hostpath0
+      nodeSelector:
+        role: kong
 ---          
 apiVersion: v1
 kind: Service
