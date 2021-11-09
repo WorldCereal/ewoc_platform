@@ -7,7 +7,7 @@ MAP
     WEB
         METADATA 
             "ows_title" "worldcereal"
-            "ows_onlineresource" "http://{{ include "mapserver.fullname" . }}:{{ .Values.mapserver.service.port.port }}?MAP=/usr/src/mapfiles/mapfile.map"
+            "ows_onlineresource" "http://{{ include "mapserver.fullname" . }}.wctiler.svc.cluster.local:{{ .Values.mapserver.service.port.port }}?MAP=/usr/src/mapfiles/mapfile.map"
             "ows_srs" "EPSG:3857 EPSG:4326"
             "ows_enable_request" "*"
             "wms_feature_info_mime_type" "text/html"
@@ -28,7 +28,7 @@ MAP
         METADATA
             "ows_title"	"worldcereal_status"
         END
-        CLASSITEM status
+        CLASSITEM "status"
         CLASS
             EXPRESSION "scheduled"
             STYLE

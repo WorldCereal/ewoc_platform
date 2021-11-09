@@ -16,7 +16,8 @@ deploy:
 	@sed "s:VALUE1:$(HOSTNAME):" ingress.tmpl > ingress.yaml
 
 	# Create pgsql connexion conf
-	@sed "s:HOST:$(host):;s:PORT:$(port):;s:DBNAME:$(dbname):;s:USER:$(user):;s:PASSWORD:$(password):" chart/config/mapfiles/postgres_connection.inc.map.tmpl > chart/config/mapfiles/postgres_connection.inc.map.sample
+	#@sed "s:HOST:$(host):;s:PORT:$(port):;s:DBNAME:$(dbname):;s:USER:$(user):;s:PASSWORD:$(password):" chart/config/mapfiles/postgres_connection.inc.map.tmpl > chart/config/mapfiles/postgres_connection.inc.map.sample
+	@sed "s:HOST:postgres-postgresql-0.postgres-postgresql-headless.argo.svc.cluster.local:;s:PORT:$(port):;s:DBNAME:world-cereal-wctiler:;s:USER:$(user):;s:PASSWORD:$(password):" chart/config/mapfiles/postgres_connection.inc.map.tmpl > chart/config/mapfiles/postgres_connection.inc.map.sample
 
 	@helm install mapproxy  chart/  --namespace=wctiler --wait  --set-file mapserver.mapfiles.postgresConnection=chart/config/mapfiles/postgres_connection.inc.map.sample
 
@@ -42,6 +43,20 @@ deploy:
 	--data 'config.token_endpoint_auth_method=client_secret_post' \
 	--data 'enabled=true'"
 
+	@kubectl exec kong-oidc-tool -n kong -- sh -c "curl -kSsl -X POST \
+	--url http://kong-kong-admin:8001/routes/wctiler.wctiler.01/plugins \
+	--data 'name=oidc' \
+	--data 'config.bearer_only=no' \
+	--data 'config.client_id=wctiler' \
+	--data 'config.client_secret=2738c0a4-85be-44b0-8784-125b0ec8feac' \
+	--data 'config.discovery=http://auth.$(HOSTNAME)/auth/realms/worldcereal/.well-known/openid-configuration' \
+	--data 'config.realm=worldcereal' \
+	--data 'config.response_type=code' \
+	--data 'config.scope=openid' \
+	--data 'config.session_secret=null' \
+	--data 'config.ssl_verify="no"' \
+	--data 'config.token_endpoint_auth_method=client_secret_post' \
+	--data 'enabled=true'"
 
 delete :
 	# Delete WCTiller

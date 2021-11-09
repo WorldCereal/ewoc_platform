@@ -35,7 +35,7 @@ ingress:
 auth:
   createAdminUser: true
   adminUser: admin
-  adminPassword: Sc5g^@igT6N%9$Kxt8V=96
+  #adminPassword: Sc5g^@igT6N%9$Kxt8V=96
 
 
 extraEnvVars:
@@ -53,6 +53,7 @@ metrics:
     additionalLabels:
       release: kube-prometheus-stack
 
-
+nodeSelector:
+  role: kong
 
       

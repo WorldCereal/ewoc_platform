@@ -48,6 +48,8 @@ spec:
       - name: pg-hostpath1
         configMap:  
           name: pg-hostpath1
+      nodeSelector:
+        role: kong
 ---
 apiVersion: v1
 kind: Service

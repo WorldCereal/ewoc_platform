@@ -15,6 +15,9 @@ imagePullSecrets:
 deploymentStrategy:
   type: Recreate
 
+nodeSelector:
+    role: kong
+
 # livenessProbe:
 #   httpGet:
 #     path: /
@@ -38,7 +41,7 @@ persistence:
   # storageClass: "-"
 
 service:
-  type: NodePort
+  type: ClusterIP
   port:
     name: mapproxy
     port: 8080
@@ -95,3 +98,5 @@ mapserver:
       port: 80
       targetPort: mapserver
       protocol: TCP
+  nodeSelector:
+    role: kong
