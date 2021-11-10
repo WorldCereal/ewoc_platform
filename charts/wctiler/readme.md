@@ -11,4 +11,3 @@ The data are translated to tiles.
 A reverse proxy handle which pods is supposed to be contacted according the ressources needed. 
 
 The WMS flow is handled by mapserver and used in the web application exposed by mapproxy. 
-
