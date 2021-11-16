@@ -21,6 +21,7 @@ proxy:
 1) Create an Load Balancer on the network where the cluster is deployed.
 2) add to pool , all your node on port 32080.
 3) Disabling the heath monitoring.
+4) If you plan to have https do the same steps above for port 32443
 
 
 

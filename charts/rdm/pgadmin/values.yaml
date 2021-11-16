@@ -20,4 +20,3 @@ ingress:
 
 env:
   email: ewoc@worldcereal.com
-  password: SuperSecret

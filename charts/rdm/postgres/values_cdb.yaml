@@ -8,7 +8,7 @@ image:
 
 postgresqlUsername: postgres
 postgresqlPassword: postgres
-postgresqlDatabase: ewocmaster
+postgresqlDatabase: communitydb
 postgresqlDataDir: rdm/postgresql/data
 
 volumePermissions:
@@ -24,5 +24,5 @@ persistence:
   mountPath: /rdm/postgresql 
   accessModes:
     - ReadWriteOnce 
-  size: 5Gi #100 prod
+  size: 100Gi
  

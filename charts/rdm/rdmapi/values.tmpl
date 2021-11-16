@@ -80,29 +80,6 @@ service:
   type: ClusterIP
   port: 80
 
-#ingress:
- # enabled: false
-#  annotations:
-#    {}
-    # kubernetes.io/ingress.class: restapi
-    # kubernetes.io/tls-acme: "true"
-#  hosts:
- #  - host: chart-example.local
- #     paths: []
- # tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: kong 
-  hosts:
-    - host: rdmapi.VALUE1
-      paths: [/]        
-  tls: []
-
 resources:
   {}
   # We usually recommend not to specify default resources and to leave this as a conscious
