@@ -2,12 +2,27 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: rdm
----
+--
 apiVersion: v1
-kind: Secret
+kind: PersistentVolumeClaim
 metadata:
-  name: harborcs
+  name: restapi-pvc
   namespace: rdm
-data:
-  .dockerconfigjson: ewoJImF1dGhzIjogewoJCSJoZmpjbXdnbC5ncmE1LmNvbnRhaW5lci1yZWdpc3RyeS5vdmgubmV0IjogewoJCQkiYXV0aCI6ICJibXhoWTNKdmRYZzZVR0Z0YVdWeWN6RTRNVFVoIgoJCX0sCgkJImh0dHBzOi8vaW5kZXguZG9ja2VyLmlvL3YxLyI6IHt9LAoJCSJyZWdpc3RyeS50b29scy5zMXBkZ3MuZXUiOiB7fQoJfSwKCSJIdHRwSGVhZGVycyI6IHsKCQkiVXNlci1BZ2VudCI6ICJEb2NrZXItQ2xpZW50LzE5LjAzLjYgKGxpbnV4KSIKCX0KfQ==
-type: kubernetes.io/dockerconfigjson
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+--
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: refdb-pvc
+  namespace: rdm
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

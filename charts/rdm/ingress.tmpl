@@ -1,53 +1,55 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: rdmingress
-  namespace: rdm
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/https-redirect-status-code: "302"
+    konghq.com/protocols: https
     kubernetes.io/ingress.class: kong
     kubernetes.io/tls-acme: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    konghq.com/protocols: https
-    konghq.com/https-redirect-status-code: "302"
+  name: rdm
+  namespace: rdm
 spec:
-  tls:
-  - secretName: rdm-tls-cert
-    hosts:
-    - rdm.VALUE1
   rules:
   - host: rdm.VALUE1
     http:
       paths:
-      - path: /data/*
-        backend:
-          serviceName: rdmapi
-          servicePort: 80
-      - path: /*
-        backend:
+      - backend:
           serviceName: rdmui-nginx
           servicePort: 80
+        path: /*
+      - backend:
+          serviceName: rdmapi
+          servicePort: 80
+        path: /data/*
+  tls:
+  - hosts:
+    - rdm.VALUE1
+    secretName: rdm-tls-cert
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: rdmapi
-  namespace: rdm
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/https-redirect-status-code: "302"
+    konghq.com/protocols: https
     kubernetes.io/ingress.class: kong
     kubernetes.io/tls-acme: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    konghq.com/protocols: https
-    konghq.com/https-redirect-status-code: "302"
+  name: rdmapiingress
+  namespace: rdm
 spec:
-  tls:
-  - secretName: rdmapi-tls-cert
-    hosts:
-    - rdmapi.VALUE1
   rules:
   - host: rdmapi.VALUE1
     http:
       paths:
-      - path: /*
-        backend:
+      - backend:
           serviceName: rdmapi
           servicePort: 80
+        path: /*
+  tls:
+  - hosts:
+    - rdmapi.VALUE1
+    secretName: rdmapi-tls-cert
+
+

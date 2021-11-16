@@ -7,19 +7,26 @@
 - Cinder controller deployed or equivalent on the cluster.
 - Git clone ewoc_platform on the bastion.
 - Source the file export-env.sh.
+- Nodes that are not going to perform any preproccesing tagged as "kong"
 
 ## summary
 
+- [1. Secret Management](#Secret Management)
+- [2. Kong](#kong-deployment)
+- [3. Keycloak](#keycloak-deployment)
+- [4. Keycloak-Database-Setup](#keycloak-setup-database-init-or-restore-procedure)
+- [5. Kube-Prometheus-Stack](#kube-prometheus-stack-deployment)
+- [6. Logging-Stack](#./charts/logging/readMe.md#deploy-log-stack-worldcereal)
+- [7. WCTiler](#)
+- [8. RDM Oidc plugin setup](#rdm-oidc-plugin-setup)
+- [9. VDM-stack](#)
 
-- [1. Kong](#kong-deployment)
-- [2. Keycloak](#keycloak-deployment)
-- [3. Keycloak-Database-Setup](#keycloak-setup-database-init-or-restore-procedure)
-- [4. Kube-Prometheus-Stack](#kube-prometheus-stack-deployment)
-- [5. Logging-Stack](#./charts/logging/readMe.md#deploy-log-stack-worldcereal)
-- [6. WCTiller](#)
-- [7. RDM Oidc plugin setup](#rdm-oidc-plugin-setup)
-- [8. VDM-stack](#)
-
+### Secret Management
+Some deployment use docker images that are stored in a private docker registry.
+To retrieve it, some deployments uses a secret named ```harborcs```.
+For each namespaces, it is required to add you registry credential by playing the following command
+before any deployment.
+```kubectl create secret -n NAMESPACE docker-registry harborcs --docker-server=YOUR_REGISTRY --docker-username=REGISTRY_USERNAME --docker-password="REGISTRY_PASSWORD"```
 
 ### Kong Deployment 
 
@@ -148,19 +155,27 @@ for infomation:
 - kube-prometheus-stack-prometheus-node-exporter-* is a DaemonSet(deploy a instance on every nodes) that allow to expose metrics to Prometheus. 
 - prometheus-kube-prometheus-stack-prometheus-0  this is the heart of prometheus, it fetches the metrics exposed by node-exporter.
 
-### 6. WCTiller
-Currently this deployment is in WIP status, that mean:
-- Waiting to add 'geometry' column on Tille schema
+### 6. WCTiler
+WcTiler allow users to check the tiles processing status.
+WcTiler is a helm chart that deploy 2 elements and is required to be plug to one database
+that has a specific tables pattern to be read.
+The database host and name needs to be set in export-en.sh 
 
-After that we have need to update the configuration for works on our system.
+To install it run : 
+```cd wctiler```
+then 
+```make deploy```
 
-Go to use wctiller directory, use Makefile for in step:
-- Build
-- Deploy
-- Delete
+The application should be accessible at the url wctiler.YOURDOMAIN.
+Some change have been made on the WCtiler container image mapproxy because of the HTTP request size
+that can be blocked if they execess a buffersize. That lead to not display the tiles.
+To fix that, the docker image have been updated. By changing the uwsgi.ini paramter buffersize,
+the problem is fixed. 
+If the issue persist, log in the container mapproxy and play with uswgi.ini parameters and then update server conf with ```uwsgi --reload /tmp/map.pid uwsgi.ini```.
+If your solution fix the issue then update the dockerfile and push you new container image on the habor.
 
 
-### 7. RDM Oidc plugin setup
+### 7. RDM
 
 After the deployment of the RDM component, go to charts/rdm for installs oidc plugin on RDM route and use make:
 ```sh
