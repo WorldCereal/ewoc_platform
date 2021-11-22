@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/https-redirect-status-code: "302"
+    konghq.com/protocols: https
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+  labels:
+    app.kubernetes.io/instance: pgadmin
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pgadmin4
+    app.kubernetes.io/version: "5.7"
+    helm.sh/chart: pgadmin4-1.7.6
+  name: pgadmin-pgadmin4
+  namespace: rdm
+spec:
+  rules:
+  - host: rdmdb.VALUE1
+    http:
+      paths:
+      - backend:
+          serviceName: pgadmin-pgadmin4
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - rdmdb.VALUE1
+    secretName: pg-tls
