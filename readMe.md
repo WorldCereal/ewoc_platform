@@ -22,7 +22,7 @@
 - [9. VDM-stack](#)
 
 ### Secret Management
-Some deployment use docker images that are stored in a private docker registry.
+Some deployments use docker images that are stored in a private docker registry.
 To retrieve it, some deployments uses a secret named ```harborcs```.
 For each namespaces, it is required to add you registry credential by playing the following command
 before any deployment.
@@ -81,7 +81,7 @@ keycloak-0              1/1     Running   0          15d
 keycloak-postgresql-0   1/1     Running   0          15d
 ```
 
-### Keycloak Setup Database: Init or Restore Procedure
+### (WIP) Keycloak Setup Database: Init or Restore Procedure
 ```sh
 cd backup
 ```
@@ -196,4 +196,32 @@ Go to use vdm directory, use Makefile for in step:
 
 Note:
 Be careful when removing the component not to delete the pvc otherwise volumes will be deleted on Cloud Ferro .
+
+### Create acces for RDM administartor
+As RDM team wishes to get access to the cluster to play job we recommand
+to follow the procedure below. It allow to create a user that can access only to the RDM namespace.
+
+#### Generate SSH Key pair
+Rdm user has to generate an ssh key pair, and provide to the cluster amdinistrator 
+the public one. 
+
+
+#### Create user rdm and ssh access
+```sudo adduser --shell /bin/rbash --home /home/rdm rdm```
+Then connect as rdm :
+```su rdm```
+and create ssh directory
+```mkdir .ssh```
+```chmod 700 .ssh```
+and add the public key in ```.ssh/authorized_keys``` and execute ```chmod 600 authorized_keys```
+At this point you should be able to connect through ssh as rdm user 
+
+
+#### Configure kubectl 
+Now switch to root user, at this point the purpose
+is to create a config file for kubernetes to allow user to
+access only to his namespace. To dp so, follow the online documentation
+and add the config file of kubectl on the /home of RDM.
+
+
 
