@@ -11,7 +11,7 @@
 
 ## summary
 
-- [1. Secret Management](#Secret Management)
+- [1. Secret Management](#Secret-Management)
 - [2. Kong](#kong-deployment)
 - [3. Keycloak](#keycloak-deployment)
 - [4. Keycloak-Database-Setup](#keycloak-setup-database-init-or-restore-procedure)
