@@ -9,7 +9,7 @@ The logging system repose on following product to store logs.
 
 - First, fluent-bit pods are placed on each node and send the logs to a kafka topic.
 - The kafka topics keeps the events until a consumer come to read them.
--  Graylog is the consumer and use kafka to retrieve events and store them in his elasticsearch DB.
+- Graylog is the consumer and use kafka to retrieve events and store them in his elasticsearch DB.
 
 ![logging architecture](index.jpeg)
 
@@ -34,7 +34,16 @@ Go to *chart/logging/kafka* and execute the following commands:
 `make build && make deploy`
 The deploy step will use the *init-deployment.yaml* in *chart/logging/init* that creates the namespace **logging** and the the sercret **harborcs** allocated for this namespace.
 
-Then it will deploy 3 Kafka replicas with 1 zookeeper, the kafka is composed of one topic named **preprocessing.logs** composed of 3 partitions, replicated 3 times with a retention time of 7 days.
+Then it will deploy 3 Kafka replicas with 1 zookeeper, the kafka is composed of five topics named 
+- **preprocessing.logs** 
+- **vdm.logs**
+- **rdm.logs**
+- **wctiler.logs**
+- **keycloak.logs**
+
+preprocessing is partionned once and has 3 replicas all the others topics are only partionned once 
+with 2 repilcas, the retention time for all is  1 days.
+
 
 If you wish to add topic you can modify the Makefile and add your topic by using the following command as exemple :
 
@@ -76,9 +85,6 @@ Go to *chart/logging/graylog-stack/ElasticSearch* and execute the following comm
 
 To delete (PVC not included) use `make delete`.
 
- **TODO**
-- Volume size
-- Heap size 8go
 
 ### Install MongoDB
 Deploy Elasticsearch (node affinity !!) (heap 8go)
@@ -123,7 +129,4 @@ It allow you yo access the graylog web app.
 
 To delete (PVC not included) use `make delete`.
 
- **TODO**
-- Volume size
-- Heap size 
 
