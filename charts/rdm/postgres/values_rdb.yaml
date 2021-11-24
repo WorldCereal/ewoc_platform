@@ -26,3 +26,6 @@ persistence:
     - ReadWriteOnce 
   size: 100Gi
  
+primary:
+  nodeSelector:
+  role: kong
