@@ -25,7 +25,7 @@ spec:
   tls:
   - hosts:
     - rdm.VALUE1
-    secretName: rdm-tls-cert
+    secretName: rdmtlscert
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -50,6 +50,35 @@ spec:
   tls:
   - hosts:
     - rdmapi.VALUE1
-    secretName: rdmapi-tls-cert
+    secretName: rdmapitlscert
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/https-redirect-status-code: "302"
+    konghq.com/protocols: https
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+    meta.helm.sh/release-name: pgadmin
+    meta.helm.sh/release-namespace: rdm
+  name: pgadmin-pgadmin4
+  namespace: rdm
+spec:
+  rules:
+  - host: rdmdb.VALUE1
+    http:
+      paths:
+      - backend:
+          serviceName: pgadmin-pgadmin4
+          servicePort: 80
+        path: /
+  tls:
+  - hosts:
+    - rdmdb.VALUE1
+    secretName: pgtls
+
+
 
 

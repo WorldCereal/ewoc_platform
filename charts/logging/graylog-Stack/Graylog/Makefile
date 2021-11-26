@@ -37,13 +37,13 @@ deploy:
 	--data 'name=oidc' \
 	--data 'config.bearer_only=no' \
 	--data 'config.client_id=graylog' \
-	--data 'config.client_secret=25acbd19-afe0-49d7-81b4-580010df28c7' \
+	--data 'config.client_secret=$(GRAYLOG_CS)' \
 	--data 'config.discovery=http://auth.$(HOSTNAME)/auth/realms/worldcereal/.well-known/openid-configuration' \
 	--data 'config.realm=worldcereal' \
 	--data 'config.response_type=code' \
 	--data 'config.scope=openid' \
 	--data 'config.session_secret=null' \
-	--data 'config.ssl_verify="no"' \
+	--data 'config.ssl_verify=no' \
 	--data 'config.token_endpoint_auth_method=client_secret_post' \
 	--data 'enabled=true'"
 

@@ -29,4 +29,4 @@ deploy:
 
 delete:
 	# Delete Cert-manager component
-	helm uninstall cert-manager -n cert-manager
+	@helm uninstall cert-manager -n cert-manager

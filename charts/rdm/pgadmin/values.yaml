@@ -1,5 +1,0 @@
-env:
-  email: ewoc@worldcereal.com
-
-nodeSelector:
-  role: kong

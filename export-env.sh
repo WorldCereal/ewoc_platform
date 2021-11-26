@@ -41,4 +41,13 @@ export GRAYLOG_VERSION="4.1.3-1"
 #WCTiler
 export WCT_VERSION="1.0.0"
 export WCT_HOST_DB="postgres-postgresql-0.postgres-postgresql-headless.argo.svc.cluster.local"
-export WCT_DB_NAME="world-cereal-wctiler" 
+export WCT_DB_NAME="world-cereal-wctiler"
+
+
+# Client Secret
+export GRAYLOG_CS=""
+export PROMETHEUS_CS=""
+export GRAFANA_CS=""
+export WCT_CS=""
+export RDM_CS=""
+export VDM_CS=""
