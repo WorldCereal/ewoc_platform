@@ -103,7 +103,6 @@ The password for graylog user is generated randomly and stored as secret.
 
 To delete (PVC not included) use `make delete`.
 
-
 ### Install Graylog
 #### Info
 GRAYLOG_CHART_VERSION="1.8.5"

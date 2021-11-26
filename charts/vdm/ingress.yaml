@@ -1,18 +1,18 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: app
+  name: vdm
   namespace: vdm
   annotations:
     kubernetes.io/ingress.class: kong
     konghq.com/strip-path: "true"
-    kubernetes.io/tls-acme: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    konghq.com/protocols: https
-    konghq.com/https-redirect-status-code: "302"
+    kubernetes.io/tls-acme: "true" #Optionnal if no ssl used
+    cert-manager.io/cluster-issuer: letsencrypt-prod #Optionnal if no ssl used
+    konghq.com/protocols: https  #Optionnal if no ssl used
+    konghq.com/https-redirect-status-code: "302" #Optionnal if no ssl used
 spec:
-  tls:
-  - secretName: vdm-tls
+  tls: #Optionnal if no ssl used
+  - secretName: vdmtls
     hosts:
     - vdm.VALUE1
   rules:

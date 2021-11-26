@@ -36,13 +36,13 @@ deploy:
 	--data 'name=oidc' \
 	--data 'config.bearer_only=no' \
 	--data 'config.client_id=wctiler' \
-	--data 'config.client_secret=2738c0a4-85be-44b0-8784-125b0ec8feac' \
+	--data 'config.client_secret=$(WCT_CS)' \
 	--data 'config.discovery=http://auth.$(HOSTNAME)/auth/realms/worldcereal/.well-known/openid-configuration' \
 	--data 'config.realm=worldcereal' \
 	--data 'config.response_type=code' \
 	--data 'config.scope=openid' \
 	--data 'config.session_secret=null' \
-	--data 'config.ssl_verify="no"' \
+	--data 'config.ssl_verify=no' \
 	--data 'config.token_endpoint_auth_method=client_secret_post' \
 	--data 'enabled=true'"
 
