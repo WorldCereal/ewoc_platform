@@ -24,6 +24,7 @@ You can update the size of the PVC according your needs by changing the storage 
 
 5. Change parameters in the helm chart according your needs.
 You will have to change some configuration elements in configmaps, (domain name, password..). 
+**Don't forget to add the nodeSelector to restrict the domain of execution of the deployed pods**
 
 6. Once all the parameters match with your environement, play the following command that is going to install the chart onto the vdm namespace.
 ```cd helm-chart``` then ```helm install vdm -n vdm .``` after execution helm should display a validation message. 

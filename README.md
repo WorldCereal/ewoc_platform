@@ -25,10 +25,14 @@
 
 ## Notes 
 - The cluster size evolve according preproccesing needs, so it has two parts, one fix and one dynamic.
-All the elements deployed here, must be attached to the fix part which is labeled with role: kong. We strongly advise you to check that every component that you deploy use the nodeSelector to restrict pods execution only on the fix part of your cluster
+All the elements deployed here, must be attached to the fix part which is labeled with role: kong. We strongly advise you to check that every component that you deploy use the nodeSelector to restrict pods execution only on the fix part of your cluster.
 ```
 nodeSelector:
   role: kong 
+```
+If no node selector is present after you deployment, adapt and use the following command to fix the pods.
+```
+kubectl patch TYPE_OF_OBJECT -n NAMESPACE OBJECT_NAME -p '{"spec": {"template": {"spec": {"nodeSelector": {"role": "kong"}}}}}'
 ```
 
 - Version configuration is available on the **export-env.sh** as domain name value. 

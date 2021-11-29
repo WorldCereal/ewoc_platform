@@ -17,6 +17,8 @@ Follow the following steps:
 
 2. Create the harborcs that contains the credentials to access the harbor repository.
 3. Exec ```kubectl apply -f pvc.yaml -n rdm``` and ```kubectl apply -f restapi-pvc.yaml -n rdm -n rdm```
+**Don't forget to add the nodeSelector to restrict the domain of execution of the deployed pods**
+
 4. Deploy the 3 instances of databases by running :
     - ```helm install rdm bitnami/postgresql --version 10.9.4 --values values.yaml -n rdm```
     - ```helm install rdm-cdb bitnami/postgresql --version 10.9.4 --values values.yaml -n rdm```
@@ -27,6 +29,8 @@ Follow the following steps:
 6. Execute the following job and wait until complete execution : ```kubectl apply -f rdmRefDbUpdate\job.yaml -n rdm ```
 
 7. Change the configuration of rdmui.values to make it match with your domain name, https etc..
+**Don't forget to add the nodeSelector to restrict the domain of execution of the deployed pods**
+
 8. Deploy the webserver application by running : ```helm install rdmui bitnami/nginx --values rdmui/values.yaml -n rdm```
 
 9. Deploy the pgadmin application (Change credentials in values.yaml before any deployment)
