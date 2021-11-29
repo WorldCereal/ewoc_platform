@@ -1,18 +1,24 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: wctiller
-  namespace: wctiller
+  name: wctiler
+  namespace: wctiler
   annotations:
     kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/protocols: https
+    konghq.com/https-redirect-status-code: "302"
 spec:
+  tls:
+  - secretName: wctiler-tls
+    hosts:
+    - wctiler.VALUE1
   rules:
-  - host: wctiller.VALUE1
+  - host: wctiler.VALUE1
     http:
       paths:
-      - backend:
+      - path: /
+        backend:
           serviceName: mapproxy
           servicePort: 8080
-        path: /
-        pathType: Prefix
-

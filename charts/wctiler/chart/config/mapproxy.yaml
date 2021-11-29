@@ -1,0 +1,24 @@
+globals:
+  http:
+    client_timeout: 600
+
+services:
+  demo:
+  tms:
+  wms:
+    srs: ['EPSG:3857', 'EPSG:4326']
+    md:
+      title: World-Cereal WMS Proxy
+
+layers:
+  - name: worldcereal_status
+    title: World-Cereal S2-tiles Status Layer
+    sources: [worldcereal_status_wms]
+
+sources:
+  worldcereal_status_wms:
+    type: wms
+    req:
+      url: http://{{ include "mapserver.fullname" . }}:{{ .Values.mapserver.service.port.port }}/mapserv?LAYERS=worldcereal_status&MAP=/usr/src/mapfiles/mapfile.map
+      layers: worldcereal_status
+      transparent: true
