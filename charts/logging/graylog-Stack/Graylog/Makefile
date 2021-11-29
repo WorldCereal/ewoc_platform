@@ -23,10 +23,10 @@ deploy:
 		--set graylog.elasticsearch.hosts=http://elastic-elasticsearch-master.logging.svc.cluster.local:9200 \
 		--set graylog.elasticsearch.version=7 \
 		--set graylog.persistence.size="10Gi" \
-    	-f values_graylog.yaml
+    	-f values-graylog.yaml
 
 	# Create Ingress
-	kubectl apply -f ingress-graylog.yaml
+	kubectl apply -f ingress-graylog.yaml -n logging
 	
 	# waiting 20 secondes before install oidc plugin
 	sleep 20
@@ -37,13 +37,13 @@ deploy:
 	--data 'name=oidc' \
 	--data 'config.bearer_only=no' \
 	--data 'config.client_id=graylog' \
-	--data 'config.client_secret=25acbd19-afe0-49d7-81b4-580010df28c7' \
+	--data 'config.client_secret=$(GRAYLOG_CS)' \
 	--data 'config.discovery=http://auth.$(HOSTNAME)/auth/realms/worldcereal/.well-known/openid-configuration' \
 	--data 'config.realm=worldcereal' \
 	--data 'config.response_type=code' \
 	--data 'config.scope=openid' \
 	--data 'config.session_secret=null' \
-	--data 'config.ssl_verify="no"' \
+	--data 'config.ssl_verify=no' \
 	--data 'config.token_endpoint_auth_method=client_secret_post' \
 	--data 'enabled=true'"
 
@@ -53,19 +53,19 @@ config:
 	kubectl exec -it -n kong kong-oidc-tool -- apk update
 	kubectl exec -it -n kong kong-oidc-tool -- apk add jq
 
-	kubectl cp kafka.json -n kong kong-oidc-tool:/tmp 
+	kubectl cp worldcereal_inputs.json -n kong kong-oidc-tool:/tmp 
 
 	# Upload content pack
-	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u admin:$(password_admin) -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs" -d @"/tmp/kafka.json"
+	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u admin:$(password_admin) -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs" -d @"/tmp/worldcereal_inputs.json"
 
 install_pack:
 	# Install the content pack 
-	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u "admin":"adminadminpassword" -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs/${content_pack_id}/1/installations" -d '{"parameters": {},"comment": ""}'
+	kubectl exec -it -n kong kong-oidc-tool -- curl -s -i -X POST -u "admin":$(password_admin) -H "Content-Type: application/json" -H "X-Requested-By: cli" "graylog.logging.svc.cluster.local:9000/api/system/content_packs/${content_pack_id}/1/installations" -d '{"parameters": {},"comment": ""}'
 
 delete:
 	# Deleting all components for graylog
 	helm uninstall graylog -n logging 
-	kubectl delete -f ingress-graylog.yaml
+	kubectl delete ingress -n logging graylog
 
 
 

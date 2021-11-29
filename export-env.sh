@@ -4,6 +4,9 @@ export CLUSTER_ENV_LOADED="true"
 
 export HOSTNAME="demo.worldcereal.csgroup.space"
 
+# Cert Manager 
+export CERT_MANAGER_CHART_VERSION="1.5.4"
+export CERT_MANAGER_MAIL="quentin.maraval@csgroup.eu"
 # Kong conf
 export KONG_CHART_VERSION="2.1.0"
 export KONG_VERSION="2.4-ubuntu"
@@ -35,5 +38,16 @@ export ELASTIC_VERSION="7.14.1-debian-10-r8"
 export GRAYLOG_CHART_VERSION="1.8.5"
 export GRAYLOG_VERSION="4.1.3-1"
 
-#World Cover Tiller
+#WCTiler
 export WCT_VERSION="1.0.0"
+export WCT_HOST_DB="postgres-postgresql-0.postgres-postgresql-headless.argo.svc.cluster.local"
+export WCT_DB_NAME="world-cereal-wctiler"
+
+
+# Client Secret
+export GRAYLOG_CS=""
+export PROMETHEUS_CS=""
+export GRAFANA_CS=""
+export WCT_CS=""
+export RDM_CS=""
+export VDM_CS=""

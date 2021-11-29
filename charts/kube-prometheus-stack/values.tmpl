@@ -14,12 +14,15 @@ alertmanager:
     path: /
     pathType: ImplementationSpecific
 
+    alertmanagerSpec:
+      nodeSelector:
+        role: kong
 
   
 grafana:
   enabled: true
   defaultDashboardsEnabled: true
-  adminPassword: c25hcGVhcnRoMjAyMQo=
+  #adminPassword: c25hcGVhcnRoMjAyMQo=
   sidecar:
     dashboards:
       enabled: true
@@ -67,7 +70,8 @@ prometheus:
 prometheusOperator:
   enabled: true
   hostNetwork: false        
-  
+  nodeSelector:
+    role: kong
 
 kubelet:
   enabled: true

@@ -1,0 +1,3 @@
+FROM hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/mapproxy:latest
+
+COPY ./uwsgi.ini /uwsgi.ini

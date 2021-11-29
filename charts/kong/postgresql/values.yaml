@@ -12,3 +12,7 @@ shmVolume:
 
 persistence:
   enabled: true
+
+primary:
+  nodeSelector: 
+    role: kong
