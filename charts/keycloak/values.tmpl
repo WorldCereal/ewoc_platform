@@ -13,7 +13,7 @@ extraEnv:
 - name: ROOT_LOG_LEVEL
   value: DEBUG
 - name: PROXY_ADDRESS_FORWARDING  
-  value: "true"  
+  value: "true"
 
 service:
   type: ClusterIP
@@ -22,7 +22,6 @@ service:
 
 ingress:
   enabled: true
-  certManager: false
   hostname: auth.VALUE2
   path: /
   #ingressClassName: kong
@@ -30,13 +29,12 @@ ingress:
   annotations:
     konghq.com/strip-path: "false"
     kubernetes.io/ingress.class: kong
-
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 
 auth:
   createAdminUser: true
   adminUser: admin
-  adminPassword: Sc5g^@igT6N%9$Kxt8V=96
-
 
 extraEnvVars:
   - name: KEYCLOAK_LOG_LEVEL
@@ -53,6 +51,7 @@ metrics:
     additionalLabels:
       release: kube-prometheus-stack
 
-
+nodeSelector:
+  role: kong
 
       

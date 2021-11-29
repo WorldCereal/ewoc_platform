@@ -1,0 +1,429 @@
+{
+  "v": 1,
+  "id": "f2879be3-7365-4958-9c02-f87f5b15776f",
+  "rev": 1,
+  "name": "worldcereal",
+  "summary": "Inputs ",
+  "description": "",
+  "vendor": "CS group",
+  "url": "",
+  "parameters": [],
+  "entities": [
+    {
+      "v": "1",
+      "type": {
+        "name": "input",
+        "version": "1"
+      },
+      "id": "54fdd98d-ac50-4f69-9d06-687641944350",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "Preprocessing"
+        },
+        "configuration": {
+          "custom_properties": {
+            "@type": "string",
+            "@value": ""
+          },
+          "offset_reset": {
+            "@type": "string",
+            "@value": "largest"
+          },
+          "topic_filter": {
+            "@type": "string",
+            "@value": "^preprocessing.logs$"
+          },
+          "threads": {
+            "@type": "integer",
+            "@value": 2
+          },
+          "force_rdns": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "allow_override_date": {
+            "@type": "boolean",
+            "@value": true
+          },
+          "zookeeper": {
+            "@type": "string",
+            "@value": "127.0.0.1:2181"
+          },
+          "override_source": {
+            "@type": "string",
+            "@value": "preprocessing"
+          },
+          "throttling_allowed": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "expand_structured_data": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "bootstrap_server": {
+            "@type": "string",
+            "@value": "kafka.logging.svc.cluster.local:9092"
+          },
+          "store_full_message": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "legacy_mode": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "fetch_min_bytes": {
+            "@type": "integer",
+            "@value": 5
+          },
+          "group_id": {
+            "@type": "string",
+            "@value": "graylog2"
+          },
+          "fetch_wait_max": {
+            "@type": "integer",
+            "@value": 100
+          }
+        },
+        "static_fields": {},
+        "type": {
+          "@type": "string",
+          "@value": "org.graylog2.inputs.syslog.kafka.SyslogKafkaInput"
+        },
+        "global": {
+          "@type": "boolean",
+          "@value": false
+        },
+        "extractors": []
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=4.1.3+9d79c05"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "input",
+        "version": "1"
+      },
+      "id": "b5831237-196e-47ba-9e5a-393bee888a55",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "WcTiler"
+        },
+        "configuration": {
+          "custom_properties": {
+            "@type": "string",
+            "@value": ""
+          },
+          "offset_reset": {
+            "@type": "string",
+            "@value": "largest"
+          },
+          "topic_filter": {
+            "@type": "string",
+            "@value": "^wctiler.logs$"
+          },
+          "threads": {
+            "@type": "integer",
+            "@value": 2
+          },
+          "zookeeper": {
+            "@type": "string",
+            "@value": "127.0.0.1:2181"
+          },
+          "override_source": {
+            "@type": "string",
+            "@value": "wctiler"
+          },
+          "throttling_allowed": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "bootstrap_server": {
+            "@type": "string",
+            "@value": "kafka.logging.svc.cluster.local:9092"
+          },
+          "legacy_mode": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "fetch_min_bytes": {
+            "@type": "integer",
+            "@value": 5
+          },
+          "group_id": {
+            "@type": "string",
+            "@value": "graylog2"
+          },
+          "fetch_wait_max": {
+            "@type": "integer",
+            "@value": 100
+          }
+        },
+        "static_fields": {},
+        "type": {
+          "@type": "string",
+          "@value": "org.graylog2.inputs.raw.kafka.RawKafkaInput"
+        },
+        "global": {
+          "@type": "boolean",
+          "@value": false
+        },
+        "extractors": []
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=4.1.3+9d79c05"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "input",
+        "version": "1"
+      },
+      "id": "a491fb96-3e86-4259-8c62-c7567b492a8d",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "RDM"
+        },
+        "configuration": {
+          "custom_properties": {
+            "@type": "string",
+            "@value": ""
+          },
+          "offset_reset": {
+            "@type": "string",
+            "@value": "largest"
+          },
+          "topic_filter": {
+            "@type": "string",
+            "@value": "^rdm.logs$"
+          },
+          "threads": {
+            "@type": "integer",
+            "@value": 2
+          },
+          "zookeeper": {
+            "@type": "string",
+            "@value": "127.0.0.1:2181"
+          },
+          "override_source": {
+            "@type": "string",
+            "@value": "RDM"
+          },
+          "throttling_allowed": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "bootstrap_server": {
+            "@type": "string",
+            "@value": "kafka.logging.svc.cluster.local:9092"
+          },
+          "legacy_mode": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "fetch_min_bytes": {
+            "@type": "integer",
+            "@value": 5
+          },
+          "group_id": {
+            "@type": "string",
+            "@value": "graylog2"
+          },
+          "fetch_wait_max": {
+            "@type": "integer",
+            "@value": 100
+          }
+        },
+        "static_fields": {},
+        "type": {
+          "@type": "string",
+          "@value": "org.graylog2.inputs.raw.kafka.RawKafkaInput"
+        },
+        "global": {
+          "@type": "boolean",
+          "@value": false
+        },
+        "extractors": []
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=4.1.3+9d79c05"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "input",
+        "version": "1"
+      },
+      "id": "37fd6b0e-ed29-4563-861d-736b5f781029",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "Keycloak"
+        },
+        "configuration": {
+          "custom_properties": {
+            "@type": "string",
+            "@value": ""
+          },
+          "offset_reset": {
+            "@type": "string",
+            "@value": "largest"
+          },
+          "topic_filter": {
+            "@type": "string",
+            "@value": "^keycloak.logs$"
+          },
+          "threads": {
+            "@type": "integer",
+            "@value": 2
+          },
+          "zookeeper": {
+            "@type": "string",
+            "@value": "127.0.0.1:2181"
+          },
+          "override_source": {
+            "@type": "string",
+            "@value": "keycloak"
+          },
+          "throttling_allowed": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "bootstrap_server": {
+            "@type": "string",
+            "@value": "kafka.logging.svc.cluster.local:9092"
+          },
+          "legacy_mode": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "fetch_min_bytes": {
+            "@type": "integer",
+            "@value": 5
+          },
+          "group_id": {
+            "@type": "string",
+            "@value": "graylog2"
+          },
+          "fetch_wait_max": {
+            "@type": "integer",
+            "@value": 100
+          }
+        },
+        "static_fields": {},
+        "type": {
+          "@type": "string",
+          "@value": "org.graylog2.inputs.raw.kafka.RawKafkaInput"
+        },
+        "global": {
+          "@type": "boolean",
+          "@value": false
+        },
+        "extractors": []
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=4.1.3+9d79c05"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "input",
+        "version": "1"
+      },
+      "id": "dcae22d0-9fb0-4e2c-a6cb-74617f7f9aef",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "VDM"
+        },
+        "configuration": {
+          "custom_properties": {
+            "@type": "string",
+            "@value": ""
+          },
+          "offset_reset": {
+            "@type": "string",
+            "@value": "largest"
+          },
+          "topic_filter": {
+            "@type": "string",
+            "@value": "^vdm.logs$"
+          },
+          "threads": {
+            "@type": "integer",
+            "@value": 2
+          },
+          "zookeeper": {
+            "@type": "string",
+            "@value": "127.0.0.1:2181"
+          },
+          "override_source": {
+            "@type": "string",
+            "@value": "VDM"
+          },
+          "throttling_allowed": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "bootstrap_server": {
+            "@type": "string",
+            "@value": "kafka.logging.svc.cluster.local:9092"
+          },
+          "legacy_mode": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "fetch_min_bytes": {
+            "@type": "integer",
+            "@value": 5
+          },
+          "group_id": {
+            "@type": "string",
+            "@value": "graylog2"
+          },
+          "fetch_wait_max": {
+            "@type": "integer",
+            "@value": 100
+          }
+        },
+        "static_fields": {},
+        "type": {
+          "@type": "string",
+          "@value": "org.graylog2.inputs.raw.kafka.RawKafkaInput"
+        },
+        "global": {
+          "@type": "boolean",
+          "@value": false
+        },
+        "extractors": []
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=4.1.3+9d79c05"
+        }
+      ]
+    }
+  ]
+}

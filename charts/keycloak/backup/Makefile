@@ -11,14 +11,14 @@ dump:
 restore:
 	# restore keycloak backup database
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
-	kubectl exec keycloak-postgresql-0 -n keycloak -- bash -c "PGPASSWORD=$(password)  psql -U bn_keycloak -d bitnami_keycloak -c "CREATE DATABASE bitnami_keycloak;""
+	kubectl exec keycloak-postgresql-0 -n keycloak -- bash -c "PGPASSWORD=$(password)  psql -U bn_keycloak -d bitnami_keycloak -c "CREATE DATABASE bitnami_keycloak;"
 	cat $(HOSTNAME)-keycloak-database.sql | kubectl exec -i keycloak-postgresql-0 -n keycloak -- bash -c "PGPASSWORD=$(password)  psql -U bn_keycloak -d bitnami_keycloak" 
 	# restard pod for the cache issue.
 	kubectl delete keycloak-0 -n keycloak
 
 drop:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
-	kubectl delete keycloak-postgresql-0 -n keycloak
+	# kubectl delete keycloak-postgresql-0 -n keycloak
 	kubectl exec keycloak-postgresql-0 -n keycloak -- bash -c "PGPASSWORD=$(password)  dropdb -f -U bn_keycloak -d bitnami_keycloak"
 
 

@@ -9,13 +9,10 @@ The logging system repose on following product to store logs.
 
 - First, fluent-bit pods are placed on each node and send the logs to a kafka topic.
 - The kafka topics keeps the events until a consumer come to read them.
--  Graylog is the consumer and use kafka to retrieve events and store them in his elasticsearch DB
+- Graylog is the consumer and use kafka to retrieve events and store them in his elasticsearch DB.
 
-## Requirements :
+![logging architecture](index.jpeg)
 
-**TODO**
-First, the stack needs 2 specifics VM with at least 16Go of ram
-in order to welcome elasticsearch and one replica.
 
 ## Steps :
 - Install Kafka
@@ -37,18 +34,22 @@ Go to *chart/logging/kafka* and execute the following commands:
 `make build && make deploy`
 The deploy step will use the *init-deployment.yaml* in *chart/logging/init* that creates the namespace **logging** and the the sercret **harborcs** allocated for this namespace.
 
-Then it will deploy 3 Kafka replicas with 1 zookeeper, the kafka is composed of one topic named **preprocessing.logs** composed of 3 partitions, replicated 3 times with a retention time of 7 days.
+Then it will deploy 3 Kafka replicas with 1 zookeeper, the kafka is composed of five topics named 
+- **preprocessing.logs** 
+- **vdm.logs**
+- **rdm.logs**
+- **wctiler.logs**
+- **keycloak.logs**
+
+preprocessing is partionned once and has 3 replicas all the others topics are only partionned once 
+with 2 repilcas, the retention time for all is  1 days.
+
 
 If you wish to add topic you can modify the Makefile and add your topic by using the following command as exemple :
 
 `kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic preprocessing.logs --partitions=3 --replication-factor=3 --config cleanup.policy=delete --config retention.ms=604800000 --config retention.bytes="-1"`
 
 To delete the install ( PVC not included) use `make delete`.
-
-**TODO**
-
-- ADD attribution node affinity when cluster prod ready 
-- persistence size
 
 ### Install Fluent-bit
 #### Info
@@ -65,9 +66,6 @@ If you wish to add logs in the workflow, you should delete the daemonset by usin
 
 **Be carefull the rules syntax is tricky, respect the current format in order to avoid issues**
 To delete the install use `make delete`.
-
-**TODO**
-- Config output and input with the right name of container to monitor
 
 ### Install Graylog stack
 The graylog stack depends on 3 elements to works properly.
@@ -87,11 +85,6 @@ Go to *chart/logging/graylog-stack/ElasticSearch* and execute the following comm
 
 To delete (PVC not included) use `make delete`.
 
- **TODO**
-- Set security auth
-- Node affinity
-- Volume size
-- Heap size 8go
 
 ### Install MongoDB
 Deploy Elasticsearch (node affinity !!) (heap 8go)
@@ -109,11 +102,6 @@ This chart create one user graylog with a password present in the chart for the 
 The password for graylog user is generated randomly and stored as secret.
 
 To delete (PVC not included) use `make delete`.
-
- **TODO**
-- Node affinity
-- Volume size
-- config graylog with true container names
 
 ### Install Graylog
 #### Info
@@ -140,9 +128,4 @@ It allow you yo access the graylog web app.
 
 To delete (PVC not included) use `make delete`.
 
- **TODO**
-- Node affinity
-- Volume size
-- Heap size 
-- Input config graylog
 
