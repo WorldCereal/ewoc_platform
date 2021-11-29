@@ -15,9 +15,17 @@ The logging system repose on following product to store logs.
 
 
 ## Steps :
+- Init
 - Install Kafka
 - Install Fluent-bit
 - Install Graylog stack
+
+### Init 
+- First Create namespace for the logging stack using : 
+```kubectl create namespace logging```
+
+- Create the secret `harborcs` that allow to pull the image from private registry.
+```kubectl create secret -n vdm docker-registry harborcs --docker-server=YOUR_REGISTRY --docker-username=REGISTRY_USERNAME --docker-password="REGISTRY_PASSWORD"```
 
 ### Install Kafka
 
@@ -27,8 +35,6 @@ KAFKA_VERSION="2.8.0-debian-10-r84"
 https://bitnami.com/stack/kafka/helm
 
 #### Steps
-Go to *chart/logging/
-`kubectl apply -f init/init-deployment.yaml`
 
 Go to *chart/logging/kafka* and execute the following commands:
 `make build && make deploy`

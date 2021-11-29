@@ -84,6 +84,9 @@ To delete cert-manager use ```make delete```.
 Kong is the ingress controller of the plateform.
 An OIDC plugin is added to manage user authentication with the help of the keycloak SSO.
 
+First, create the harborcs secret to allow you deployment to pull container images from the private registry.
+```kubectl create secret -n NAMESPACE docker-registry harborcs --docker-server=YOUR_REGISTRY --docker-username=REGISTRY_USERNAME --docker-password="REGISTRY_PASSWORD"```
+
 Go to kong direcory:
 ```sh
 cd ewoc_platform/charts/kong  

@@ -1,8 +1,6 @@
 .PHONY: deploy delete
 
-#host=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_host"] ' | base64 --decode )
 port=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_port"] ' | base64 --decode ) 
-#dbname=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_database"] ' | base64 --decode )
 user=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_user"] ' | base64 --decode )
 password=$(shell kubectl get secrets -n argo pgsql -o json | jq  -r '.data["postgresql_password"] ' | base64 --decode )
 
@@ -11,7 +9,7 @@ deploy:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 	
 	# Init env
-	@kubectl apply -f init.yaml
+	@kubectl create namespace wctiler
 	
 	@sed "s:VALUE1:$(HOSTNAME):" ingress.tmpl > ingress.yaml
 

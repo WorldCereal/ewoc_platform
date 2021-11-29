@@ -7,7 +7,6 @@ build:
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update
 	
-	
 deploy:
 	# Deploy all components for Kong
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
@@ -16,7 +15,7 @@ deploy:
 	@sed "s:VALUE1:$(KONG_VERSION):" values.tmpl > values.yaml
 
 	# Create namespace & secrets
-	kubectl apply -f init/init-deployment.yaml
+	kubectl create namespace kong
 
 	# Deploy a Postgres DB for Kong
 	@helm install kong-postgresql bitnami/postgresql --version=$(POSTGRESQL_CHART_VERSION) --values postgresql/values.yaml -n kong
