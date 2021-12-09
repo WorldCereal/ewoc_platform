@@ -1,0 +1,182 @@
+
+alertmanager:
+  ## Deploy alertmanager
+  ##
+  enabled: true
+  apiVersion: v2
+  ingress:
+    enabled: true
+    ingressClassName: kong
+
+    annotations:
+      #kubernetes.io/ingress.class: kong
+      konghq.com/strip-path: "false"
+    
+    ## Hostnames.
+    hosts: 
+      - alertmanager.VALUE1
+
+    ## Path for grafana ingress
+    path: /
+    pathType: ImplementationSpecific
+
+
+  
+grafana:
+  enabled: true
+  ## Deploy default dashboards.
+  ##
+  defaultDashboardsEnabled: true
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+
+      ## Annotations for Grafana dashboard configmaps
+      ##
+      annotations: {}
+
+  ingress:
+    ## If true, Grafana Ingress will be created
+    ##
+    enabled: true
+    ## Annotations for Grafana Ingress
+    ##
+    annotations: 
+      kubernetes.io/ingress.class: kong
+      konghq.com/strip-path: "false"
+    
+    ## Hostnames.
+    hosts: 
+      - grafana.VALUE1
+    ## Path for grafana ingress
+    path: /
+
+prometheus:
+  enabled: true
+  
+  prometheusSpec:
+    podMonitorSelectorNilUsesHelmValues: true
+    serviceMonitorSelectorNilUsesHelmValues: true
+    serviceMonitorSelector:
+      matchLabels:
+        release: kube-prometheus-stack
+
+  ingress:
+    enabled: true
+
+    # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
+    # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
+    ingressClassName: kong
+
+    annotations: 
+      konghq.com/strip-path: "false"
+
+    hosts: 
+      - prometheus.VALUE1
+    paths: 
+      - /
+    pathType: ImplementationSpecific  
+   
+
+prometheusOperator:
+  enabled: true
+  hostNetwork: false        
+  
+
+kubelet:
+  enabled: true
+  namespace: kube-system
+  serviceMonitor:
+    ## Enable scraping /metrics/resource from kubelet's service
+    ## This is disabled by default because container metrics are already exposed by cAdvisor
+    ##
+    resource: true
+
+additionalPrometheusRulesMap: 
+  custom-alert:
+    groups:
+    - name: host-alert
+      rules:
+      - record: HostOutOfMemory
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host out of memory (instance {{ $labels.instance }})
+          description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - record: HostMemoryUnderMemoryPressure
+        expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host memory under memory pressure (instance {{ $labels.instance }})
+          description: "The node is under heavy memory pressure. High rate of major page faults\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - record: HostUnusualNetworkThroughputIn
+        expr: sum by (instance) (rate(node_network_receive_bytes_total[2m])) / 1024 / 1024 > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host unusual network throughput in (instance {{ $labels.instance }})
+          description: "Host network interfaces are probably receiving too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - record: HostUnusualNetworkThroughputOut
+        expr: sum by (instance) (rate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host unusual network throughput out (instance {{ $labels.instance }})
+          description: "Host network interfaces are probably sending too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - record: HostUnusualDiskReadRate
+        expr: sum by (instance) (rate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host unusual disk read rate (instance {{ $labels.instance }})
+          description: "Disk is probably reading too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - record: HostUnusualDiskWriteRate
+        expr: sum by (instance) (rate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 50
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host unusual disk write rate (instance {{ $labels.instance }})
+          description: "Disk is probably writing too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - record: HostOutOfInodes
+        expr: node_filesystem_files_free{mountpoint ="/rootfs"} / node_filesystem_files{mountpoint="/rootfs"} * 100 < 10 and ON (instance, device, mountpoint) node_filesystem_readonly{mountpoint="/rootfs"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host out of inodes (instance {{ $labels.instance }})
+          description: "Disk is almost running out of available inodes (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - record: HostInodesWillFillIn24Hours
+        expr: node_filesystem_files_free{mountpoint ="/rootfs"} / node_filesystem_files{mountpoint="/rootfs"} * 100 < 10 and predict_linear(node_filesystem_files_free{mountpoint="/rootfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly{mountpoint="/rootfs"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host inodes will fill in 24 hours (instance {{ $labels.instance }})
+          description: "Filesystem is predicted to run out of inodes within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - record: HostUnusualDiskReadLatency
+        expr: rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 0.1 and rate(node_disk_reads_completed_total[1m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host unusual disk read latency (instance {{ $labels.instance }})
+          description: "Disk latency is growing (read operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - record: HostUnusualDiskWriteLatency
+        expr: rate(node_disk_write_time_seconds_total[1m]) / rate(node_disk_writes_completed_total[1m]) > 0.1 and rate(node_disk_writes_completed_total[1m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host unusual disk write latency (instance {{ $labels.instance }})
+          description: "Disk latency is growing (write operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+          

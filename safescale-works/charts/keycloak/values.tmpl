@@ -1,0 +1,54 @@
+# helm install keycloak  bitnami/keycloak --create-namespace --namespace=keycloak -f keycloak-value.yaml
+image:
+  registry: docker.io
+  repository: bitnami/keycloak
+  tag: VALUE1  
+  debug: true
+
+extraEnv:
+- name: KEYCLOAK_LOG_LEVEL
+  value: DEBUG
+- name: WILDFLY_LOG_LEVEL
+  value: DEBUG
+- name: ROOT_LOG_LEVEL
+  value: DEBUG
+- name: PROXY_ADDRESS_FORWARDING  
+  value: "true"  
+
+service:
+  type: ClusterIP
+  port: 80
+  nodePort: 443  
+
+ingress:
+  enabled: true
+  certManager: false
+  #hostname: auth.VALUE2
+  hostname: keycloak.local
+  ingressClassName: kong
+  path: /
+  pathType: ImplementationSpecific
+  annotations:
+    konghq.com/strip-path: "false"
+
+
+auth:
+  createAdminUser: true
+  adminUser: admin
+
+
+extraEnvVars:
+  - name: KEYCLOAK_LOG_LEVEL
+    value: INFO  
+
+#metrics:
+#  enabled: true
+#  serviceMonitor:
+#    enabled: true
+#    namespace: monitoring
+#    interval: 10s
+#    scrapeTimeout: 10s
+#    honorLabels: false
+#    additionalLabels:
+#      release: kube-prometheus-stack
+    
