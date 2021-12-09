@@ -9,7 +9,7 @@
 
 ## Steps
 
-1. Copy the VDM repository on github
+1. Copy the VDM repository on github https://github.com/WorldCereal/gisat-env-world-cereal
 
 2. Create the vdm namespace that is going to host all the things related to this application.
 ```kubectl create ns vdm```
