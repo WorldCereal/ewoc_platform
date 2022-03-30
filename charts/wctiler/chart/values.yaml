@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 image:
-  registry: hfjcmwgl.gra5.container-registry.ovh.net/world-cereal
+  registry: 643vlk6z.gra7.container-registry.ovh.net/world-cereal
   name: mapproxy
   tag: latest
   #pullPolicy: IfNotPresent
@@ -50,7 +50,7 @@ service:
 
 nginx:
   image:
-    registry: hfjcmwgl.gra5.container-registry.ovh.net/world-cereal
+    registry: 643vlk6z.gra7.container-registry.ovh.net/world-cereal
     name: nginx
     tag: latest
     pullPolicy: IfNotPresent
@@ -77,7 +77,7 @@ mapserver:
   nameOverride: mapserver
   replicaCount: 1
   image:
-    registry: hfjcmwgl.gra5.container-registry.ovh.net/world-cereal
+    registry: 643vlk6z.gra7.container-registry.ovh.net/world-cereal
     name: docker-mapserver
     tag: latest
     pullPolicy: IfNotPresent
