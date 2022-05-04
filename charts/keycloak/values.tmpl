@@ -20,18 +20,6 @@ service:
   port: 80
   nodePort: 443  
 
-ingress:
-  enabled: true
-  hostname: auth.VALUE2
-  path: /
-  #ingressClassName: kong
-  pathType: ImplementationSpecific
-  annotations:
-    konghq.com/strip-path: "false"
-    kubernetes.io/ingress.class: kong
-    kubernetes.io/tls-acme: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-
 auth:
   createAdminUser: true
   adminUser: admin
