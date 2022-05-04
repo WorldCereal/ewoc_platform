@@ -14,7 +14,7 @@ deploy:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
 	@sed "s:VALUE1:$(GRAYLOG_VERSION):" values-graylog.tmpl > values-graylog.yaml
-	@sed "s:VALUE1:$(HOSTNAME):" ingress-graylog.tmpl > ingress-graylog.yaml
+	@sed "s:VALUE1:$(HOSTNAME):;s:VALUE3:$(GRAYLOG_CS):" ingress-graylog.tmpl > ingress-graylog.yaml
 
 	helm install graylog --namespace logging --wait kongz/graylog --version $(GRAYLOG_CHART_VERSION) \
 		--set tags.install-mongodb=false \
@@ -28,28 +28,8 @@ deploy:
 	# Create Ingress
 	kubectl apply -f ingress-graylog.yaml -n logging
 	
-	# waiting 20 secondes before install oidc plugin
-	sleep 20
-
-	# install oidc plugin on prometheus route
-	@kubectl exec kong-oidc-tool -n kong -- sh -c "curl -kSsl -X POST \
-	--url http://kong-kong-admin:8001/routes/logging.graylog.00/plugins \
-	--data 'name=oidc' \
-	--data 'config.bearer_only=no' \
-	--data 'config.client_id=graylog' \
-	--data 'config.client_secret=$(GRAYLOG_CS)' \
-	--data 'config.discovery=http://auth.$(HOSTNAME)/auth/realms/worldcereal/.well-known/openid-configuration' \
-	--data 'config.realm=worldcereal' \
-	--data 'config.response_type=code' \
-	--data 'config.scope=openid' \
-	--data 'config.session_secret=null' \
-	--data 'config.ssl_verify=no' \
-	--data 'config.token_endpoint_auth_method=client_secret_post' \
-	--data 'enabled=true'"
-
-
 config:
- 	# SET INPUTS FOR GRAYLOG
+
 	kubectl exec -it -n kong kong-oidc-tool -- apk update
 	kubectl exec -it -n kong kong-oidc-tool -- apk add jq
 
@@ -66,6 +46,7 @@ delete:
 	# Deleting all components for graylog
 	helm uninstall graylog -n logging 
 	kubectl delete ingress -n logging graylog
+	kubectl delete kongplugins.configuration.konghq.com  -n logging graylog-oidc 
 
 
 
