@@ -1,0 +1,15 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: preprocessing.logs
+  labels:
+    strimzi.io/cluster: kafka-cluster
+spec:
+  partitions: 2
+  replicas: 1
+  config:
+    retention.bytes: 715827882
+    retention.ms: "-1"
+    segment.bytes: 178956970
+    cleanup.policy: delete
+    unclean.leader.election.enable: false
