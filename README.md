@@ -114,7 +114,7 @@ For infomation:
     - proxy (Kong Gateway)
     - ingress (Kong Ingress Controller)
 - kong-postgresql-postgresql-0 pod  containt a postgres database (used by Kong Admin Api for the oidc plugin, routes , svc , etc)
-- kong-oidc-tool is a custom pod that allow to post & update via curl request to the Kong Admin Api.
+- kong-oidc-tool is a custom pod that allow to post & update via curl request to the Kong Admin Api. (Deprecated)
 
 ## Keycloak Deployment 
 Keycloak is the SSO of the plateform that handle user authentication.
