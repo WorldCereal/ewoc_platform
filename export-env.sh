@@ -24,9 +24,6 @@ export KUBE_PROMETHEUS_STACK_CHART_VERSION="17.0.2"
 export FLUENTBIT_CHART_VERSION="0.16.6"
 export FLUENTBIT_VERSION="1.8"
 
-# Kafka 
-export KAFKA_CHART_VERSION="14.1.0"
-export KAFKA_VERSION="2.8.0-debian-10-r84"
 
 # Graylog STACK (elastic+mongo+graylog)
 export MONGO_CHART_VERSION="10.26.1"
@@ -44,10 +41,11 @@ export WCT_HOST_DB="postgres-postgresql-0.postgres-postgresql-headless.argo.svc.
 export WCT_DB_NAME="world-cereal-wctiler"
 
 
-# Client Secret
+# Keycloak Client Secret
 export GRAYLOG_CS=""
 export PROMETHEUS_CS=""
 export GRAFANA_CS=""
 export WCT_CS=""
 export RDM_CS=""
-export VDM_CS=""
+export VDM_CS="TEST"
+export VDM_API_CS="APITEST"
