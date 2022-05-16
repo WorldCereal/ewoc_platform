@@ -13,6 +13,7 @@ RUN apt-get update && \
 	apt-get upgrade -y && \
 	apt-get install -y luarocks curl
 RUN luarocks install kong-oidc 
+RUN luarocks install kong-plugin-request-transformer
 
 RUN  rm usr/local/share/lua/5.1/kong/plugins/oidc/handler.lua && rm /usr/local/share/lua/5.1/resty/openidc.lua
 COPY handler.lua  usr/local/share/lua/5.1/kong/plugins/oidc/handler.lua 
