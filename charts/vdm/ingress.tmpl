@@ -1,0 +1,110 @@
+apiVersion: configuration.konghq.com/v1
+config:
+  bearer_only: "no"
+  client_id: vdm
+  client_secret: A
+  discovery: https://auth.demo.worldcereal.csgroup.space/auth/realms/worldcereal/.well-known/openid-configuration
+  introspection_endpoint: https://auth.demo.worldcereal.csgroup.space/auth/realms/worldcereal/protocol/openid-connect/token/introspect
+  logout_path: /logout
+  realm: worldcereal
+  redirect_after_logout_uri: /
+  redirect_uri_path: null
+  response_type: code
+  scope: openid
+  session_secret: null
+  ssl_verify: "no"
+  token_endpoint_auth_method: client_secret_post
+kind: KongPlugin
+metadata:
+  name: vdm-oidc
+  namespace: vdm
+plugin: oidc
+---
+apiVersion: configuration.konghq.com/v1
+config:
+  bearer_only: "yes"
+  client_id: vdmapi
+  client_secret: B
+  discovery: http://auth.demo.worldcereal.csgroup.space/auth/realms/worldcereal/.well-known/openid-configuration
+  introspection_endpoint: http://auth.demo.worldcereal.csgroup.space/auth/realms/worldcereal/protocol/openid-connect/token/introspect
+  logout_path: /logout
+  realm: worldcereal
+  redirect_after_logout_uri: /
+  redirect_uri_path: null
+  response_type: code
+  scope: openid
+  session_secret: null
+  ssl_verify: "no"
+  token_endpoint_auth_method: client_secret_post
+kind: KongPlugin
+metadata:
+  name: vdmapi-oidc
+  namespace: vdm
+plugin: oidc
+--- 
+apiVersion: configuration.konghq.com/v1
+config:
+  remove:
+    headers:
+    - Authorization
+kind: KongPlugin
+metadata:
+  name: vdmapi-cleaner
+  namespace: vdm
+plugin: request-transformer
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/plugins: vdm-oidc
+    konghq.com/strip-path: "true"
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+  name: vdm
+  namespace: vdm
+spec:
+  rules:
+  - host: vdm.VALUE1
+    http:
+      paths:
+      - backend:
+          serviceName: be
+          servicePort: 9850
+        path: /backend
+      - backend:
+          serviceName: app-wcpdr
+          servicePort: 9000
+        path: /
+  tls:
+  - hosts:
+    - vdm.VALUE1
+    secretName: vdmtls
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/https-redirect-status-code: "302"
+    konghq.com/plugins: vdmapi-oidc, vdmapi-cleaner
+    konghq.com/protocols: https
+    konghq.com/strip-path: "true"
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+  name: vdmapi
+  namespace: vdm
+spec:
+  rules:
+  - host: vdmapi.VALUE1
+    http:
+      paths:
+      - backend:
+          serviceName: be
+          servicePort: 9850
+        path: /backend
+  tls:
+  - hosts:
+    - vdmapi.VALUE1
+    secretName: vdmapitls
