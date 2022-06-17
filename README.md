@@ -161,7 +161,7 @@ Then apply the ingress to generate the certificate and make SSL available.
 NAME           READY   SECRET       AGE
 keycloaktls   True    keycloaktls   14d
 ```
-Connect to the administration page of keycloak, change the current realm to master.
+Connect to the administration page of keycloak in HTTP, change the current realm to master.
 Update the frontend URL by updating http to https **https://auth.YOUR_HOSTNAME/auth/**.
 
 
@@ -169,6 +169,10 @@ Update the frontend URL by updating http to https **https://auth.YOUR_HOSTNAME/a
 Go to Kube-Prometheus-Stack directory:
 ```sh
 cd ewoc_platform/charts/kube-prometheus-stack  
+```
+Create namespace.
+```sh
+ kubectl create ns monitoring
 ```
 
 Build & deploy via Make
@@ -210,8 +214,15 @@ The database host and name needs to be set in export-en.sh
 
 To install it run : 
 ```cd wctiler```
+
+Create namespace.
+```sh
+ kubectl create ns wctiler 
+```
 then 
-```make deploy```
+```sh 
+make deploy
+```
 
 The application should be accessible at the url wctiler.YOURDOMAIN.
 Some change have been made on the WCtiler container image mapproxy because of the HTTP request size
