@@ -1,21 +1,27 @@
-.PHONY: build delete deploy_operator deploy_topics
+.PHONY: build deploy delete create_topic
 
 build:
 	
 	# Build Kafka component
-	helm repo add strimzi https://strimzi.io/charts/
+	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update
+	
+deploy:
 
-deploy_operator: 
+	# Deploy Kafka component
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
-	helm install operatorkafka strimzi/strimzi-kafka-operator -f values_operator.yaml --skip-crds=false -n logging
-	kubectl apply -f kafka_values.yaml -n logging
 
-deploy_topics:
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
-	kubectl apply -f Topics/ -n logging
+	# Install Kafka
+	helm install kafka bitnami/kafka --namespace=logging  -f values.yaml
+
+
+create_topic:
+	# Create Topics Kafka
+	# retention 1 day (1000*60*60*24*1) 
+	kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic preprocessing.logs --partitions=1 --replication-factor=2 --config cleanup.policy=delete --config retention.ms=86400000 --config retention.bytes="-1"
+	kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic keycloak.logs --partitions=1 --replication-factor=2 --config cleanup.policy=delete --config retention.ms=86400000 --config retention.bytes="-1"
+
 
 delete:
-	kubectl delete kafkatopics.kafka.strimzi.io -n logging keycloak.logs preprocessing.logs
-	kubectl delete -n logging  kafka kafka-cluster
-	helm uninstall operatorkafka -n logging
+	# Delete kafka component
+	helm uninstall kafka -n logging
