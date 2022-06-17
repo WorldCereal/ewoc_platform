@@ -1,0 +1,56 @@
+
+alertmanager:
+  enabled: true
+  apiVersion: v2
+  ingress:
+    enabled: false
+
+  alertmanagerSpec:
+    nodeSelector:
+      role: kong
+
+  
+grafana:
+  enabled: true
+  defaultDashboardsEnabled: true
+  nodeSelector:
+    role: kong
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+
+      annotations: {}
+
+  ingress:
+    enabled: false
+
+prometheus:
+  enabled: true
+  
+  prometheusSpec:
+    podMonitorSelectorNilUsesHelmValues: true
+    serviceMonitorSelectorNilUsesHelmValues: true
+    serviceMonitorSelector:
+      matchLabels:
+        release: kube-prometheus-stack
+    nodeSelector:
+      role: kong
+
+  ingress:
+    enabled: false
+
+prometheusOperator:
+  enabled: true
+  hostNetwork: false        
+  nodeSelector:
+    role: kong
+
+kubelet:
+  enabled: true
+  namespace: kube-system
+  serviceMonitor:
+    ## Enable scraping /metrics/resource from kubelet's service
+    ## This is disabled by default because container metrics are already exposed by cAdvisor
+    ##
+    resource: true

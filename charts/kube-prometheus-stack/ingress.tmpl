@@ -1,0 +1,96 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: prometheus-oidc
+plugin: oidc
+config:
+  bearer_only: "no"
+  client_id: prometheus
+  client_secret: VALUE2
+  discovery: http://auth.VALUE1/auth/realms/worldcereal/.well-known/openid-configuration
+  introspection_endpoint: http://auth.VALUE1/auth/realms/worldcereal/protocol/openid-connect/token/introspect
+  logout_path: /logout
+  realm: worldcereal
+  redirect_after_logout_uri: /
+  redirect_uri_path: null
+  response_type: code
+  scope: openid
+  session_secret: null
+  ssl_verify: "no"
+  token_endpoint_auth_method: client_secret_post
+---  
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/https-redirect-status-code: "302"
+    konghq.com/protocols: https
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+    konghq.com/plugins: prometheus-oidc
+  name: prometheus
+  namespace: monitoring
+spec:
+  rules:
+  - host: prometheus.VALUE1
+    http:
+      paths:
+      - backend:
+          serviceName: kube-prometheus-stack-prometheus
+          servicePort: 9090
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - prometheus.VALUE1
+    secretName: prometheustlscert
+
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: grafana-oidc
+plugin: oidc
+config:
+  bearer_only: "no"
+  client_id: grafana
+  client_secret: VALUE3
+  discovery: http://auth.VALUE1/auth/realms/worldcereal/.well-known/openid-configuration
+  introspection_endpoint: http://auth.VALUE1/auth/realms/worldcereal/protocol/openid-connect/token/introspect
+  logout_path: /logout
+  realm: worldcereal
+  redirect_after_logout_uri: /
+  redirect_uri_path: null
+  response_type: code
+  scope: openid
+  session_secret: null
+  ssl_verify: "no"
+  token_endpoint_auth_method: client_secret_post
+---  
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/https-redirect-status-code: "302"
+    konghq.com/protocols: https
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+    konghq.com/plugins: grafana-oidc
+  name: grafana
+  namespace: monitoring
+spec:
+  rules:
+  - host: grafana.VALUE1
+    http:
+      paths:
+      - backend:
+          serviceName: kube-prometheus-stack-grafana
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - grafana.VALUE1
+    secretName: grafanatlscert
