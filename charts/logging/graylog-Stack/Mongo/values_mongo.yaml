@@ -1,0 +1,18 @@
+
+nodeSelector:
+  role: kong 
+
+auth:
+  enabled: true
+  rootUser: root
+  username: "graylog"
+  database: "graylog"
+
+
+persistence:
+  enabled: true
+  storageClass: "standard"
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+
