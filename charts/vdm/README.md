@@ -43,3 +43,22 @@ Then:
 **NB: if you change the ingress name, change the kong endpoint because the route name is build from the ingress name**
 
 9. Check that the application is protected by the OIDC authentification by trying to access it from you browser.
+
+## Information
+VDM is composed of 4 deployments.
+- redis used for caching
+- postgresql
+- app-wcpdr which is the front end
+- be or backend which is composed of 2 containers mapproxy and be. The containers shares 4 PV mounted in each one.
+
+be and postgres uses PV. 
+postgres uses pg-data PV. 
+be uses mapproxy-cache mapproxy-conf mapproxy-datasource mapproxy-seed.
+
+## Troubleshooting
+
+- When deploying postgresql for the fist time, it's possible to have issues with pods connection to the db.
+If it's the case, connect to the postgresql pods et delete the `lost+found` folder in the mounted PVC directory.
+
+- If the front-end do not provides tiles, it's possible that the shared PVC in the `be` pods has some rights issues. Mapproxy is running as uid 1000 whereas the be container is root.
+To solve this, connect in be pod and select be container then exec a recursive chown to give rights to uid 1000.   

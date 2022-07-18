@@ -6,14 +6,15 @@
 - [2. Notes](#notes)
 - [3. Namespaces](#namespaces)
 - [4. Secret Management](#secret-Management)
-- [5. Cert-Manager](#cert-Manager)
+- [5. Cert-Manager](#cert-manager)
 - [6. Kong](#kong-deployment)
 - [7. Keycloak](#keycloak-deployment)
 - [8. Kube-Prometheus-Stack](#kube-prometheus-stack-deployment)
 - [9. Logging-Stack](#logging-stack)
 - [10. WCTiler](#wctiler)
-- [11. Reference Data Module (RDM)](#reference-data-Module-(RDM))
-- [12. Visualization Dissemination Module (VDM)](#visualization-dissemination-module-(VDM))
+- [11. Reference Data Module (RDM)](#reference-data-module-rdm)
+- [12. Visualization Dissemination Module (VDM)](#visualization-dissemination-module-vdm)
+- [13. PV recovery](#pvc-recovery)
 
 ## Requirements
 
@@ -109,12 +110,38 @@ kong-oidc-tool                    1/1     Running     0          22d
 kong-postgresql-postgresql-0      1/1     Running     0          12d
 
 ```
-For infomation: 
-- kong-kong-84dd95ffd9-z2szz pod containt 2 container:
+For information: 
+- kong-kong pods contains 2 containers:
     - proxy (Kong Gateway)
     - ingress (Kong Ingress Controller)
 - kong-postgresql-postgresql-0 pod  containt a postgres database (used by Kong Admin Api for the oidc plugin, routes , svc , etc)
 - kong-oidc-tool is a custom pod that allow to post & update via curl request to the Kong Admin Api. (Deprecated)
+
+Kong also provide a CRD that allows to configure the OIDC plugin though yaml file.
+For instance:
+```
+apiVersion: configuration.konghq.com/v1
+config:
+  bearer_only: "no"
+  client_id: rdm
+  client_secret: TheClientSecret
+  discovery: https://YourKeycloakURL/auth/realms/YourRealm/.well-known/openid-configuration
+  introspection_endpoint: https://YourKeycloakURL/auth/realms/YourRealm/protocol/openid-connect/token/introspect
+  logout_path: /logout
+  realm: YourRealm
+  redirect_after_logout_uri: /
+  redirect_uri_path: null
+  response_type: code
+  scope: openid
+  session_secret: null
+  ssl_verify: "no"
+  token_endpoint_auth_method: client_secret_post
+kind: KongPlugin
+metadata:
+  name: oidc-plugin
+  namespace: yourNamespace
+plugin: oidc
+```
 
 ## Keycloak Deployment 
 Keycloak is the SSO of the plateform that handle user authentication.
@@ -140,7 +167,7 @@ keycloak-postgresql-0   1/1     Running   0          15d
 ```
 
 Set up SSL Configuration
-For now, keycloak is deployed and available in http, this point is WIP and https should be available by default in the near future. 
+For now, keycloak is deployed and available in http.
 For now to use keycloak with https it is required to edit the ingress configuration of keycloack. 
 First export it in a yaml file with ```kubectl get ingress -n keycloak keycloak -o yaml > ingress.yaml```.
 Then update the ingress by adding the following annotations under metadata tag:
@@ -240,3 +267,35 @@ Check the readme in rdm folder.
 Check the readme in vdm folder.
 
 
+## PV recovery
+
+In case of plateform rebuild, it could be needed to reuse some of the PV as they contains valuable data.
+It concerns particularly VDM, RDM and Keycloak volumes. 
+
+If the plateform is rebuilt and ETCD is lost, all the PV are not available anymore in the new K8S context.
+This is how reattach the volume and reassociate the to their pods (openstack environment). 
+
+For simplicity, it's advised to rename your volume in your openstack project in order to easily identify the volume owner.
+
+First gather the **volume id** in your openstack context.
+then create manually a PV using the following exemple: 
+
+```
+apiVersion: "v1"
+kind: "PersistentVolume"
+metadata:
+  name: "Name"
+spec:
+  capacity:
+    storage: "20Gi" #Reuse old size
+  accessModes:
+    - "ReadWriteOnce"
+  claimRef:
+    namespace: theNS
+    name: theNameUsedByPVC   
+  cinder:
+    volumeID: "Your Openstack volume id"
+```
+The important part is the claimref part that allows to force the binding between the claim and this manually create PV.
+
+When the PVC is create, **if the PVC name has not changed** it should bind automatically to the PV and by so using the old volume.

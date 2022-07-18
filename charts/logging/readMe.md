@@ -40,16 +40,15 @@ Go to *chart/logging/kafka* and execute the following commands:
 `make build && make deploy`
 The deploy step will use the *init-deployment.yaml* in *chart/logging/init* that creates the namespace **logging** and the the sercret **harborcs** allocated for this namespace.
 
-Then it will deploy 3 Kafka replicas with 1 zookeeper, the kafka is composed of five topics named 
+Once kafka is deployed and running you can create the topics by using :
+`make create_topic`
+
+The following topic should be created.
 - **preprocessing.logs** 
-- **vdm.logs**
-- **rdm.logs**
-- **wctiler.logs**
 - **keycloak.logs**
+- **system.logs**
 
-preprocessing is partionned once and has 3 replicas all the others topics are only partionned once 
-with 2 repilcas, the retention time for all is  1 days.
-
+For now, the topic retention is only set to one day.
 
 If you wish to add topic you can modify the Makefile and add your topic by using the following command as exemple :
 
@@ -119,14 +118,12 @@ https://github.com/KongZ/charts
 Go to *chart/logging/graylog-stack/Graylog* and execute the following commands :
 `make build && make deploy`
 
-
 Once the application is online, we have to create the input object that is used by 
 graylog to retrieve events from Kafka. 
 To do so, execute the following command: 
 `make config` then `make install_pack`
 
 Then connect to Graylog then check that the input kafka is present and running.
-
 
 The password is random generated and to get it you have to use the following commands.
 `$(kubectl get secret --namespace logging graylog -o "jsonpath={.data['graylog-password-secret']}" | base64 --decode)`
