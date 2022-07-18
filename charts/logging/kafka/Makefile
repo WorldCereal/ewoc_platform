@@ -16,10 +16,10 @@ deploy:
 
 
 create_topic:
-	# Create Topics Kafka
-	# retention 1 day (1000*60*60*24*1) 
-	kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic preprocessing.logs --partitions=1 --replication-factor=2 --config cleanup.policy=delete --config retention.ms=86400000 --config retention.bytes="-1"
-	kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic keycloak.logs --partitions=1 --replication-factor=2 --config cleanup.policy=delete --config retention.ms=86400000 --config retention.bytes="-1"
+	# Create Topics Kafka 
+	kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic preprocessing.logs --partitions=6 --replication-factor=1 --config cleanup.policy=delete --config retention.ms=3600000 --config retention.bytes="-1"
+	kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic keycloak.logs --partitions=1 --replication-factor=1 --config cleanup.policy=delete --config retention.ms=3600000 --config retention.bytes="-1"
+	kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic system.logs --partitions=6 --replication-factor=1 --config cleanup.policy=delete --config retention.ms=3600000 --config retention.bytes="-1"
 
 
 delete:

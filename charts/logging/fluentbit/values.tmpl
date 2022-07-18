@@ -16,7 +16,7 @@ config:
     [INPUT]
         Name tail
         Tag argo.*
-        Path /var/log/containers/*argo_main*.log
+        Path /var/log/containers/*ewoc-system*.log
         DB /var/log/argo.db
         DB.Sync Normal
         Rotate_Wait 10
@@ -31,6 +31,14 @@ config:
         Rotate_Wait 10
         Mem_Buf_Limit 10MB
         Parser  docker
+    [INPUT]
+        Name tail
+        Tag system.*
+        Path /var/log/syslog
+        DB /var/log/syslog.db
+        DB.Sync Normal
+        Rotate_Wait 10
+        Mem_Buf_Limit 10MB
 
   filters: |
     [FILTER]
@@ -70,3 +78,9 @@ config:
         Match keycloak.*
         Brokers kafka.logging.svc.cluster.local:9092
         Topics keycloak.logs
+    [OUTPUT]
+        Name kafka
+        Format json
+        Match system.*
+        Brokers kafka.logging.svc.cluster.local:9092
+        Topics system.logs
