@@ -14,7 +14,7 @@
 - [10. WCTiler](#wctiler)
 - [11. Reference Data Module (RDM)](#reference-data-module-rdm)
 - [12. Visualization Dissemination Module (VDM)](#visualization-dissemination-module-vdm)
-- [13. PV recovery](#pvc-recovery)
+- [13. PV recovery](#pv-recovery)
 
 ## Requirements
 
