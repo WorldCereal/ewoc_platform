@@ -12,20 +12,20 @@
 ## Build image for Harbor registry
 
 ```
-docker build . -t hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/[Repository]:[Tag] -f Dockerfile
+docker build . -t 643vlk6z.gra7.container-registry.ovh.net/world-cereal/[Repository]:[Tag] -f Dockerfile
 ```
 example:
 ```
-docker build . -t hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/suggest-engine:dev -f Dockerfile-from-java-8-jdk-alpine
+docker build . -t 643vlk6z.gra7.container-registry.ovh.net/world-cereal/suggest-engine:dev -f Dockerfile-from-java-8-jdk-alpine
 ```
 
 ## Push image on Harbor registry
 ```
-docker push hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/[suggest-engine]:[Tag] 
+docker push 643vlk6z.gra7.container-registry.ovh.net/world-cereal/[suggest-engine]:[Tag] 
 ```
 example:
 ```
-docker push hfjcmwgl.gra5.container-registry.ovh.net/world-cereal/suggest-engine:dev 
+docker push 643vlk6z.gra7.container-registry.ovh.net/world-cereal/suggest-engine:dev 
 ```
 ## Push Helm Chart on Harbor registry
 
@@ -35,7 +35,7 @@ For create or update a Helm Chart on Harbor, we need to push it.
 ```
 tar czvf [my-chart].tgz [your-chart-directory]/
 ```
-- Step 2: Upload chart on https://hfjcmwgl.gra5.container-registry.ovh.net
+- Step 2: Upload chart on https://643vlk6z.gra7.container-registry.ovh.net
 
 Click on "UPLOAD"
 
@@ -54,5 +54,5 @@ helm push --username=<your_username> --password=<your_password>  ./harbor-helm/
 
 ## Add Helm repo with our Harbor registry
 ```
- helm repo add  snapearth  --username=<your_username> --password=<your_password>  https://hfjcmwgl.gra5.container-registry.ovh.net/chartrepo/snapearth
+ helm repo add  snapearth  --username=<your_username> --password=<your_password>  https://643vlk6z.gra7.container-registry.ovh.net/chartrepo/snapearth
 ```
