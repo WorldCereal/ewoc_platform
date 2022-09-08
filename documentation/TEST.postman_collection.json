@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "bae368f7-61f0-4699-8cb4-0db0c2ebdca2",
+		"name": "TEST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Service access",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "https://rdmapi.DOMAIN/data/collections",
+					"protocol": "https",
+					"host": [
+						"rdmapi",
+						"DOMAIN"
+					],
+					"path": [
+						"data",
+						"collections"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "YOUR_USER",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "YOUR_PASSWORD",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "auth",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://auth.demo.esa-worldcereal.org/auth/realms/worldcereal/protocol/openid-connect/token",
+					"protocol": "https",
+					"host": [
+						"auth",
+						"demo",
+						"esa-worldcereal",
+						"org"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"worldcereal",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
