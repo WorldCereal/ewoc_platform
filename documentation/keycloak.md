@@ -47,7 +47,7 @@ The group token mapper has the following properties:
     Add to userinfo: ON
 ```
 #### UUID mapper
-This token mappers is plugged to the user attribute set here [here](#user-management) this is done by setting the same name as the one in user attribute (ex: role_id).
+This token mapper is plugged to the user attribute set here [here](#user-management) this is done by setting the same name as the one in user attribute (ex: role_id).
 ```
     Name: attribute mapper
     Mapper Type: User Attribute
@@ -62,7 +62,7 @@ This token mappers is plugged to the user attribute set here [here](#user-manage
 ```
 ### X-Userinfo header
 If all is correctly set, the client application must receives in request an header called
-X-Userinfo encoded in base64 that contains all the attribute set in previous steps.
+`X-Userinfo` encoded in base64 that contains all the attribute set in previous steps.
 
 Exemple: Decoded base64 X-UserInfo
 ```
@@ -130,8 +130,6 @@ Then click on Attributes tab and add on entry with attribute name: `role_id`
 and the generated **UUID** for the current user as value. 
 Save.
 
-
-
 ## Keycloak for API applications
 Worldcereal uses Keycloak as SSO for accessing services hosted on the cluster. This means that the authentication of users is performed by Keycloak and not by the applications themselves.
 
@@ -145,18 +143,18 @@ We created on standard ingress with kong plugin in order to handle authenticatio
 ![Create user](./img/Keycloak_form.png)
 
 Now let's imagine that we want to expose the API from this application.
-When unauthenticated, the behaviour of Keycloak is going to be the same, the API call is going to be redirect to the Keycloak authentication form which is not REST.
+When unauthenticated, the behaviour of Keycloak is going to be the same, the API call is going to be redirect to the Keycloak authentication form which is not REST compliant.
 
 ### Solution
 
 2 Ingress can not uses the same URL, this means that the "standard application" and the API can not share the same URL.
 That's why VDM application and RDM application have 2 clients entries on Keycloak that dont have the same URL.VDM,VDMAPI and RDM,RDMAPI.
 For instance, 
-VDM points to https://vdm.DOMAIN.org/* and VDMAPI to https://vdmapi.DOMAIN.org/*
+`VDM` points to https://vdm.DOMAIN.org/* and `VDMAPI` to https://vdmapi.DOMAIN.org/*
 
 #### Case standard browser application
 On the Keycloak client part VDM for instance, the client configuration are the same,
-we have a clientid which is the application name vdm, a client secret has been generated using the credential tab, the access_type is confidentential and is provided the url that this service is going to user as valid redirect.
+we have a `client_id` which is the application name `vdm`, a client secret has been generated using the credential tab, the access_type is confidentential and is provided the url that this service is going to user as valid redirect.
 
 On the kong ingress
 ```
