@@ -1,19 +1,21 @@
 # Keycloak in Worldcereal context
-Worldcereal uses keycloak as SSO for accessing services hosted on the cluster.
+Worldcereal uses Keycloak as SSO for accessing services hosted on the cluster.
 This files details what configuration has been applied.
 
 ## Header Management
-Keycloak handle the header management for VDM and RDM application.
-By header management, it means that keycloak provides to both applications
+Keycloak handles the HTTP headers for VDM and RDM applications.
+It means that Keycloak provides to both applications
 informations about the current user through HTTP headers. 
 VDM and RDM applications then use thoses data to perform specific treatments on their own.
 
-**This implies that, when a user is created, all thoses information are correctly set.**
+**This implies that, when a user is created, all thoses informations are correctly set on Keycloak.**
 
 ### User configuration
-Information needed are:
-- The **group**: The user needs to be members to one of the 3 available groups. **TODO** link
-- The **UUID**: The user must have the role_id attribute set with an UUID. **TODO** link
+Informations needed are:
+- The **group**: The user needs to be member to one of the 3 available groups.
+[Here](#group-mapper)
+
+- The **UUID**: The user must have the role_id attribute set with an UUID.[Here](#uuid-mapper)
 - The **username**: Which is set and mandatory at the user creation step.
 
 ### Client side
@@ -45,7 +47,7 @@ The group token mapper has the following properties:
     Add to userinfo: ON
 ```
 #### UUID mapper
-This token mappers is plugged to the user attribute set here **TODO link** this is done by setting the same name as the one in user attribute (ex: role_id).
+This token mappers is plugged to the user attribute set here [here](#user-management) this is done by setting the same name as the one in user attribute (ex: role_id).
 ```
     Name: attribute mapper
     Mapper Type: User Attribute
@@ -62,12 +64,13 @@ This token mappers is plugged to the user attribute set here **TODO link** this 
 If all is correctly set, the client application must receives in request an header called
 X-Userinfo encoded in base64 that contains all the attribute set in previous steps.
 
-Exemple: Decoded base64 X-USER-INFO
+Exemple: Decoded base64 X-UserInfo
 ```
 {"email_verified":true,"preferred_username":"iiasa_user","userid":"XXXXXX-XXXXX-XXXXX-XXXXX-907e5e5f0e58","sub":"XXXXXXX-f5XXXXff-XXXXXX-938d-42679cc1a574","id":"XXXXXXXXX-XXXXXXX-XXXXXXX-938d-42679cc1a574","username":"iiasa_user","group":["ewoc_admin"],"attribute":"XXXXXX-XXXXXX-4775-a732-XXXXXX"}
 ```
-## Group Management
-The standard configuration deploy 3 groups at the keycloak level.
+## Group Management
+
+The standard configuration deploy 3 groups at the Keycloak level.
 ewoc_user, ewoc_admin,ewoc_plateform.
 The only difference between group is the access that can be done to the exposed services.
 
@@ -75,9 +78,9 @@ The only difference between group is the access that can be done to the exposed 
 `ewoc_admin` access to monitoring logs and metrics (Graylog & Grafana) in addition user role.
 `ewoc_plateform` can access all module (prometheus)
 
-This access segmentation is done by managing 3 differents notions in keycloak.
+This access segmentation is done by managing 3 differents notions in Keycloak.
 The `client role`.
-The `keycloak user type role` (user,admin,superadmin).
+The `Keycloak user type role` (user,admin,superadmin).
 The `group` (ewoc_user,ewoc_admin,ewoc_plateform).
 
 ### Client role
@@ -130,24 +133,24 @@ Save.
 
 
 ## Keycloak for API applications
-Worldcereal uses keycloak as SSO for accessing services hosted on the cluster. This means that the authentication of users is performed by Keycloak and not by the applications themselves.
+Worldcereal uses Keycloak as SSO for accessing services hosted on the cluster. This means that the authentication of users is performed by Keycloak and not by the applications themselves.
 
 ### Issue
-One issue using Kong and keycloak is that when exposing an application this route can only supports one  authentication method.
+One issue using Kong and Keycloak is that when exposing an application this route can only supports one  authentication method.
 
 For instance, VDM application is a standard browser application whit GUI, and it uses API to
 expose data in the front end. 
-We created on standard ingress with kong plugin in order to handle authentication, it means that when a user wants to connect to the VDM application through internet, if the user is not connected the requests are redirect to keycloak form authentication that allows the user to authenticate himself.   
+We created on standard ingress with kong plugin in order to handle authentication, it means that when a user wants to connect to the VDM application through internet, if the user is not connected the requests are redirect to Keycloak form authentication that allows the user to authenticate himself.   
 
-![Create user](./img/keycloak_form.png)
+![Create user](./img/Keycloak_form.png)
 
 Now let's imagine that we want to expose the API from this application.
-When unauthenticated, the behaviour of keycloak is going to be the same, the API call is going to be redirect to the keycloak authentication form which is not REST.
+When unauthenticated, the behaviour of Keycloak is going to be the same, the API call is going to be redirect to the Keycloak authentication form which is not REST.
 
 ### Solution
 
 2 Ingress can not uses the same URL, this means that the "standard application" and the API can not share the same URL.
-That's why VDM application and RDM application have 2 clients entries on keycloak that dont have the same URL.VDM,VDMAPI and RDM,RDMAPI.
+That's why VDM application and RDM application have 2 clients entries on Keycloak that dont have the same URL.VDM,VDMAPI and RDM,RDMAPI.
 For instance, 
 VDM points to https://vdm.DOMAIN.org/* and VDMAPI to https://vdmapi.DOMAIN.org/*
 
@@ -182,7 +185,7 @@ On the kong ingress
 
 #### Case Api application "Bearer token"
 The authentication by API is performed with two steps for users.
-- First, Send a POST request to keycloak with a public client created in the next step, + the users credentials. If the data are correct, keycloak is going to provide an access token.
+- First, Send a POST request to Keycloak with a public client created in the next step, + the users credentials. If the data are correct, Keycloak is going to provide an access token.
 - Access the API URL directly and use the provided Access token as Authenticatio Bearer token. 
 
 ![TEST](./img/auth_client.jpg)
@@ -226,7 +229,7 @@ plugin: oidc
 
 ## Keycloak HTTPS
 When creating Keycloak instance on kubernetes, the configuration set to use HTTP which is ot recommanded.
-To use HTTPS connect to the administration page of keycloak in HTTP, change the current realm to master. Update the frontend URL by updating http to https https://auth.YOUR_HOSTNAME/auth/.
+To use HTTPS connect to the administration page of Keycloak in HTTP, change the current realm to master. Update the frontend URL by updating http to https https://auth.YOUR_HOSTNAME/auth/.
 
 ![HTTPS](./img/https.jpg)
 

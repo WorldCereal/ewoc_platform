@@ -53,7 +53,7 @@ VDM is composed of 4 deployments.
 
 be and postgres uses PV. 
 postgres uses pg-data PV. 
-be uses mapproxy-cache mapproxy-conf mapproxy-datasource mapproxy-seed.
+be uses mapproxy-cache mapproxy-conf mapproxy-datasource mapproxy-seed PV's.
 
 ## Troubleshooting
 
@@ -61,4 +61,8 @@ be uses mapproxy-cache mapproxy-conf mapproxy-datasource mapproxy-seed.
 If it's the case, connect to the postgresql pods et delete the `lost+found` folder in the mounted PVC directory.
 
 - If the front-end do not provides tiles, it's possible that the shared PVC in the `be` pods has some rights issues. Mapproxy is running as uid 1000 whereas the be container is root.
-To solve this, connect in be pod and select be container then exec a recursive chown to give rights to uid 1000.   
+To solve this, connect in be pod and select be container then exec a recursive chown to give rights to uid 1000.
+
+## Specificity
+On the VDM Api ingress route, we had to add a specific plugin `request-transformer`.
+This plugin is used to delete the Authorization header because OIDC and the API use this very same header which create incompatibilty which leaded to failed authentication by Keycloak/Kong.
