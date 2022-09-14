@@ -56,7 +56,7 @@ This cluster is composed of 9 specific namespaces.
 - **monitoring**, stack for perfomance monitoring.      
 - **rdm**, stack regrouping elements related to the Reference Data Module.
 - **vdm**, stack regrouping elements related to the Visualization and Dissemination Module.             
-- **wctiler**, stack that allow to check tiles processing state.
+- **wctiler**, stack that allows to check tiles processing state.
 
 ## Secret Management
 Some deployments use docker images that are stored in a private docker registry.
@@ -165,31 +165,6 @@ output should looks:
 keycloak-0              1/1     Running   0          15d
 keycloak-postgresql-0   1/1     Running   0          15d
 ```
-
-Set up SSL Configuration
-For now, keycloak is deployed and available in http.
-For now to use keycloak with https it is required to edit the ingress configuration of keycloack. 
-First export it in a yaml file with ```kubectl get ingress -n keycloak keycloak -o yaml > ingress.yaml```.
-Then update the ingress by adding the following annotations under metadata tag:
-```
-cert-manager.io/cluster-issuer: letsencrypt-prod
-kubernetes.io/tls-acme: "true"
-```
-and the following line in spec tag.
-```
-  tls:
-  - hosts:
-    - auth.YOUR_HOSTNAME
-    secretName: keycloaktls
-```
-Then apply the ingress to generate the certificate and make SSL available.
-```kubectl apply -n keycloak -f ingress.yaml``` , wait few seconds and checks that the certificate has been issued with : ```kubectl get certificate -n keycloak``` the folowwing output is exepected : 
-```
-NAME           READY   SECRET       AGE
-keycloaktls   True    keycloaktls   14d
-```
-Connect to the administration page of keycloak in HTTP, change the current realm to master.
-Update the frontend URL by updating http to https **https://auth.YOUR_HOSTNAME/auth/**.
 
 
 ## Kube-Prometheus-Stack Deployment

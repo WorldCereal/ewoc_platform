@@ -42,4 +42,17 @@ metrics:
 nodeSelector:
   role: kong
 
-      
+extraEnvVars:
+  - name: KEYCLOAK_EXTRA_ARGS
+    value: "-Dkeycloak.import=/config/WC-realm.json"      
+extraVolumeMounts:
+  - name: config
+    mountPath: "/config"
+    readOnly: true
+extraVolumes:
+  - name: config
+    configMap:
+      name: realm-config
+      items:
+      - key: "WC-realm.json"
+        path: "WC-realm.json"

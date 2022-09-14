@@ -20,7 +20,7 @@ deploy:
 	@kubectl get ns kong || kubectl create namespace kong
 
 	# Deploy a Postgres DB for Kong
-# 	helm upgrade --install kong-postgresql bitnami/postgresql --namespace=kong --version=$(POSTGRESQL_CHART_VERSION) --values=postgresql/values.yaml
+	helm upgrade --install kong-postgresql bitnami/postgresql --namespace=kong --version=$(POSTGRESQL_CHART_VERSION) --values=postgresql/values.yaml
 
 	# Deploy Kong Gateway & Kong Ingress Controller
 	helm upgrade --install kong kong/kong --namespace=kong --version=$(KONG_CHART_VERSION) --values=values.yaml
