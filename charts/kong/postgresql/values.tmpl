@@ -1,3 +1,12 @@
+
+image:
+  registry: 643vlk6z.gra7.container-registry.ovh.net
+  repository: world-cereal/postgresql
+  tag: VALUE_PGTAG
+  # pullPolicy: "Always"
+  pullSecrets:
+    - harborcs
+
 postgresqlUsername: postgres
 postgresqlPassword: postgres
 postgresqlDatabase: kong

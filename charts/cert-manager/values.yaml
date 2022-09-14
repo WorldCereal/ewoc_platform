@@ -1,2 +1,8 @@
 nodeSelector:
-  role: kong 
+  role: kong
+webhook:
+  nodeSelector:
+    role: kong
+cainjector:
+  nodeSelector:
+    role: kong

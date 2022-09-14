@@ -2,20 +2,33 @@
 
 export CLUSTER_ENV_LOADED="true"
 
-export HOSTNAME="demo.worldcereal.csgroup.space"
+export HOSTNAME="ewoc-prod.worldcereal.csgroup.space"
 
 # Cert Manager 
-export CERT_MANAGER_CHART_VERSION="1.5.4"
-export CERT_MANAGER_MAIL="quentin.maraval@csgroup.eu"
+# export CERT_MANAGER_CHART_VERSION="1.5.4"
+export CERT_MANAGER_CHART_VERSION="1.9.1"
+# export CERT_MANAGER_MAIL="quentin.maraval@csgroup.eu"
+export CERT_MANAGER_MAIL="guillaume.dubreule@csgroup.eu"
 # Kong conf
-export KONG_CHART_VERSION="2.1.0"
-export KONG_VERSION="2.4-ubuntu"
+# export KONG_CHART_VERSION="2.1.0"
+# export KONG_VERSION="2.4-ubuntu"
 
-export POSTGRESQL_CHART_VERSION="10.3.15"
+# export POSTGRESQL_CHART_VERSION="10.3.15"
+
+
+# Kong conf
+export POSTGRESQL_CHART_VERSION="10.14.3"
+export POSTGRESQL_VERSION="11.12.0-debian-10-r13"
+# export POSTGRESQL_VERSION="14.5-alpine3.16"
+export KONG_CHART_VERSION="2.12.0"
+export KONG_VERSION="2.8.1-alpine"
+
 
 # Keycloak conf
-export KEYCLOAK_CHART_VERSION="5.0.6"
-export KEYCLOAK_VERSION="15.0.2-debian-10-r15" 
+# export KEYCLOAK_CHART_VERSION="5.0.6"
+export KEYCLOAK_CHART_VERSION="9.8.1"
+# export KEYCLOAK_VERSION="15.0.2-debian-10-r15"
+export KEYCLOAK_VERSION="18.0.2-debian-11-r28"
 
 # Kube-Prometheus-Stack
 export KUBE_PROMETHEUS_STACK_CHART_VERSION="17.0.2"

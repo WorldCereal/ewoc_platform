@@ -2,19 +2,21 @@
 # Install command with namespace creation if not not exit:
 #helm install kong kong/kong --create-namespace --namespace=kong -f kong-ingress-controller-dbless-value.yaml
 
+imagePullSecrets:
+  - harborcs
+
 image:
-  repository: 643vlk6z.gra7.container-registry.ovh.net/world-cereal/kong
-  tag: VALUE1
-  pullPolicy: "Always"
-  pullSecrets:
-    - harborcs
+  repository: 643vlk6z.gra7.container-registry.ovh.net/world-cereal/kong-oidc
+  # registry: 643vlk6z.gra7.container-registry.ovh.net
+  # repository: world-cereal/kong-oidc
+  tag: VALUE_KONGTAG
 
 autoscaling:
   enabled: false
 
 env:
   database: "postgres"
-  pg_host : kong-postgresql.kong
+  pg_host : kong-postgresql
   pg_port : 5432
   pg_timeout : 5000
   pg_user : postgres
@@ -41,12 +43,7 @@ nodeSelector:
 
 proxy:
   enabled: true
-  type: NodePort
-  http:
-    nodePort: 32080
-
-  tls:
-    nodePort: 32443  
+  type: LoadBalancer
  
 
 admin:

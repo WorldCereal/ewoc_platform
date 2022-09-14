@@ -12,13 +12,12 @@ deploy:
 
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
-	@helm install \
-  	cert-manager jetstack/cert-manager \
-  	--namespace cert-manager \
-  	--create-namespace \
-  	--version v$(CERT_MANAGER_CHART_VERSION) \
-  	--set installCRDs=true \
-	-f values.yaml 
+	@helm upgrade --install cert-manager jetstack/cert-manager \
+		--namespace cert-manager \
+		--create-namespace \
+		--version v$(CERT_MANAGER_CHART_VERSION) \
+		--set installCRDs=true \
+		--values values.yaml
 
 
 	# Genarate values.yaml from template file

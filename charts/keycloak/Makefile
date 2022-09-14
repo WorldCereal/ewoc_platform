@@ -14,13 +14,13 @@ deploy:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
 	# Genarate values.yaml from template file
-	@sed "s:VALUE1:$(KEYCLOAK_VERSION):" values.tmpl > values.yaml
+	@sed "s:VALUE_KCVERS:$(KEYCLOAK_VERSION):" values.tmpl > values.yaml
 
-	helm install keycloak bitnami/keycloak --version=$(KEYCLOAK_CHART_VERSION) --create-namespace --namespace=keycloak -f values.yaml
+	helm upgrade --install keycloak bitnami/keycloak --version=$(KEYCLOAK_CHART_VERSION) --create-namespace --namespace=keycloak -f values.yaml --set=installCRDs=true
 	
-	@sed "s:VALUE2:$(HOSTNAME):" ingress.tmpl > ingress.yaml
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):" ingress.tmpl > ingress.yaml
 
-	kubectl apply -f ingress.yaml -n keyclaok
+	kubectl apply -f ingress.yaml -n keycloak
 
 delete:
 	# Delete Keycloack component

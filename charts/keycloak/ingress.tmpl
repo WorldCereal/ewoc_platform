@@ -1,23 +1,26 @@
-  apiVersion: extensions/v1beta1
-  kind: Ingress
-  metadata:
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-prod
-      kubernetes.io/ingress.class: kong
-      kubernetes.io/tls-acme: "true"
-    name: keycloak
-    namespace: keycloak
-  spec:
-    rules:
-    - host: auth.VALUE2
+apiVersion: networking.k8s.io/v1
+#apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+  name: keycloak
+  namespace: keycloak
+spec:
+  rules:
+    - host: auth.VALUE_HOSTNAME
       http:
         paths:
-        - backend:
-            serviceName: keycloak
-            servicePort: 80
-          path: /
-          pathType: ImplementationSpecific
-    tls:
+          - backend:
+              service:
+                name: keycloak
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+  tls:
     - hosts:
-      - auth.VALUE2
+        - auth.VALUE_HOSTNAME
       secretName: keycloak-tls
