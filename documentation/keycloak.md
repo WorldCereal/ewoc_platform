@@ -225,11 +225,4 @@ plugin: oidc
 **The api_authentication.md file explain how to use postman to test the authentication through API**
 
 
-## Keycloak HTTPS
-When creating Keycloak instance on kubernetes, the configuration set to use HTTP which is ot recommanded.
-To use HTTPS connect to the administration page of Keycloak in HTTP, change the current realm to master. Update the frontend URL by updating http to https https://auth.YOUR_HOSTNAME/auth/.
-
-![HTTPS](./img/https.jpg)
-
-
 
