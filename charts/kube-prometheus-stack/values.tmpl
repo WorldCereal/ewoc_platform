@@ -70,9 +70,9 @@ prometheus:
          accessModes: ["ReadWriteOnce"]
          resources:
            requests:
-             storage: 10Gi
+             storage: 100Gi
 
-    replicas: 1
+    replicas: 3
 
     ## Interval between consecutive scrapes.
     ## Defaults to 30s.
