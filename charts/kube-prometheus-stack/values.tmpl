@@ -23,7 +23,33 @@ grafana:
 
   ingress:
     enabled: false
-
+  
+  grafana.ini: 
+    log:
+      mode: "console"
+      level: "info"
+    log.frontend:
+      enabled: true
+    server:
+      domain: grafana.VALUE_HOSTNAME
+      root_url: https://grafana.VALUE_HOSTNAME
+    auth:
+      oauth_auto_login: true
+      disable_login_form: true
+      signout_redirect_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/logout?redirect_uri=https%3A%2F%2Fgrafana.ewoc-prod.hexdump.ovh
+      
+    auth.generic_oauth:
+      enabled: true
+      tls_skip_verify_insecure: true
+      allow_sign_up: true
+      client_id: grafana
+      scopes: profile
+      auth_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/auth
+      token_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/token
+      api_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/userinfo
+      #role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
+      role_attribute_strict: false
+      client_secret: GRAFANA_CS
 prometheus:
   enabled: true
   
@@ -35,19 +61,18 @@ prometheus:
         release: kube-prometheus-stack
     nodeSelector:
       role: kong
-#      kubernetes.io/hostname: ewoc-prd-k8s-node-nf-2     
     retention: 2d
     
     storageSpec: 
      volumeClaimTemplate:
        spec:
-         storageClassName: standard
+         #storageClassName: standard
          accessModes: ["ReadWriteOnce"]
          resources:
            requests:
-             storage: 100Gi
+             storage: 10Gi
 
-    replicas: 3
+    replicas: 1
 
     ## Interval between consecutive scrapes.
     ## Defaults to 30s.

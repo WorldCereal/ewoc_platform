@@ -10,12 +10,14 @@ deploy:
 	# Deploy Kube Prometheus Stack
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
+	# Generate values.yaml
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAFANA_CS:$(GRAFANA_CS):g" values.tmpl > values.yaml
+
 	# install kube prometheus stack
-	#helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack  --version=$(KUBE_PROMETHEUS_STACK_CHART_VERSION) --create-namespace --namespace=monitoring  -f values.yaml
-	helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack  --create-namespace --namespace=monitoring  -f values.yaml
+	helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack  --version=$(KUBE_PROMETHEUS_STACK_CHART_VERSION) --create-namespace --namespace=monitoring  -f values.yaml
 
 	# Genarate values.yaml from template file
-	@sed "s:VALUE1:$(HOSTNAME):;s:VALUE2:$(PROMETHEUS_CS):;s:VALUE3:$(GRAFANA_CS):g" ingress.tmpl > ingress.yaml
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:PROMETHEUS_CS:$(PROMETHEUS_CS):;s:GRAFANA_CS:$(GRAFANA_CS):g" ingress.tmpl > ingress.yaml
 
     # create ingress
 	@kubectl apply -f ingress.yaml -n monitoring
