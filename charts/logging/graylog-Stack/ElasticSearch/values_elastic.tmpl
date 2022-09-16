@@ -1,29 +1,13 @@
-# https://github.com/bitnami/charts/blob/master/bitnami/elasticsearch/values.yaml
-
-# DEV S1
-#  PERSISTENT_VOLUME_SIZE_LOG="15Gi"
-#  PERSISTENT_VOLUME_SIZE_TRACE="5Gi"
-#  NB_ES_TRACE_REPLICA=1
-#  NB_ES_LOG_REPLICA=1
-#  NB_COORDINATING_REPLICA=1
-
-# PROD S1
-#  PERSISTENT_VOLUME_SIZE_LOG="500Gi"
-#  PERSISTENT_VOLUME_SIZE_TRACE="40Gi"
-#  NB_ES_TRACE_REPLICA=3
-#  NB_ES_LOG_REPLICA=3
-#  NB_COORDINATING_REPLICA=2
-
-image:
-  registry: 643vlk6z.gra7.container-registry.ovh.net
-  repository: world-cereal/elasticsearch
-  tag: VALUE1
-  pullPolicy: Always
-  pullSecrets:
-    - harborcs
+#image:
+#  registry: 643vlk6z.gra7.container-registry.ovh.net
+#  repository: world-cereal/elasticsearch
+#  tag: VALUE1
+#  pullPolicy: Always
+#  pullSecrets:
+#    - harborcs
 
 master:
-  replicas: 2
+  replicas: 1
   persistence:
     enabled: true
     accessModes:
@@ -32,7 +16,7 @@ master:
   nodeSelector:
     role: kong
   
-  heapSize: 2048m
+#  heapSize: 2048m
 #  resources:
 #    limits:
 #      cpu: 300m
@@ -43,16 +27,16 @@ master:
 
 
 data:
-  replicas: 2
+  replicas: 1
   nodeSelector:
-    role: kong 
+    role: kong
   persistence:
     enabled: true
     accessModes:
       - ReadWriteOnce
     size: 100Gi
 
-  heapSize: 2048m
+#  heapSize: 2048m
 #  resources:
 #    limits:
 #      memory: 4096Mi
@@ -63,8 +47,8 @@ data:
 coordinating:
   nodeSelector:
     role: kong
-
-  heapSize: 4096m
+  replicas: 1
+#  heapSize: 4096m
 #  resources:
 #    limits:
 #      memory: 4096Mi

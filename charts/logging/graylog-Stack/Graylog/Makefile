@@ -13,19 +13,16 @@ deploy:
 	# Deploy all components for Graylog
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
-	#@sed "s:VALUE1:$(GRAYLOG_VERSION):" values-graylog.tmpl > values-graylog.yaml
-	@sed "s:VALUE1:$(HOSTNAME):;s:VALUE3:$(GRAYLOG_CS):" ingress-graylog.tmpl > ingress-graylog.yaml
+	# Create namespace
+	@kubectl get ns logging || kubectl create namespace logging
 
-	helm install graylog --namespace logging --wait kongz/graylog --version $(GRAYLOG_CHART_VERSION) \
-		--set tags.install-mongodb=false \
-		--set tags.install-elasticsearch=false \
-		--set graylog.mongodb.uri=mongodb://graylog:$(password)@mongo-mongodb.logging.svc.cluster.local/graylog \
-		--set graylog.elasticsearch.hosts=http://elastic-elasticsearch-master.logging.svc.cluster.local:9200 \
-		--set graylog.elasticsearch.version=7 \
-		--set graylog.persistence.size="10Gi" \
-    	-f values-graylog.yaml
+	@sed "s:MONGO_PASSWORD:$(password):" values-graylog.tmpl > values-graylog.yaml
+
+	helm upgrade --install graylog --namespace logging kongz/graylog --version $(GRAYLOG_CHART_VERSION) -f values-graylog.yaml
 
 	# Create Ingress
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAYLOG_CS:$(GRAYLOG_CS):" ingress-graylog.tmpl > ingress-graylog.yaml
+
 	kubectl apply -f ingress-graylog.yaml -n logging
 	
 # config:

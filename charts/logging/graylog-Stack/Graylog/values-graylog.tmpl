@@ -1,0 +1,69 @@
+imagePullSecrets:
+   - name: harborcs
+
+tags:
+  install-elasticsearch: false
+  install-mongodb: false
+
+graylog:
+
+  image:
+    repository: "graylog/graylog"
+    tag: "4.3.3-1"
+    
+  config: |
+    elasticsearch_mute_deprecation_warnings = true
+
+  env:
+    GRAYLOG_TRUSTED_PROXIES: 10.2.0.0/16
+
+  replicas: 1
+
+  # TOCHANGE PROD
+  persistence:
+    enabled: true
+    size: "10Gi" 
+
+  nodeSelector:
+    role: kong 
+
+  # resources:     
+  #   limits:
+  #     cpu: 2000m
+  #     memory: 4096Mi
+  #   requests:
+  #     cpu: 500m
+  #     memory: 3072Mi
+
+  # TOCHANGE PROD
+  #heapSize: "4g"
+
+  metrics:
+    enabled: true
+
+  rootUsername: "admin"
+
+  mongodb:
+    uri: "mongodb://graylog:MONGO_PASSWORD@mongo-mongodb.logging.svc.cluster.local/graylog"
+
+  elasticsearch:
+    hosts: "http://elastic-elasticsearch-master.logging.svc.cluster.local:9200" 
+    version: 7 
+
+  provisioner:
+    enabled: true
+    useGraylogServiceAccount: false
+    script: |
+      IDS=$(curl -u "admin:$GRAYLOG_PASSWORD_SECRET" -X GET --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' http://graylog-master.logging.svc.cluster.local:9000/api/system/inputs)
+      RES=$?
+      echo $RES
+      if [ $RES -ne 0 ]
+      then 
+        echo 'Wait for master to be started'
+        exit 1
+      else
+        json_header='{"username_header": "X-Username","enabled": "true"}'
+          curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X PUT --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_header}" http://graylog-master.logging.svc.cluster.local:9000/api/system/authentication/http-header-auth-config
+        json_user='{"first_name":"Operator","last_name":"Graylog","username":"operator","email":"operator@operator.fr","password":"{{ graylog.operator_password }}","roles":["Admin"], "permissions":[]}'
+          curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X POST --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_user}" http://graylog-master.logging.svc.cluster.local:9000/api/users
+      fi 

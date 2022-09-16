@@ -6,20 +6,63 @@ plugin: oidc
 config:
   bearer_only: "no"
   client_id: graylog
-  client_secret: VALUE3
-  discovery: http://auth.VALUE1/auth/realms/worldcereal/.well-known/openid-configuration
-  introspection_endpoint: http://auth.VALUE1/auth/realms/worldcereal/protocol/openid-connect/token/introspect
+  client_secret: GRAYLOG_CS
+#  discovery: http://auth.VALUE_HOSTNAME/auth/realms/worldcereal/.well-known/openid-configuration
+#  introspection_endpoint: http://auth.VALUE_HOSTNAME/auth/realms/worldcereal/protocol/openid-connect/token/introspect
+  discovery: https://auth.VALUE_HOSTNAME/realms/worldcereal/.well-known/openid-configuration
+  introspection_endpoint: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/token/introspect
   logout_path: /logout
   realm: worldcereal
   redirect_after_logout_uri: /
-  redirect_uri_path: null
+#  redirect_uri_path: null
   response_type: code
   scope: openid
   session_secret: null
   ssl_verify: "no"
   token_endpoint_auth_method: client_secret_post
 ---
-apiVersion: extensions/v1beta1
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: graylog
+#   namespace: logging
+#   annotations:
+#     konghq.com/strip-path: "false"
+#     kubernetes.io/ingress.class: kong
+#     kubernetes.io/tls-acme: "true"
+#     cert-manager.io/cluster-issuer: letsencrypt-prod
+#     konghq.com/protocols: https
+#     konghq.com/https-redirect-status-code: "302"
+#     konghq.com/plugins: graylog-oidc
+# spec:
+#   tls:
+#   - secretName: graylog-tls
+#     hosts:
+#     - graylog.VALUE_HOSTNAME
+#   rules:
+#   - host: graylog.VALUE_HOSTNAME
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: graylog
+#           servicePort: 9000
+#         path: /
+#         pathType: Prefix
+
+apiVersion: configuration.konghq.com/v1
+config:
+  add:
+    headers:
+    - X-Username:operator
+kind: KongPlugin
+metadata:
+  name: graylog-http
+  namespace: logging
+plugin: request-transformer
+
+---
+apiVersion: networking.k8s.io/v1
+#apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: graylog
@@ -31,19 +74,21 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     konghq.com/protocols: https
     konghq.com/https-redirect-status-code: "302"
-    konghq.com/plugins: graylog-oidc
+    konghq.com/plugins: graylog-oidc,graylog-http
 spec:
-  tls:
-  - secretName: graylog-tls
-    hosts:
-    - graylog.VALUE1
   rules:
-  - host: graylog.VALUE1
-    http:
-      paths:
-      - backend:
-          serviceName: graylog
-          servicePort: 9000
-        path: /
-        pathType: Prefix
+    - host: graylog.VALUE_HOSTNAME
+      http:
+        paths:
+          - backend:
+              service:
+                name: graylog
+                port:
+                  number: 9000
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - graylog.VALUE_HOSTNAME
+      secretName: graylog-tls
 
