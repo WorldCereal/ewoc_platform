@@ -11,7 +11,7 @@ auth:
 
 persistence:
   enabled: true
-  storageClass: "standard"
+#  storageClass: "standard"
   accessModes:
     - ReadWriteOnce
   size: 8Gi

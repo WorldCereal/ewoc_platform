@@ -40,14 +40,16 @@ export FLUENTBIT_VERSION="1.8"
 
 
 # Graylog STACK (elastic+mongo+graylog)
-export MONGO_CHART_VERSION="10.26.1"
-export MONGO_VERSION="4.4.9-debian-10-r0"
+#export MONGO_CHART_VERSION="10.26.1"
+export MONGO_CHART_VERSION="13.1.3"
+#export MONGO_VERSION="4.4.9-debian-10-r0" # UNUSED
 
 export ELASTIC_CHART_VERSION="17.9.29"
-export ELASTIC_VERSION="7.14.1-debian-10-r8"
+#export ELASTIC_VERSION="7.14.1-debian-10-r8"# UNUSED
 
-export GRAYLOG_CHART_VERSION="2.1.3"
-export GRAYLOG_VERSION="4.2.3-1"
+#export GRAYLOG_CHART_VERSION="2.1.3"
+#export GRAYLOG_VERSION="4.2.3-1" # UNUSED
+export GRAYLOG_CHART_VERSION="2.1.7"
 
 #WCTiler
 export WCT_VERSION="1.0.0"
