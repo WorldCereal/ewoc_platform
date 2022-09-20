@@ -2,13 +2,13 @@ apiVersion: configuration.konghq.com/v1
 config:
   bearer_only: "no"
   client_id: rdm
-  client_secret: VALUE2
-  discovery: https://auth.VALUE1/auth/realms/worldcereal/.well-known/openid-configuration
-  introspection_endpoint: https://auth.VALUE1/auth/realms/worldcereal/protocol/openid-connect/token/introspect
+  client_secret: RDM_CS
+  discovery: https://auth.VALUE1/realms/worldcereal/.well-known/openid-configuration
+  introspection_endpoint: https://auth.VALUE1/realms/worldcereal/protocol/openid-connect/token/introspect
   logout_path: /logout
   realm: worldcereal
   redirect_after_logout_uri: /
-  redirect_uri_path: null
+# redirect_uri_path: null
   response_type: code
   scope: openid
   session_secret: null
@@ -24,13 +24,13 @@ apiVersion: configuration.konghq.com/v1
 config:
   bearer_only: "yes"
   client_id: rdmapi
-  client_secret: VALUE3
-  discovery: https://auth.VALUE1/auth/realms/worldcereal/.well-known/openid-configuration
-  introspection_endpoint: https://auth.VALUE1/auth/realms/worldcereal/protocol/openid-connect/token/introspect
+  client_secret: RDM_API_CS
+  discovery: https://auth.VALUE1/realms/worldcereal/.well-known/openid-configuration
+  introspection_endpoint: https://auth.VALUE1/realms/worldcereal/protocol/openid-connect/token/introspect
   logout_path: /logout
   realm: worldcereal
   redirect_after_logout_uri: /
-  redirect_uri_path: null
+#  redirect_uri_path: null
   response_type: code
   scope: openid
   session_secret: null
@@ -42,7 +42,38 @@ metadata:
   namespace: rdm
 plugin: oidc
 ---
-apiVersion: extensions/v1beta1
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   annotations:
+#     cert-manager.io/cluster-issuer: letsencrypt-prod
+#     konghq.com/https-redirect-status-code: "302"
+#     konghq.com/plugins: rdm-oidc
+#     konghq.com/protocols: https
+#     kubernetes.io/ingress.class: kong
+#     kubernetes.io/tls-acme: "true"
+#   name: rdm
+#   namespace: rdm
+# spec:
+#   rules:
+#   - host: rdm.VALUE1
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: rdmapi
+#           servicePort: 80
+#         path: /data/
+#       - backend:
+#           serviceName: rdmui-nginx
+#           servicePort: 80
+#         path: /
+#   tls:
+#   - hosts:
+#     - rdm.VALUE1
+#     secretName: rdmtlscert
+
+apiVersion: networking.k8s.io/v1
+#apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
@@ -56,23 +87,56 @@ metadata:
   namespace: rdm
 spec:
   rules:
-  - host: rdm.VALUE1
-    http:
-      paths:
-      - backend:
-          serviceName: rdmapi
-          servicePort: 80
-        path: /data/
-      - backend:
-          serviceName: rdmui-nginx
-          servicePort: 80
-        path: /
+    - host: rdm.VALUE_HOSTNAME
+      http:
+        paths:
+          - backend:
+              service:
+                name: rdmapi
+                port:
+                  number: 80
+            path: /data/
+            pathType: ImplementationSpecific
+          - backend:
+              service:
+                name: rdmui-nginx
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
   tls:
-  - hosts:
-    - rdm.VALUE1
-    secretName: rdmtlscert
+    - hosts:
+        - rdm.VALUE_HOSTNAME
+      secretName: rdmtlscert
 ---
-apiVersion: extensions/v1beta1
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   annotations:
+#     cert-manager.io/cluster-issuer: letsencrypt-prod
+#     konghq.com/https-redirect-status-code: "302"
+#     konghq.com/plugins: rdmapi-oidc
+#     konghq.com/protocols: https
+#     kubernetes.io/ingress.class: kong
+#     kubernetes.io/tls-acme: "true"
+#   name: rdmapi
+#   namespace: rdm
+# spec:
+#   rules:
+#   - host: rdmapi.VALUE1
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: rdmapi
+#           servicePort: 80
+#         path: /
+#   tls:
+#   - hosts:
+#     - rdmapi.VALUE1
+#     secretName: rdmapitlscert
+
+apiVersion: networking.k8s.io/v1
+#apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
@@ -86,19 +150,49 @@ metadata:
   namespace: rdm
 spec:
   rules:
-  - host: rdmapi.VALUE1
-    http:
-      paths:
-      - backend:
-          serviceName: rdmapi
-          servicePort: 80
-        path: /
+    - host: rdmapi.VALUE_HOSTNAME
+      http:
+        paths:
+          - backend:
+              service:
+                name: rdmapi
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
   tls:
-  - hosts:
-    - rdmapi.VALUE1
-    secretName: rdmapitlscert
+    - hosts:
+        - rdmapi.VALUE_HOSTNAME
+      secretName: rdmapitlscert
 ---
-apiVersion: extensions/v1beta1
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   annotations:
+#     cert-manager.io/cluster-issuer: letsencrypt-prod
+#     konghq.com/https-redirect-status-code: "302"
+#     konghq.com/plugins: rdm-oidc
+#     konghq.com/protocols: https
+#     kubernetes.io/ingress.class: kong
+#     kubernetes.io/tls-acme: "true"
+#   name: pgadmin-pgadmin4
+#   namespace: rdm
+# spec:
+#   rules:
+#   - host: rdmdb.VALUE1
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: pgadmin-pgadmin4
+#           servicePort: 80
+#         path: /
+#   tls:
+#   - hosts:
+#     - rdmdb.VALUE1
+#     secretName: pgtls
+
+apiVersion: networking.k8s.io/v1
+#apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
@@ -112,14 +206,17 @@ metadata:
   namespace: rdm
 spec:
   rules:
-  - host: rdmdb.VALUE1
-    http:
-      paths:
-      - backend:
-          serviceName: pgadmin-pgadmin4
-          servicePort: 80
-        path: /
+    - host: rdmdb.VALUE_HOSTNAME
+      http:
+        paths:
+          - backend:
+              service:
+                name: pgadmin-pgadmin4
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
   tls:
-  - hosts:
-    - rdmdb.VALUE1
-    secretName: pgtls
+    - hosts:
+        - rdmdb.VALUE_HOSTNAME
+      secretName: rdmdbtlscert
