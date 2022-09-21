@@ -2,6 +2,9 @@
 # Install command with namespace creation if not not exit:
 #helm install kong kong/kong --create-namespace --namespace=kong -f kong-ingress-controller-dbless-value.yaml
 
+deployment:
+  daemonset: true
+
 imagePullSecrets:
   - aws-registry
 
@@ -10,6 +13,7 @@ image:
   # registry: CS_REGISTRY
   # repository: world-cereal/kong-oidc
   tag: VALUE_KONGTAG
+  # pullPolicy: Always
   pullSecrets:
     - aws-registry
 
@@ -18,11 +22,16 @@ autoscaling:
 
 env:
   database: "postgres"
-  pg_host : kong-postgresql
+  pg_host : pgsqlha-postgresql.sysdb.svc.cluster.local
   pg_port : 5432
   pg_timeout : 5000
   pg_user : postgres
-  pg_password : postgres
+  # pg_password : postgres
+  pg_password :
+    valueFrom:
+      secretKeyRef:
+        name: system-db
+        key: postgresql-password
   pg_database : kong
   nginx_worker_processes: "1"
   plugins: bundled,oidc
@@ -34,11 +43,11 @@ env:
   nginx_proxy_large_client_header_buffers: 64 2m
   nginx_proxy_client_header_buffer_size: 2m
   nginx_log_level: debug
+  # kong_migrate: 'yes'
 
 ingressController:
   enabled: true
   installCRDs: false
-
 
 nodeSelector:
   system-tag: world-cereal-system
@@ -46,7 +55,7 @@ nodeSelector:
 proxy:
   enabled: true
   type: LoadBalancer
- 
+
 
 admin:
   enabled: true
