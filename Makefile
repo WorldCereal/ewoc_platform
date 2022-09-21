@@ -13,16 +13,13 @@ deploy:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
 	### Postgres DB
+
 	# @sed "s:VALUE_PGTAG:$(POSTGRESQL_VERSION):" postgresql/values.tmpl > postgresql/values.yaml
 	helm upgrade --install pgsqlha bitnami/postgresql-ha --namespace=sysdb \
 				--version=$(POSTGRESQL_CHART_VERSION) --values=charts/postgresql-ha/values.yaml
 
-	# Init database
-	kubectl create configmap pgsqlha-postgresql-initdb-scripts --namespace=sysdb \
-			--from-literal="kong.sql=CREATE DATABASE kong OWNER postgres;" \
-			--from-literal="keycloak.sql=CREATE DATABASE bn_keycloak OWNER postgres;"
-
 	### Kong Gateway & Kong Ingress Controller
+
 	@sed "s:CS_REGISTRY:$(CS_REGISTRY): ; s:VALUE_KONGTAG:$(KONG_VERSION):" charts/kong/values.tmpl >kong-values.yaml
 	helm upgrade --install kong kong/kong --namespace=kong \
 				--version=$(KONG_CHART_VERSION) --values=kong-values.yaml
