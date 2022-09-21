@@ -1,8 +1,8 @@
 nodeSelector:
-  role: kong
+  system-tag: world-cereal-system
 webhook:
   nodeSelector:
-    role: kong
+    system-tag: world-cereal-system
 cainjector:
   nodeSelector:
-    role: kong
+    system-tag: world-cereal-system

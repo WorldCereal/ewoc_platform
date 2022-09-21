@@ -23,6 +23,7 @@ deploy:
 	helm upgrade --install kong-postgresql bitnami/postgresql --namespace=kong --version=$(POSTGRESQL_CHART_VERSION) --values=postgresql/values.yaml
 
 	# Deploy Kong Gateway & Kong Ingress Controller
+	@sed "s:CS_REGISTRY:$(CS_REGISTRY): ; s:VALUE_KONGTAG:$(KONG_VERSION):" values.tmpl > values.yaml
 	helm upgrade --install kong kong/kong --namespace=kong --version=$(KONG_CHART_VERSION) --values=values.yaml
 
 	# Add Prometheus plugin
