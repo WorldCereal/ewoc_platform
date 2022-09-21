@@ -1,5 +1,7 @@
 .PHONY: build deploy delete
 
+password= $(shell kubectl get secret -n sysdb pgsqlha-postgresql-ha-postgresql -o=jsonpath={.data.postgresql-password} | base64 -d)
+
 build:
 	# Build Kube Prometheus Stack
 	
@@ -11,7 +13,7 @@ deploy:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
 	# Generate values.yaml
-	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAFANA_CS:$(GRAFANA_CS):g" values.tmpl > values.yaml
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAFANA_CS:$(GRAFANA_CS):;s:PG_PASS:$(password):g" values.tmpl > values.yaml
 
 	# install kube prometheus stack
 	helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack  --version=$(KUBE_PROMETHEUS_STACK_CHART_VERSION) --create-namespace --namespace=monitoring  -f values.yaml

@@ -26,9 +26,11 @@ export KONG_VERSION="2.8.1-alpine"
 
 # Keycloak conf
 # export KEYCLOAK_CHART_VERSION="5.0.6"
-export KEYCLOAK_CHART_VERSION="9.8.1"
+#export KEYCLOAK_CHART_VERSION="9.8.1"
+export KEYCLOAK_CHART_VERSION="10.1.0"
+
 # export KEYCLOAK_VERSION="15.0.2-debian-10-r15"
-export KEYCLOAK_VERSION="18.0.2-debian-11-r28"
+#export KEYCLOAK_VERSION="18.0.2-debian-11-r28"
 
 # Kube-Prometheus-Stack 
 #export KUBE_PROMETHEUS_STACK_CHART_VERSION="17.0.2"

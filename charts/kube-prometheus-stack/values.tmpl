@@ -6,50 +6,84 @@ alertmanager:
 
   alertmanagerSpec:
     nodeSelector:
-      role: kong
-
+#      role: kong
+      system-tag: world-cereal-system
   
 grafana:
   enabled: true
   defaultDashboardsEnabled: true
-  nodeSelector:
-    role: kong
+
   sidecar:
     dashboards:
       enabled: true
       label: grafana_dashboard
 
-      annotations: {}
+  persistence:
+    enabled: false
 
   ingress:
     enabled: false
-  
+  logLevel: DEBUG
   grafana.ini: 
     log:
       mode: "console"
-      level: "info"
+      level: "debug"
     log.frontend:
       enabled: true
     server:
       domain: grafana.VALUE_HOSTNAME
-      root_url: https://grafana.VALUE_HOSTNAME
+      root_url: https://grafana.VALUE_HOSTNAME/
     auth:
       oauth_auto_login: true
       disable_login_form: true
-      signout_redirect_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/logout?redirect_uri=https%3A%2F%2Fgrafana.ewoc-prod.hexdump.ovh
-      
+      signout_redirect_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/logout?redirect_uri=https%3A%2F%2Fgrafana.VALUE_HOSTNAME
+
     auth.generic_oauth:
       enabled: true
       tls_skip_verify_insecure: true
       allow_sign_up: true
       client_id: grafana
-      scopes: profile
+      scopes: email openid
       auth_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/auth
       token_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/token
       api_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/userinfo
       #role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
       role_attribute_strict: false
       client_secret: GRAFANA_CS
+
+    database:
+      type: postgres
+      host: pgsqlha-postgresql-ha-postgresql.sysdb.svc.cluster.local.
+      user: postgres
+      password: PG_PASS
+      port: 5432
+      name: grafana
+
+    remote_cache:
+      type: database
+
+    unified_alerting:
+      enabled: true
+      ha_peers: kube-prometheus-stack-grafana-headless:3000
+  
+  nodeSelector:
+#    role: kong
+    system-tag: world-cereal-system
+
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name 
+              operator: In
+              values:
+              - grafana
+          topologyKey: kubernetes.io/hostname
+
+  replicas: 2
+  headlessService: true
+
 prometheus:
   enabled: true
   
@@ -60,7 +94,8 @@ prometheus:
       matchLabels:
         release: kube-prometheus-stack
     nodeSelector:
-      role: kong
+#      role: kong
+      system-tag: world-cereal-system
     retention: 2d
     
     storageSpec: 
@@ -72,26 +107,21 @@ prometheus:
            requests:
              storage: 100Gi
 
-    replicas: 3
+    replicas: 2
 
-    ## Interval between consecutive scrapes.
-    ## Defaults to 30s.
-    ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/release-0.44/pkg/prometheus/promcfg.go#L180-L183
-    ##
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name 
+              operator: In
+              values:
+              - prometheus
+          topologyKey: kubernetes.io/hostname
+
     scrapeInterval: "60s"
-
-
-    ## Interval between consecutive evaluations.
-    ##
     evaluationInterval: "60s"
-
-    ## EXPERIMENTAL: Number of shards to distribute targets onto.
-    ## Number of replicas multiplied by shards is the total number of Pods created.
-    ## Note that scaling down shards will not reshard data onto remaining instances, it must be manually moved.
-    ## Increasing shards will not reshard data either but it will continue to be available from the same instances.
-    ## To query globally use Thanos sidecar and Thanos querier or remote write data to a central location.
-    ## Sharding is done on the content of the `__address__` target meta-label.
-    ##
     shards: 1
 
     resources:
@@ -99,6 +129,7 @@ prometheus:
         memory: 8192Mi
       requests:
         memory: 4096Mi
+
   ingress:
     enabled: false
 
@@ -106,8 +137,8 @@ prometheusOperator:
   enabled: true
   hostNetwork: false        
   nodeSelector:
-    role: kong
-
+#    role: kong
+    system-tag: world-cereal-system
 kubelet:
   enabled: true
   namespace: kube-system
