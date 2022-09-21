@@ -3,15 +3,15 @@
 #helm install kong kong/kong --create-namespace --namespace=kong -f kong-ingress-controller-dbless-value.yaml
 
 imagePullSecrets:
-  - harborcs
+  - aws-registry
 
 image:
-  repository: 643vlk6z.gra7.container-registry.ovh.net/world-cereal/kong-oidc
-  # registry: 643vlk6z.gra7.container-registry.ovh.net
+  repository: CS_REGISTRY/world-cereal/kong-oidc
+  # registry: CS_REGISTRY
   # repository: world-cereal/kong-oidc
   tag: VALUE_KONGTAG
   pullSecrets:
-    - harborcs
+    - aws-registry
 
 autoscaling:
   enabled: false
@@ -41,7 +41,7 @@ ingressController:
 
 
 nodeSelector:
-  role: kong
+  system-tag: world-cereal-system
 
 proxy:
   enabled: true
