@@ -25,7 +25,8 @@ export CERT_MANAGER_MAIL="guillaume.dubreule@csgroup.eu"
 # export POSTGRESQL_VERSION="11.12.0-debian-10-r13"
 export POSTGRESQL_CHART_VERSION="9.4.2" # -> Postgresql 14.5.0
 # export POSTGRESQL_VERSION="14.5.0-debian-11-r13"
-export KONG_CHART_VERSION="2.12.0"
+# export KONG_CHART_VERSION="2.12.0"
+export KONG_CHART_VERSION="2.13.0"
 export KONG_VERSION="2.8.1-alpine"
 
 

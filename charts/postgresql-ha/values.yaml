@@ -1,5 +1,5 @@
 
-# nameOverride: pgsql
+nameOverride: pgsql
 
 pgpool:
   # Create pods on System nodes
@@ -12,24 +12,25 @@ postgresql:
   initdbScripts:
     db.sql: |
       CREATE DATABASE kong OWNER postgres;
-      CREATE DATABASE bn_keycloak OWNER postgres;
-      CREATE DATABASE grafana OWNER postgres;
+    # CREATE DATABASE bn_keycloak OWNER postgres;
 
   # Create pods on System nodes
   nodeSelector: 
     system-tag: world-cereal-system
+  podAntiAffinitypreset: hard
+  replicaCount: 3
 
-  # Using affinity to schedule one pod per node
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: app.kubernetes.io/instance
-                operator: In
-                values:
-                  - pgsqlha
-          topologyKey: kubernetes.io/hostname
+  # # Using affinity to schedule one pod per node
+  # affinity:
+  #   podAntiAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       - labelSelector:
+  #           matchExpressions:
+  #             - key: app.kubernetes.io/instance
+  #               operator: In
+  #               values:
+  #                 - pgsqlha
+  #         topologyKey: kubernetes.io/hostname
 
 volumePermissions:
   enabled: true
