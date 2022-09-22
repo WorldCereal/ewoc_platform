@@ -1,6 +1,6 @@
 .PHONY: build deploy delete
 
-password= $(shell kubectl get secret -n sysdb pgsqlha-postgresql-ha-postgresql -o=jsonpath={.data.postgresql-password} | base64 -d)
+password= $(shell kubectl get secret -n sysdb system-db -o=jsonpath={.data.postgresql-password} | base64 -d)
 
 build:
 	
