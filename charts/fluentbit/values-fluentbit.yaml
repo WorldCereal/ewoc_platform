@@ -1,0 +1,34 @@
+# image:
+#   repository: 643vlk6z.gra7.container-registry.ovh.net/world-cereal/fluent-bit
+#   tag: VALUE1
+#   pullPolicy: "Always"
+
+# imagePullSecrets:
+#     - name: harborcs
+
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+
+#logLevel: debug
+
+config:
+  inputs: |
+    [INPUT]
+        Name tail
+        Tag system.*
+        Path /var/log/syslog
+        DB /var/log/syslog.db
+        DB.Sync Normal
+        Rotate_Wait 10
+        Mem_Buf_Limit 10MB
+        
+  outputs: |
+    [OUTPUT]
+        Name kafka
+        Format json
+        Match system.*
+        Brokers kafka-headless.logging.svc.cluster.local:9092
+        Topics system.logs
+
+#Brokers kafka.logging.svc.cluster.local:9092
