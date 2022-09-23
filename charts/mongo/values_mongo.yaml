@@ -1,13 +1,16 @@
 
 nodeSelector:
-  role: kong 
+#  role: kong 
+  system-tag: world-cereal-system
+
+architecture: standalone
 
 auth:
   enabled: true
   rootUser: root
   username: "graylog"
   database: "graylog"
-
+  existingSecret: "mongo-db"
 
 persistence:
   enabled: true

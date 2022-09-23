@@ -60,17 +60,21 @@ monitoring:
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:PROMETHEUS_CS:$(PROMETHEUS_CS):;s:GRAFANA_CS:$(GRAFANA_CS):g" charts/kube-prometheus-stack/ingress.tmpl > monitoring-ingress.yaml
 	@kubectl apply -f monitoring-ingress.yaml -n monitoring
 
-
 mongo:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
-	helm upgrade --install mongo bitnami/mongodb  -n logging --version=$(MONGO_CHART_VERSION) -f charts/logging/graylog-stack/mongo/values_mongo.yaml
+	helm upgrade --install mongo bitnami/mongodb  -n logging --version=$(MONGO_CHART_VERSION) -f charts/mongo/values_mongo.yaml
 
 elasticsearch:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
-
+	helm upgrade --install elastic bitnami/elasticsearch --version=$(ELASTIC_CHART_VERSION) -n logging -f charts/elasticsearch/values_elastic.yaml
 
 graylog:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	helm upgrade --install graylog -n logging kongz/graylog --version $(GRAYLOG_CHART_VERSION) -f charts/graylog/values-graylog.yaml
+
+	# Create Ingress
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAYLOG_CS:$(GRAYLOG_CS):" charts/graylog/ingress-graylog.tmpl > ingress-graylog.yaml
+	kubectl apply -f ingress-graylog.yaml -n logging
 
 
 

@@ -1,21 +1,19 @@
-#image:
-#  registry: 643vlk6z.gra7.container-registry.ovh.net
-#  repository: world-cereal/elasticsearch
-#  tag: VALUE1
-#  pullPolicy: Always
-#  pullSecrets:
-#    - harborcs
-
 master:
+
   replicas: 1
+  podAntiAffinityPreset: "hard"
+
   persistence:
     enabled: true
     accessModes:
       - ReadWriteOnce
     size: 10Gi
+
   nodeSelector:
-    role: kong
+  #  role: kong 
+    system-tag: world-cereal-system
   
+
 #  heapSize: 2048m
 #  resources:
 #    limits:
@@ -27,14 +25,19 @@ master:
 
 
 data:
+
   replicas: 1
+  podAntiAffinityPreset: "hard"
+
   nodeSelector:
-    role: kong
+  #  role: kong 
+    system-tag: world-cereal-system
+
   persistence:
     enabled: true
     accessModes:
       - ReadWriteOnce
-    size: 100Gi
+    size: 10Gi
 
 #  heapSize: 2048m
 #  resources:
@@ -46,8 +49,12 @@ data:
 
 coordinating:
   nodeSelector:
-    role: kong
+  #  role: kong 
+    system-tag: world-cereal-system
+
+  podAntiAffinityPreset: "hard"
   replicas: 1
+  
 #  heapSize: 4096m
 #  resources:
 #    limits:
@@ -58,4 +65,5 @@ coordinating:
 metrics:
   enabled: true
   nodeSelector:
-    role: kong
+  #  role: kong 
+    system-tag: world-cereal-system
