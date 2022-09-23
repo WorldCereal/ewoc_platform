@@ -1,4 +1,4 @@
-.PHONY: build certmgr pgsql kong keycloak monitoring graylog mongo elasticsearch deploy delete  
+.PHONY: build certmgr pgsql kong keycloak monitoring graylog mongo elasticsearch kafka fluentbit deploy delete  
 
 
 build:
@@ -70,13 +70,22 @@ elasticsearch:
 
 graylog:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+
+	#kubectl create configmap graylog-contentpacks -n logging --from-file=charts/graylog/contentpacks.json
+	
 	helm upgrade --install graylog -n logging kongz/graylog --version $(GRAYLOG_CHART_VERSION) -f charts/graylog/values-graylog.yaml
 
 	# Create Ingress
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAYLOG_CS:$(GRAYLOG_CS):" charts/graylog/ingress-graylog.tmpl > ingress-graylog.yaml
 	kubectl apply -f ingress-graylog.yaml -n logging
 
+kafka:
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	helm upgrade --install kafka -n logging bitnami/kafka --version $(KAFKA_CHART_VERSION) -f charts/kafka/values-kafka.yaml
 
+fluentbit: 
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	helm upgrade --install fluent-bit fluent/fluent-bit -n logging --version $(FLUENTBIT_CHART_VERSION) -f charts/fluentbit/values-fluentbit.yaml
 
 deploy:
 	# Deploy all components for Kong

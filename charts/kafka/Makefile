@@ -21,6 +21,7 @@ create_topic:
 	kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic keycloak.logs --partitions=1 --replication-factor=1 --config cleanup.policy=delete --config retention.ms=3600000 --config retention.bytes="-1"
 	kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic system.logs --partitions=6 --replication-factor=1 --config cleanup.policy=delete --config retention.ms=3600000 --config retention.bytes="-1"
 
+#kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --topic system.logs --describe
 
 delete:
 	# Delete kafka component

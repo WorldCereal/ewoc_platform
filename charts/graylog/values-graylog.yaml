@@ -10,9 +10,23 @@ graylog:
   image:
     repository: "graylog/graylog"
     tag: "4.3.3-1"
-    
+  
+#  Content packs Config map Mounts
+  extraVolumeMounts:
+    - name: graylog-contentpacks
+      mountPath: /usr/share/graylog/data/content-packs
+
+#  Content packs Config map Mounts
+  extraVolumes:
+    - name: graylog-contentpacks
+      configMap: 
+        name: graylog-contentpacks
+        
   config: |
     elasticsearch_mute_deprecation_warnings = true
+    content_packs_loader_enabled = true
+    content_packs_dir = /usr/share/graylog/data/content-packs/
+    content_packs_auto_install = contentpacks.json,grok-patterns.json
 
   env:
     GRAYLOG_TRUSTED_PROXIES: 10.2.0.0/16
@@ -28,7 +42,6 @@ graylog:
             values:
             - graylog
         topologyKey: kubernetes.io/hostname
-
 
   persistence:
     enabled: true
