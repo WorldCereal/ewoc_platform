@@ -35,7 +35,7 @@ done
 
 
 # Postgresql secret
-for ns in kong keycloak; do
+for ns in kong keycloak monitoring; do
 	echo "Namespace: $ns"
 	kubectl create secret generic system-db --type=Opaque --namespace=$ns \
 		--from-literal="postgresql-password=$dbpasswd" \

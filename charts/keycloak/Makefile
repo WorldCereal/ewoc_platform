@@ -1,6 +1,6 @@
 .PHONY: build deploy delete
 
-password= $(shell kubectl get secret -n sysdb system-db -o=jsonpath={.data.postgresql-password} | base64 -d)
+#password= $(shell kubectl get secret -n sysdb system-db -o=jsonpath={.data.postgresql-password} | base64 -d)
 
 build:
 	
@@ -21,7 +21,9 @@ deploy:
 	@kubectl get configmap -n keycloak realm-config || kubectl create configmap realm-config --from-file=WC-realm.json -n keycloak
 
 	# Generate values.yaml from template file
-	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:PG_PASS:$(password):" values.tmpl > values.yaml
+#	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:PG_PASS:$(password):" values.tmpl > values.yaml
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):" values.tmpl > values.yaml
+
 
 	helm upgrade --install keycloak bitnami/keycloak --version=$(KEYCLOAK_CHART_VERSION) --create-namespace --namespace=keycloak -f values.yaml --set=installCRDs=true
 	

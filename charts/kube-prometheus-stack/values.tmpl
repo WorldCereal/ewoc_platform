@@ -23,7 +23,7 @@ grafana:
 
   ingress:
     enabled: false
-  logLevel: DEBUG
+#  logLevel: DEBUG
   grafana.ini: 
     log:
       mode: "console"
@@ -53,7 +53,7 @@ grafana:
 
     database:
       type: postgres
-      host: pgsqlha-postgresql-ha-postgresql.sysdb.svc.cluster.local.
+      host: pgsqlha-pgpool.sysdb.svc.cluster.local
       user: postgres
       password: PG_PASS
       port: 5432
@@ -81,7 +81,7 @@ grafana:
               - grafana
           topologyKey: kubernetes.io/hostname
 
-  replicas: 2
+  replicas: 3
   headlessService: true
 
 prometheus:
@@ -107,7 +107,7 @@ prometheus:
            requests:
              storage: 100Gi
 
-    replicas: 2
+    replicas: 3
 
     affinity:
       podAntiAffinity:

@@ -12,8 +12,8 @@ postgresql:
   initdbScripts:
     db.sql: |
       CREATE DATABASE kong OWNER postgres;
-    # CREATE DATABASE bn_keycloak OWNER postgres;
-
+      CREATE DATABASE bn_keycloak OWNER postgres;
+      CREATE DATABASE grafana OWNER postgres;
   # Create pods on System nodes
   nodeSelector: 
     system-tag: world-cereal-system

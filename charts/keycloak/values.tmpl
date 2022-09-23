@@ -59,15 +59,25 @@ postgresql:
   enabled: false
 
 externalDatabase:
-  host: "pgsqlha-postgresql-ha-postgresql.sysdb.svc.cluster.local."
+#  host: "pgsqlha-postgresql-ha-postgresql.sysdb.svc.cluster.local."
+  host: "pgsqlha-pgpool.sysdb.svc.cluster.local"
   port: 5432
   user: postgres
   database: bn_keycloak
-  password: PG_PASS
+  # password:
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: system-db
+  #       key: postgresql-password
 
 proxy: passthrough
 
 extraEnvVars:
+  - name: KEYCLOAK_DATABASE_PASSWORD  
+    valueFrom:
+      secretKeyRef:
+        name: system-db
+        key: postgresql-password
   - name: KEYCLOAK_LOG_LEVEL
     value: INFO
   - name: KEYCLOAK_PRODUCTION

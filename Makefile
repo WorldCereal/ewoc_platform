@@ -1,4 +1,4 @@
-.PHONY: build certmgr pgsql kong deploy delete 
+.PHONY: build certmgr pgsql kong keycloak monitoring graylog mongo elasticsearch deploy delete  
 
 
 build:
@@ -36,6 +36,41 @@ kong:
 
 	# Add Prometheus plugin
 	kubectl apply -f charts/kong/plugins/kong-prometheus-plugin.yaml
+
+keycloak:
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+	
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):g" charts/keycloak/WC-realm.tmpl > WC-realm.json
+	@kubectl get configmap -n keycloak realm-config || kubectl create configmap realm-config --from-file=WC-realm.json -n keycloak
+	
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):" charts/keycloak/values.tmpl > keycloak-values.yaml
+	helm upgrade --install keycloak bitnami/keycloak --version=$(KEYCLOAK_CHART_VERSION) \
+    --namespace=keycloak -f keycloak-values.yaml --set=installCRDs=true
+	
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):" charts/keycloak/ingress.tmpl > keycloak-ingress.yaml
+	kubectl apply -f keycloak-ingress.yaml -n keycloak
+
+monitoring:
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+	
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAFANA_CS:$(GRAFANA_CS):;s:PG_PASS:$(shell kubectl get secret -n monitoring system-db -o=jsonpath={.data.postgresql-password} | base64 -d):g" charts/kube-prometheus-stack/values.tmpl > monitoring-values.yaml
+	helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack  \
+	--version=$(KUBE_PROMETHEUS_STACK_CHART_VERSION) -n monitoring  -f monitoring-values.yaml
+
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:PROMETHEUS_CS:$(PROMETHEUS_CS):;s:GRAFANA_CS:$(GRAFANA_CS):g" charts/kube-prometheus-stack/ingress.tmpl > monitoring-ingress.yaml
+	@kubectl apply -f monitoring-ingress.yaml -n monitoring
+
+
+mongo:
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	helm upgrade --install mongo bitnami/mongodb  -n logging --version=$(MONGO_CHART_VERSION) -f charts/logging/graylog-stack/mongo/values_mongo.yaml
+
+elasticsearch:
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+
+
+graylog:
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 
 
 
