@@ -220,3 +220,32 @@ spec:
     - hosts:
         - rdmdb.VALUE_HOSTNAME
       secretName: rdmdbtlscert
+---
+apiVersion: networking.k8s.io/v1
+#apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/https-redirect-status-code: "302"
+    konghq.com/protocols: https
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+  name: rdmapiswagger
+  namespace: rdm
+spec:
+  rules:
+    - host: rdmapi.VALUE_HOSTNAME
+      http:
+        paths:
+          - backend:
+              service:
+                name: rdmapi
+                port:
+                  number: 80
+            path: /swagger/*
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - rdmapi.VALUE_HOSTNAME
+      secretName: rdmapitlscert
