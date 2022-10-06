@@ -20,21 +20,16 @@
 
 - Kubernetes cluster running on version 1.18 or more.
 - a cluster with 6 or more nodes.
-- Cinder controller deployed or equivalent on the cluster to handle storage class/persistance.
 - Git clone ewoc_platform on the bastion.
-- Nodes that are not going to perform any preproccesing tagged as "kong"
+- Nodes that are not going to perform any preproccesing tagged as "ewoc-system".
+`kubectl label node THE_NODE system-tag=world-cereal-system`
+- Access to the image registry (public or by credential).
+- aws cli installed and configured to access your cloud instance.
+- Kubectl and helm are installed. 
 
 ## Notes 
 - The cluster size evolve according preproccesing needs, so it has two parts, one fix and one dynamic.
-All the elements deployed here, must be attached to the fix part which is labeled with role: kong. We strongly advise you to check that every component that you deploy use the nodeSelector to restrict pods execution only on the fix part of your cluster.
-```
-nodeSelector:
-  role: kong 
-```
-If no node selector is present after you deployment, adapt and use the following command to fix the pods.
-```
-kubectl patch TYPE_OF_OBJECT -n NAMESPACE OBJECT_NAME -p '{"spec": {"template": {"spec": {"nodeSelector": {"role": "kong"}}}}}'
-```
+All the elements deployed here, must be attached to the fix part which is labeled with system-tag: world-cereal-system. We strongly advise you to check that every component that you deploy use the nodeSelector to restrict pods execution only on the fix part of your cluster.
 
 - Version configuration is available on the **export-env.sh** as domain name value. 
 Before using the Makefile for your deployment, check that you have sourced the export-env.sh by running the following command : 
@@ -42,12 +37,12 @@ Before using the Makefile for your deployment, check that you have sourced the e
 source export-env.sh 
 ```
 
-- Some helm chart used here can be found online (bitnami for instance), however some used docker image are only present in our private registry.
+- Some helm chart used here can be found online (bitnami for instance), however some use containers images that are only present in our private registry.
 
-- **Be careful when removing the component not to delete the pvc otherwise volumes will be deleted on Cloud Ferro .**
+- **Be careful when removing a component not to delete the linked pvc.**
 
 ## Namespaces
-This cluster is composed of 9 specific namespaces.
+This cluster is composed of 10 specific namespaces.
 - **argo**, used by preprocessing modules.             
 - **cert-manager**, handle SSL/TLS certificates.     
 - **keycloak**, SSO handle cluster authentication. 
@@ -57,65 +52,47 @@ This cluster is composed of 9 specific namespaces.
 - **rdm**, stack regrouping elements related to the Reference Data Module.
 - **vdm**, stack regrouping elements related to the Visualization and Dissemination Module.             
 - **wctiler**, stack that allows to check tiles processing state.
+- **sysdb**, namespace for shared postgresql-ha instance.
+
+## Init
+In order to deploy the plateform, you first need to play the following command.
+`make init`, this will update all helm repository needed and play the `sys-init.sh`.
+This script is going to create all the needed secrets.
 
 ## Secret Management
-Some deployments use docker images that are stored in a private docker registry.
-To retrieve it, some deployments uses a secret named ```harborcs```.
-For each namespaces, it is required to add you registry credential by playing the following command
-before any deployment.
-```kubectl create secret -n NAMESPACE docker-registry harborcs --docker-server=YOUR_REGISTRY --docker-username=REGISTRY_USERNAME --docker-password="REGISTRY_PASSWORD"```
+Some deployments use containers images that are stored in a private registry.
+To be able to pull thoses images, a secret ```aws-registry``` is created in each namespace listed above.
+This secret is created by the script `sys-init.sh`. This script also generate password for postgresql instance, mongodb.
 
 ## Cert-Manager
 Cert-Manager is the component that handle the SSL/TLS certificates for cluster applications.
 It use the official helm chart from https://cert-manager.io/docs/installation/helm/.
-It is deployed in his own namespace cert-manager.
+It is deployed in his own namespace `cert-manager`.
 
-**Change the issuer email in export-env.sh in CERT_MANAGER_MAIL**
+**Please be aware to change the issuer email in export-env.sh through CERT_MANAGER_MAIL variable**
 
-To deploy move into the cert-manager folder, this will deploy all the element of the chart and create a cluster issuer with the mail that you have provided
+To deploy it:
 ```
-cd /cert-manager
-make build
-make deploy
+make certmgr
 ```
 
-To delete cert-manager use ```make delete```.
+## Postgresql-Ha
+The data of keycloak, kong, grafana are stored in postgresql-HA. 
+All the password have been generated in `sys-init.sh` step.
+
+To deploy it:
+```
+make pgsql
+```
 
 ## Kong Deployment 
-Kong is the ingress controller of the plateform.
+Kong is the ingress controller of the plateform, it uses the postgresql-ha in order to store configuration data.
 An OIDC plugin is added to manage user authentication with the help of the keycloak SSO.
 
-First, create the harborcs secret to allow you deployment to pull container images from the private registry.
-```kubectl create secret -n NAMESPACE docker-registry harborcs --docker-server=YOUR_REGISTRY --docker-username=REGISTRY_USERNAME --docker-password="REGISTRY_PASSWORD"```
-
-Go to kong direcory:
-```sh
-cd ewoc_platform/charts/kong  
+To deploy it:
 ```
-
-Build & deploy via Make
-```sh
-make build
-make deploy
+make kong
 ```
-Check if all kong's pod are running & up:
-```sh
-kubectl get pod -n kong
-```
-The output should looks like:
-```
-kong-kong-84dd95ffd9-z2szz        2/2     Running     0          6d2h
-kong-kong-init-migrations-xrfqh   0/1     Completed   2          12d
-kong-oidc-tool                    1/1     Running     0          22d
-kong-postgresql-postgresql-0      1/1     Running     0          12d
-
-```
-For information: 
-- kong-kong pods contains 2 containers:
-    - proxy (Kong Gateway)
-    - ingress (Kong Ingress Controller)
-- kong-postgresql-postgresql-0 pod  containt a postgres database (used by Kong Admin Api for the oidc plugin, routes , svc , etc)
-- kong-oidc-tool is a custom pod that allow to post & update via curl request to the Kong Admin Api. (Deprecated)
 
 Kong also provide a CRD that allows to configure the OIDC plugin though yaml file.
 For instance:
@@ -145,60 +122,31 @@ plugin: oidc
 
 ## Keycloak Deployment 
 Keycloak is the SSO of the plateform that handle user authentication.
+It uses the postgresql-ha in order to store configuration data.
+Keycloak realm `worldcereal` is pre-initialized during the installation.
 
-Go to Keycloak directory:
-```sh
-cd ewoc_platform/charts/keycloak  
+To deploy it:
 ```
-
-Build & deploy via Make
-```sh
-make build
-make deploy
-```
-Check if all keycloak's pod are running & up:
-```sh
-kubectl get pod -n keycloak
-```
-output should looks:
-```
-keycloak-0              1/1     Running   0          15d
-keycloak-postgresql-0   1/1     Running   0          15d
+make keycloak
 ```
 
+Once Keycloak is up and running, get the admin password then, connect to the web interface.
+For each client of worldcereal realm, generate a client secret and add it to `export-env.sh` in _CS suffixed variables.
+Finnally, source the file by running:
+```
+source export-env.sh 
+```
 
 ## Kube-Prometheus-Stack Deployment
-Go to Kube-Prometheus-Stack directory:
-```sh
-cd ewoc_platform/charts/kube-prometheus-stack  
+The kube-prometheus stack from community is used to monitor the plateform.
+It deploys Prometheus, Grafana and Alert manager. 
+Grafana relies on postgresql-ha to store data regarding Oauth session users.
+
+To deploy it:
 ```
-Create namespace.
-```sh
- kubectl create ns monitoring
+make monitoring
 ```
 
-Build & deploy via Make
-```sh
-make build
-make deploy
-```
-Check if all keycloak's pod are running & up:
-```sh
-kubectl get pod -n monitoring
-```
-The Output should looks like:
-```
-alertmanager-kube-prometheus-stack-alertmanager-0           2/2     Running   0          178m
-kube-prometheus-stack-grafana-7f9bfd8c67-jw4zl              2/2     Running   0          178m
-kube-prometheus-stack-kube-state-metrics-7d86976bf9-dtgkq   1/1     Running   0          178m
-kube-prometheus-stack-operator-59b6fcd87-qdsp4              1/1     Running   0          178m
-kube-prometheus-stack-prometheus-node-exporter-2nld5        1/1     Running   0          178m
-kube-prometheus-stack-prometheus-node-exporter-88wfl        1/1     Running   0          178m
-kube-prometheus-stack-prometheus-node-exporter-nmg5r        1/1     Running   0          178m
-kube-prometheus-stack-prometheus-node-exporter-rm8tn        1/1     Running   0          178m
-kube-prometheus-stack-prometheus-node-exporter-vkdfj        1/1     Running   0          178m
-prometheus-kube-prometheus-stack-prometheus-0               2/2     Running   0          178m
-```
 For infomation: 
 - alertmanager-kube-prometheus-stack-alertmanager-0 pod allow to setup and check the prometheus rules.
 - kube-prometheus-stack-grafana is the UI endpoint for the monitoring 
@@ -206,7 +154,7 @@ For infomation:
 - prometheus-kube-prometheus-stack-prometheus-0  this is the heart of prometheus, it fetches the metrics exposed by node-exporter.
 
 ## Logging Stack
-Check the readme in logging folder.
+Check the `logging-stack.md` file.
 
 ## WCTiler
 WcTiler allow users to check the tiles processing status.

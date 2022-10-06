@@ -1,7 +1,7 @@
-.PHONY: build certmgr pgsql kong keycloak monitoring graylog mongo elasticsearch kafka fluentbit deploy delete  
+.PHONY: init certmgr pgsql kong keycloak monitoring graylog mongo elasticsearch kafka fluentbit deploy delete  
 
 
-build:
+init:
 	# Build all components for Kong
 	helm repo add jetstack https://charts.jetstack.io
 	helm repo add kong https://charts.konghq.com
