@@ -17,7 +17,7 @@ postgresql:
   # Create pods on System nodes
   nodeSelector: 
     system-tag: world-cereal-system
-  podAntiAffinitypreset: hard
+  podAntiAffinityPreset: hard
   replicaCount: 3
 
   # # Using affinity to schedule one pod per node
