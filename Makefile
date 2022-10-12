@@ -6,6 +6,9 @@ init:
 	helm repo add jetstack https://charts.jetstack.io
 	helm repo add kong https://charts.konghq.com
 	helm repo add bitnami https://charts.bitnami.com/bitnami
+	helm repo add elastic https://helm.elastic.co
+	helm repo add kongz https://charts.kong-z.com
+	helm repo add fluent https://fluent.github.io/helm-charts
 	helm repo update
 	chmod 755 sys-init.sh && ./sys-init.sh
 
@@ -62,22 +65,29 @@ monitoring:
 
 mongo:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
-	helm upgrade --install mongo bitnami/mongodb  -n logging --version=$(MONGO_CHART_VERSION) -f charts/mongo/values_mongo.yaml
+	helm upgrade --install mongo bitnami/mongodb --namespace=logging \
+				--version=$(MONGO_CHART_VERSION) --values=charts/mongo/values_mongo.yaml
+	kubectl rollout status -n logging statefulset mongo-mongodb
 
 elasticsearch:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
-	helm upgrade --install elastic bitnami/elasticsearch --version=$(ELASTIC_CHART_VERSION) -n logging -f charts/elasticsearch/values_elastic.yaml
+	#helm upgrade --install elastic bitnami/elasticsearch --version=$(ELASTIC_CHART_VERSION) -n logging -f charts/elasticsearch/values_elastic.yaml
+	helm upgrade --install elastic elastic/elasticsearch --namespace=logging \
+				--version=$(ELASTIC_CHART_VERSION) --values=charts/elasticsearch/values_elastic.yaml
+	kubectl rollout status -n logging statefulset ewoc-elastic-master
 
 graylog:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 
-	#kubectl create configmap graylog-contentpacks -n logging --from-file=charts/graylog/contentpacks.json
+	@kubectl get configmap -n logging graylog-contentpacks \
+		|| kubectl create configmap graylog-contentpacks --namespace=logging --from-file=charts/graylog/contentpacks.json
 	
-	helm upgrade --install graylog -n logging kongz/graylog --version $(GRAYLOG_CHART_VERSION) -f charts/graylog/values-graylog.yaml
+	@sed "s:VALUE_GRAYLOG_VERSION:$(GRAYLOG_VERSION):" charts/graylog/values-graylog.tmpl >graylog-values.yaml
+	helm upgrade --install graylog kongz/graylog --namespace=logging \
+				--version $(GRAYLOG_CHART_VERSION) --values=values-graylog.yaml
 
 	# Create Ingress
-	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAYLOG_CS:$(GRAYLOG_CS):" charts/graylog/ingress-graylog.tmpl > ingress-graylog.yaml
-	kubectl apply -f ingress-graylog.yaml -n logging
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAYLOG_CS:$(GRAYLOG_CS):" charts/graylog/ingress-graylog.tmpl | kubectl apply -n logging -f-
 
 kafka:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
@@ -85,7 +95,8 @@ kafka:
 
 fluentbit: 
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
-	helm upgrade --install fluent-bit fluent/fluent-bit -n logging --version $(FLUENTBIT_CHART_VERSION) -f charts/fluentbit/values-fluentbit.yaml
+	helm upgrade --install fluent-bit fluent/fluent-bit --namespace=logging \
+				--version $(FLUENTBIT_CHART_VERSION) --values=charts/fluentbit/values-fluentbit.yaml
 
 deploy:
 	# Deploy all components for Kong
@@ -123,10 +134,18 @@ deploy:
 
 delete:
 
-	# Delete ingress
-# 	kubectl delete -n keycloak ingress keycloak
-	# Delete Keycloack component
-# 	helm uninstall keycloak -n keycloak
+	# Deleting logging stack
+	helm uninstall -n logging fluent-bit
+	helm uninstall -n logging graylog
+	kubectl delete -n logging cm graylog-contentpacks
+	helm uninstall -n logging elastic
+	helm uninstall -n logging mongo
+	kubectl delete -n logging pvc --all
+
+	# # Delete ingress
+	# kubectl delete -n keycloak ingress keycloak
+	kubectl delete -n sysdb pvc --all
+	helm uninstall cert-manager -n cert-manager
 
 	# Deleting all components for Kong
 	kubectl delete -f charts/kong/plugins/kong-prometheus-plugin.yaml

@@ -1,0 +1,110 @@
+# imagePullSecrets:
+#    - name: aws-registry
+
+tags:
+  install-elasticsearch: false
+  install-mongodb: false
+
+graylog:
+
+  journal:
+    deleteBeforeStart: true
+
+  image:
+    repository: "graylog/graylog"
+    tag: VALUE_GRAYLOG_VERSION
+  
+  replicas: 3
+
+  nodeSelector:
+    system-tag: world-cereal-system
+  # resources:     
+  #   requests:
+  #     cpu: 500m
+  #     memory: 3072Mi
+  #   limits:
+  #     cpu: 2000m
+  #     memory: 4096Mi
+
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name 
+                operator: In
+                values:
+                  - graylog
+          topologyKey: kubernetes.io/hostname
+
+  # init:
+    # kubectlVersion: "v1.23.6"
+    # kubectlVersion: "v1.22.13"
+
+  heapSize: "16g"
+  # heapSize: "2g"
+  # javaOpts:
+  #   -Xms16g
+  #   -Xmx16g
+  # javaOpts:
+  #   -Xms2g
+  #   -Xmx2g
+
+  mongodb:
+    uriSecretName: mongodb-access
+    uriSecretKey: uri
+
+  elasticsearch:
+    # hosts: "http://ewoc-elastic-master-headless:9200" 
+    hosts: "http://ewoc-elastic-master:9200" 
+    version: 7 
+
+#  Content packs Config map Mounts
+  extraVolumeMounts:
+    - name: graylog-contentpacks
+      mountPath: /usr/share/graylog/data/content-packs
+
+#  Content packs Config map Mounts
+  extraVolumes:
+    - name: graylog-contentpacks
+      configMap: 
+        name: graylog-contentpacks
+
+  config: |
+    elasticsearch_mute_deprecation_warnings = true
+    # content_packs_loader_enabled = true
+    # content_packs_dir = /usr/share/graylog/data/content-packs/
+    # content_packs_auto_install = contentpacks.json,grok-patterns.json
+
+  env:
+    GRAYLOG_TRUSTED_PROXIES: 10.42.0.0/16
+
+  persistence:
+    enabled: true
+    size: "50Gi" 
+
+  metrics:
+    enabled: true
+
+  rootUsername: "admin"
+
+  provisioner:
+    enabled: true
+    useGraylogServiceAccount: false
+    nodeSelector:
+      system-tag: world-cereal-system
+    script: |
+      # echo "Graylog passwd: \"$GRAYLOG_PASSWORD_SECRET\""
+      timeout=60; time=$(date +%s)
+      while ! curl -u "admin:$GRAYLOG_PASSWORD_SECRET" -X GET --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' http://graylog-master.logging.svc.cluster.local:9000/api/system/inputs; do
+        [ $(date +%s) -gt $(($time+$timeout)) ] && echo 'TIMEOUT' && exit 123
+        sleep 6
+      done
+      echo 'Connected to master'
+      json_header='{"username_header": "X-Username","enabled": "true"}'
+      curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X PUT --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_header}" http://graylog-master.logging.svc.cluster.local:9000/api/system/authentication/http-header-auth-config
+      json_user='{"first_name":"Operator","last_name":"Graylog","username":"operator","email":"operator@operator.fr","password":"{{ graylog.operator_password }}","roles":["Admin"], "permissions":[]}'
+      curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X POST --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_user}" http://graylog-master.logging.svc.cluster.local:9000/api/users
+
+
+

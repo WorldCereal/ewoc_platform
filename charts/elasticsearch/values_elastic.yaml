@@ -1,20 +1,74 @@
-master:
 
-  replicas: 1
-  podAntiAffinityPreset: "hard"
+clusterName: ewoc-elastic
 
-  persistence:
-    enabled: true
-    accessModes:
-      - ReadWriteOnce
-    size: 10Gi
+nodeSelector:
+  system-tag: world-cereal-system
+antiAffinity: hard # (default)
+replicas: 3 # (default)
 
-  nodeSelector:
-  #  role: kong 
-    system-tag: world-cereal-system
-  
+# roles:
+#   master: "true"
+#   data: "true"
+#   ingest: "true"
+#   remote_cluster_client: "true"
 
-#  heapSize: 2048m
+resources:
+  requests:
+    cpu: 8000m
+    memory: 16Gi
+  limits:
+    cpu: 16000m
+    memory: 32Gi
+
+esJvmOptions:
+  jvm.options: |
+    -Xms16g
+    -Xmx16g
+
+
+# # Test cluster:
+# resources:
+#   requests:
+#     cpu: 2
+#     memory: 2Gi
+#   limits:
+#     cpu: 4
+#     memory: 4Gi
+# esJvmOptions:
+#   jvm.options: |
+#     -Xms2g
+#     -Xmx2g
+
+
+
+
+
+
+
+
+
+
+
+
+# security:
+#   enabled: true
+#   existingSecret: elastic
+
+# master:
+#   masterOnly: false
+#   replicaCount: 3
+#   nodeSelector:
+#     system-tag: world-cereal-system
+#   podAntiAffinityPreset: "hard"
+
+#   persistence:
+#     enabled: true
+#     accessModes:
+#       - ReadWriteOnce
+#     size: 10Gi
+
+
+#  heapSize: 4g
 #  resources:
 #    limits:
 #      cpu: 300m
@@ -24,46 +78,49 @@ master:
 #      memory: 2048Mi
 
 
-data:
+# data:
+#   replicaCount: 0
 
-  replicas: 1
-  podAntiAffinityPreset: "hard"
+#   replicas: 1
+#   podAntiAffinityPreset: "hard"
 
-  nodeSelector:
-  #  role: kong 
-    system-tag: world-cereal-system
+#   nodeSelector:
+#     system-tag: world-cereal-system
 
-  persistence:
-    enabled: true
-    accessModes:
-      - ReadWriteOnce
-    size: 10Gi
+#   persistence:
+#     enabled: true
+#     accessModes:
+#       - ReadWriteOnce
+#     size: 50Gi
 
-#  heapSize: 2048m
-#  resources:
-#    limits:
-#      memory: 4096Mi
-#    requests:
-#      memory: 2048Mi
+# #  heapSize: 2048m
+# #  resources:
+# #    limits:
+# #      memory: 4096Mi
+# #    requests:
+# #      memory: 2048Mi
 
 
-coordinating:
-  nodeSelector:
-  #  role: kong 
-    system-tag: world-cereal-system
+# coordinating:
+#   replicaCount: 0
+#   nodeSelector:
+#     system-tag: world-cereal-system
 
-  podAntiAffinityPreset: "hard"
-  replicas: 1
+#   podAntiAffinityPreset: "hard"
+#   replicas: 3
   
-#  heapSize: 4096m
-#  resources:
-#    limits:
-#      memory: 4096Mi
-#    requests:
-#      memory: 2048Mi
+# #  heapSize: 4096m
+# #  resources:
+# #    limits:
+# #      memory: 4096Mi
+# #    requests:
+# #      memory: 2048Mi
 
-metrics:
-  enabled: true
-  nodeSelector:
-  #  role: kong 
-    system-tag: world-cereal-system
+# ingest:
+#   replicaCount: 0
+
+
+# metrics:
+#   enabled: true
+#   nodeSelector:
+#     system-tag: world-cereal-system

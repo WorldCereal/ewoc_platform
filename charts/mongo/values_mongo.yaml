@@ -1,21 +1,26 @@
 
 nodeSelector:
-#  role: kong 
   system-tag: world-cereal-system
 
-architecture: standalone
+# architecture: standalone
+architecture: replicaset
+replicaCount: 3
+podAntiAffinityPreset: hard
 
 auth:
   enabled: true
-  rootUser: root
-  username: "graylog"
-  database: "graylog"
+  # rootUser: root
+  usernames:
+    - graylog
+  databases:
+    - graylog
   existingSecret: "mongo-db"
 
 persistence:
   enabled: true
-#  storageClass: "standard"
+  # storageClass: "standard"
   accessModes:
     - ReadWriteOnce
   size: 8Gi
+
 

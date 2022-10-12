@@ -17,8 +17,6 @@ export CERT_MANAGER_MAIL="guillaume.dubreule@csgroup.eu"
 # export KONG_CHART_VERSION="2.1.0"
 # export KONG_VERSION="2.4-ubuntu"
 
-# export POSTGRESQL_CHART_VERSION="10.3.15"
-
 
 # Kong conf
 # export POSTGRESQL_CHART_VERSION="10.14.3"
@@ -49,10 +47,12 @@ export KAFKA_CHART_VERSION="18.4.4"
 export MONGO_CHART_VERSION="13.1.3"
 
 # Limited chart version by Graylog compatibility 
-export ELASTIC_CHART_VERSION="17.9.29"
+# export ELASTIC_CHART_VERSION="17.9.29" # Elastic 7.17.3 (bitnami)
+export ELASTIC_CHART_VERSION="7.17.3" # Elastic 7.17.3 (elastic)
 
 #export GRAYLOG_CHART_VERSION="2.1.3"
-export GRAYLOG_CHART_VERSION="2.1.7"
+export GRAYLOG_CHART_VERSION="2.1.7" # Graylog 4.2.7
+export GRAYLOG_VERSION="4.3.8-1"
 
 #WCTiler
 export WCT_VERSION="1.0.0"
