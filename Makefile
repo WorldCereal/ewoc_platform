@@ -56,7 +56,7 @@ keycloak:
 
 monitoring:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
-	
+
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAFANA_CS:$(GRAFANA_CS):;s:PG_PASS:$(shell kubectl get secret -n monitoring system-db -o=jsonpath={.data.postgresql-password} | base64 -d):g" charts/kube-prometheus-stack/values.tmpl > monitoring-values.yaml
 	helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack  \
 				--version=$(KUBE_PROMETHEUS_STACK_CHART_VERSION) --namespace=monitoring --values=monitoring-values.yaml
@@ -64,17 +64,20 @@ monitoring:
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:PROMETHEUS_CS:$(PROMETHEUS_CS):;s:GRAFANA_CS:$(GRAFANA_CS):g" charts/kube-prometheus-stack/ingress.tmpl > monitoring-ingress.yaml
 	@kubectl apply -f monitoring-ingress.yaml -n monitoring
 
+	kubectl rollout status -n monitoring statefulset prometheus-kube-prometheus-stack-prometheus
+	kubectl rollout status -n monitoring deployment kube-prometheus-stack-grafana
+
 mongo:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 	helm upgrade --install mongo bitnami/mongodb --namespace=logging \
-				--version=$(MONGO_CHART_VERSION) --values=charts/mongo/values_mongo.yaml
+				--version=$(MONGO_CHART_VERSION) --values=charts/mongo/values-mongo.yaml
 	kubectl rollout status -n logging statefulset mongo-mongodb
 
 elasticsearch:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
-	#helm upgrade --install elastic bitnami/elasticsearch --version=$(ELASTIC_CHART_VERSION) -n logging -f charts/elasticsearch/values_elastic.yaml
+	#helm upgrade --install elastic bitnami/elasticsearch --version=$(ELASTIC_CHART_VERSION) -n logging -f charts/elasticsearch/values-elastic.yaml
 	helm upgrade --install elastic elastic/elasticsearch --namespace=logging \
-				--version=$(ELASTIC_CHART_VERSION) --values=charts/elasticsearch/values_elastic.yaml
+				--version=$(ELASTIC_CHART_VERSION) --values=charts/elasticsearch/values-elastic.yaml
 	kubectl rollout status -n logging statefulset ewoc-elastic-master
 
 # kafka:
@@ -92,10 +95,10 @@ elasticsearch:
 graylog:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 
-	@kubectl get configmap -n logging graylog-contentpacks \
-		|| kubectl create configmap graylog-contentpacks --namespace=logging --from-file=charts/graylog/contentpacks.json
-	
-	@sed "s:VALUE_GRAYLOG_VERSION:$(GRAYLOG_VERSION):" charts/graylog/values-graylog.tmpl >graylog-values.yaml
+# 	@kubectl get configmap -n logging graylog-contentpacks \
+# 		|| kubectl create configmap graylog-contentpacks --namespace=logging --from-file=charts/graylog/contentpacks.json
+
+	@sed "s:VALUE_GRAYLOG_VERSION:$(GRAYLOG_VERSION):" charts/graylog/values-graylog.tmpl >values-graylog.yaml
 	helm upgrade --install graylog kongz/graylog --namespace=logging \
 				--version $(GRAYLOG_CHART_VERSION) --values=values-graylog.yaml
 
@@ -108,6 +111,8 @@ fluentbit:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 	helm upgrade --install fluent-bit fluent/fluent-bit --namespace=logging \
 				--version $(FLUENTBIT_CHART_VERSION) --values=charts/fluentbit/values-fluentbit.yaml
+
+	kubectl rollout status -n logging daemonset fluent-bit
 
 deploy:
 	# Deploy all components for Kong

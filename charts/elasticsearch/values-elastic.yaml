@@ -6,11 +6,18 @@ nodeSelector:
 antiAffinity: hard # (default)
 replicas: 3 # (default)
 
+# --> NOT working with Bitnami image ; is the default with official image
 # roles:
 #   master: "true"
 #   data: "true"
 #   ingest: "true"
 #   remote_cluster_client: "true"
+
+volumeClaimTemplate:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 100Gi
 
 resources:
   requests:

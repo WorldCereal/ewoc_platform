@@ -55,16 +55,16 @@ graylog:
     uriSecretKey: uri
 
   elasticsearch:
-    # hosts: "http://ewoc-elastic-master-headless:9200" 
-    hosts: "http://ewoc-elastic-master:9200" 
-    version: 7 
+    hosts: "http://ewoc-elastic-master-headless:9200" 
+    # hosts: "http://ewoc-elastic-master:9200"
+    # version: 7 
 
-#  Content packs Config map Mounts
+  # Content packs Config map Mounts
   extraVolumeMounts:
     - name: graylog-contentpacks
       mountPath: /usr/share/graylog/data/content-packs
 
-#  Content packs Config map Mounts
+  # Content packs Config map Mounts
   extraVolumes:
     - name: graylog-contentpacks
       configMap: 
@@ -72,16 +72,16 @@ graylog:
 
   config: |
     elasticsearch_mute_deprecation_warnings = true
-    # content_packs_loader_enabled = true
-    # content_packs_dir = /usr/share/graylog/data/content-packs/
-    # content_packs_auto_install = contentpacks.json,grok-patterns.json
+    content_packs_loader_enabled = true
+    content_packs_dir = /usr/share/graylog/data/content-packs/
+    content_packs_auto_install = contentpacks.json,grok-patterns.json
 
   env:
-    GRAYLOG_TRUSTED_PROXIES: 10.42.0.0/16
+    GRAYLOG_TRUSTED_PROXIES: 10.42.0.0/16,10.100.0.0/16
 
   persistence:
     enabled: true
-    size: "50Gi" 
+    size: "20Gi"
 
   metrics:
     enabled: true
@@ -96,15 +96,36 @@ graylog:
     script: |
       # echo "Graylog passwd: \"$GRAYLOG_PASSWORD_SECRET\""
       timeout=60; time=$(date +%s)
-      while ! curl -u "admin:$GRAYLOG_PASSWORD_SECRET" -X GET --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' http://graylog-master.logging.svc.cluster.local:9000/api/system/inputs; do
+      while ! curl -u "admin:$GRAYLOG_PASSWORD_SECRET" -X GET --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' http://graylog.logging.svc.cluster.local:9000/api/system/inputs; do
         [ $(date +%s) -gt $(($time+$timeout)) ] && echo 'TIMEOUT' && exit 123
         sleep 6
       done
       echo 'Connected to master'
       json_header='{"username_header": "X-Username","enabled": "true"}'
-      curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X PUT --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_header}" http://graylog-master.logging.svc.cluster.local:9000/api/system/authentication/http-header-auth-config
+      curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X PUT --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_header}" http://graylog.logging.svc.cluster.local:9000/api/system/authentication/http-header-auth-config
       json_user='{"first_name":"Operator","last_name":"Graylog","username":"operator","email":"operator@operator.fr","password":"{{ graylog.operator_password }}","roles":["Admin"], "permissions":[]}'
-      curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X POST --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_user}" http://graylog-master.logging.svc.cluster.local:9000/api/users
+      curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X POST --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_user}" http://graylog.logging.svc.cluster.local:9000/api/users
+
+
+  input:
+    tcp:
+      service:
+        name: graylog-fluentbit
+        type: ClusterIP
+      ports:
+        - name: gelf
+          port: 12201
+    udp:
+      service:
+        name: graylog-syslog
+        type: ClusterIP
+      ports:
+        - name: syslog
+          port: 31514
+
+
+
+
 
 
 

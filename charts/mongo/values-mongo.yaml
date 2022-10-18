@@ -1,11 +1,14 @@
 
-nodeSelector:
-  system-tag: world-cereal-system
-
 # architecture: standalone
 architecture: replicaset
 replicaCount: 3
 podAntiAffinityPreset: hard
+
+nodeSelector:
+  system-tag: world-cereal-system
+arbiter:
+  nodeSelector:
+    system-tag: world-cereal-system
 
 auth:
   enabled: true

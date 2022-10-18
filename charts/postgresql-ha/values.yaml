@@ -1,10 +1,16 @@
 
 nameOverride: pgsql
 
+
+
 pgpool:
   # Create pods on System nodes
   nodeSelector: 
     system-tag: world-cereal-system
+  podAntiAffinityPreset: hard
+  replicaCount: 3
+  existingSecret: pgsqlha-pgpool
+  connectionLifeTime: 120
 
 postgresql:
   existingSecret: system-db
@@ -19,18 +25,12 @@ postgresql:
     system-tag: world-cereal-system
   podAntiAffinityPreset: hard
   replicaCount: 3
+  # maxConnections: 512
 
-  # # Using affinity to schedule one pod per node
-  # affinity:
-  #   podAntiAffinity:
-  #     requiredDuringSchedulingIgnoredDuringExecution:
-  #       - labelSelector:
-  #           matchExpressions:
-  #             - key: app.kubernetes.io/instance
-  #               operator: In
-  #               values:
-  #                 - pgsqlha
-  #         topologyKey: kubernetes.io/hostname
+  # => UNTESTED
+  extendedConf: |
+    max_connections = 512
+    shared_buffers = 80MB
 
 volumePermissions:
   enabled: true
