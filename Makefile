@@ -1,4 +1,4 @@
-.PHONY: init certmgr pgsql kong keycloak monitoring graylog mongo elasticsearch kafka fluentbit deploy delete  
+.PHONY: init certmgr pgsql kong keycloak monitoring graylog mongo elasticsearch kafka fluentbit rdm deploy delete  
 
 
 init:
@@ -113,6 +113,14 @@ fluentbit:
 				--version $(FLUENTBIT_CHART_VERSION) --values=charts/fluentbit/values-fluentbit.yaml
 
 	kubectl rollout status -n logging daemonset fluent-bit
+
+rdm:
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+
+	# Ingress
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:RDM_CS:$(RDM_CS):;s:RDM_API_CS:$(RDM_API_CS):g" charts/rdm/ingress.tmpl > rdm-ingress.yaml
+	@kubectl apply -f rdm-ingress.yaml -n rdm 
+
 
 deploy:
 	# Deploy all components for Kong
