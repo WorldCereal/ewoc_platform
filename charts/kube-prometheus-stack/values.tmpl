@@ -96,7 +96,7 @@ prometheus:
     nodeSelector:
 #      role: kong
       system-tag: world-cereal-system
-    retention: 2d
+    retention: 5d
     
     storageSpec: 
      volumeClaimTemplate:
@@ -126,7 +126,7 @@ prometheus:
 
     resources:
       limits:
-        memory: 8192Mi
+        memory: 16000Mi
       requests:
         memory: 4096Mi
 
