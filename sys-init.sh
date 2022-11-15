@@ -53,7 +53,7 @@ kubectl create secret generic mongo-db --type=Opaque --namespace=logging \
 
 # Generate mongodb URI secret for graylog
 kubectl create secret generic mongodb-access --type=Opaque --namespace=logging \
-	--from-literal="uri=mongodb://graylog:$mongodb@mongo-mongodb-headless/graylog" \
+	--from-literal="uri=mongodb://graylog:$mongodb@mongo-mongodb-headless/graylog?replicaSet=rs0" \
 	--dry-run=client -oyaml | kubectl apply -f-
 
 
