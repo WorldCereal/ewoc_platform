@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: graylog-config
+  namespace: logging
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      nodeSelector:
+        system-tag: world-cereal-system
+      restartPolicy: OnFailure
+      volumes:
+        - name: graylog
+          configMap:
+            name: graylog-config
+      containers:
+        - name: graylog-config
+          image: python:3.10.8-alpine3.16
+          command: ['sh', '-c', 'pip install requests && python -u /graylog/config.py']
+          env:
+            - name: ADMIN_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: graylog
+                  key: graylog-password-secret
+          volumeMounts:
+            - name: graylog
+              mountPath: /graylog

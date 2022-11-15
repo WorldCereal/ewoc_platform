@@ -7,9 +7,6 @@ tags:
 
 graylog:
 
-  journal:
-    deleteBeforeStart: true
-
   image:
     repository: "graylog/graylog"
     tag: VALUE_GRAYLOG_VERSION
@@ -18,10 +15,10 @@ graylog:
 
   nodeSelector:
     system-tag: world-cereal-system
-  # resources:     
-  #   requests:
-  #     cpu: 500m
-  #     memory: 3072Mi
+  resources:     
+    requests:
+      cpu: 1000m
+      memory: 1Gi
   #   limits:
   #     cpu: 2000m
   #     memory: 4096Mi
@@ -37,18 +34,13 @@ graylog:
                   - graylog
           topologyKey: kubernetes.io/hostname
 
-  # init:
-    # kubectlVersion: "v1.23.6"
+  init:
+    kubectlVersion: "VALUE_KUBECTL_VERSION"
     # kubectlVersion: "v1.22.13"
 
   heapSize: "16g"
+  # # TestCluster
   # heapSize: "2g"
-  # javaOpts:
-  #   -Xms16g
-  #   -Xmx16g
-  # javaOpts:
-  #   -Xms2g
-  #   -Xmx2g
 
   mongodb:
     uriSecretName: mongodb-access
@@ -56,72 +48,51 @@ graylog:
 
   elasticsearch:
     hosts: "http://ewoc-elastic-master-headless:9200" 
-    # hosts: "http://ewoc-elastic-master:9200"
     # version: 7 
 
-  # Content packs Config map Mounts
-  extraVolumeMounts:
-    - name: graylog-contentpacks
-      mountPath: /usr/share/graylog/data/content-packs
+  journal:
+    maxSize: 10gb
+    # deleteBeforeStart: true
 
-  # Content packs Config map Mounts
-  extraVolumes:
-    - name: graylog-contentpacks
-      configMap: 
-        name: graylog-contentpacks
+  options:
+    gc_warning_threshold: 5s
+    inputbufferProcessors: 4 # default: 2
+    processbufferProcessors: 6 # default: 5
+    outputbufferProcessors: 4 # default: 3
 
   config: |
+    http_external_uri = https://graylog.VALUE_HOSTNAME/
+    trusted_proxies = 10.42.0.0/16,10.100.0.0/16,192.168.0.0/16
     elasticsearch_mute_deprecation_warnings = true
-    content_packs_loader_enabled = true
-    content_packs_dir = /usr/share/graylog/data/content-packs/
-    content_packs_auto_install = contentpacks.json,grok-patterns.json
-
-  env:
-    GRAYLOG_TRUSTED_PROXIES: 10.42.0.0/16,10.100.0.0/16
+    elasticsearch_shards = 6
+    elasticsearch_replicas = 1
+    elasticsearch_compression_enabled = true
+    # elasticsearch_index_optimization_jobs = 12
+    rotation_strategy = size
+    # elasticsearch_max_size_per_index = 1G
+    elasticsearch_max_number_of_indices = 50
 
   persistence:
     enabled: true
-    size: "20Gi"
+    size: "30Gi"
 
   metrics:
     enabled: true
 
   rootUsername: "admin"
 
-  provisioner:
-    enabled: true
-    useGraylogServiceAccount: false
-    nodeSelector:
-      system-tag: world-cereal-system
-    script: |
-      # echo "Graylog passwd: \"$GRAYLOG_PASSWORD_SECRET\""
-      timeout=60; time=$(date +%s)
-      while ! curl -u "admin:$GRAYLOG_PASSWORD_SECRET" -X GET --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' http://graylog.logging.svc.cluster.local:9000/api/system/inputs; do
-        [ $(date +%s) -gt $(($time+$timeout)) ] && echo 'TIMEOUT' && exit 123
-        sleep 6
-      done
-      echo 'Connected to master'
-      json_header='{"username_header": "X-Username","enabled": "true"}'
-      curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X PUT --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_header}" http://graylog.logging.svc.cluster.local:9000/api/system/authentication/http-header-auth-config
-      json_user='{"first_name":"Operator","last_name":"Graylog","username":"operator","email":"operator@operator.fr","password":"{{ graylog.operator_password }}","roles":["Admin"], "permissions":[]}'
-      curl -v -u "admin:$GRAYLOG_PASSWORD_SECRET" -X POST --header 'Content-Type: application/json' --header 'X-Requested-By: localhost' --data-binary "${json_user}" http://graylog.logging.svc.cluster.local:9000/api/users
-
-
   input:
-    tcp:
-      service:
-        name: graylog-fluentbit
-        type: ClusterIP
-      ports:
-        - name: gelf
-          port: 12201
     udp:
       service:
         name: graylog-syslog
         type: ClusterIP
       ports:
-        - name: syslog
+        - name: syslog-hosts
+          port: 30514
+        - name: syslog-k8s
           port: 31514
+        - name: syslog-ewoc
+          port: 32514
 
 
 

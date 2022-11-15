@@ -1,12 +1,24 @@
 
+# Heap usage
+# GET _cat/nodes?v=true&h=heap.current
+# Shards/Indices usage
+# GET _cat/shards?v=true&h=index,prirep,shard,store&s=prirep,store&bytes=gb
+
+# curl 'http://ewoc-elastic-master-headless:9200/_cat/shards?v=true&h=index,prirep,shard,segments.count,store,docs,node&s=prirep,store'
+# curl 'http://ewoc-elastic-master-headless:9200/_cat/indices/ewoc_*,system_*?v=true&h=health,status,index,pri,rep,sc,docs.count,store.size,memory.total&s=index'
+# curl 'http://ewoc-elastic-master-headless:9200/_cat/shards/ewoc_*,system_*?v=true&h=index,node,shard,prirep,store,docs,segmentsCount&s=index,node,shard,prirep'
+
+
+
 clusterName: ewoc-elastic
 
 nodeSelector:
   system-tag: world-cereal-system
 antiAffinity: hard # (default)
 replicas: 3 # (default)
+minimumMasterNodes: 2
 
-# --> NOT working with Bitnami image ; is the default with official image
+# --> NOT working with Bitnami image while it is the default with official image
 # roles:
 #   master: "true"
 #   data: "true"
@@ -17,23 +29,33 @@ volumeClaimTemplate:
   accessModes: ["ReadWriteOnce"]
   resources:
     requests:
-      storage: 100Gi
+      storage: 120Gi
+
+esConfig:
+  elasticsearch.yml: |
+    xpack.security.enabled: false
+    # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/tune-for-indexing-speed.html#_unset_or_increase_the_refresh_interval
+    # index.refresh_interval: 20s
+    # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/size-your-shards.html#avoid-node-hotspots
+    # cluster.routing.allocation.total_shards_per_node: 500
+    # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/tune-for-indexing-speed.html#_indexing_buffer_size
+    # indices.memory.index_buffer_size: ?g # 512M * number-of-shards per node ? (6, configured in graylog)
+
+esJvmOptions:
+  jvm.options: |
+    -Xms24g
+    -Xmx24g
 
 resources:
   requests:
-    cpu: 8000m
-    memory: 16Gi
+    cpu: 4000m
+    memory: 8Gi
   limits:
     cpu: 16000m
     memory: 32Gi
 
-esJvmOptions:
-  jvm.options: |
-    -Xms16g
-    -Xmx16g
 
-
-# # Test cluster:
+# # Testcluster:
 # resources:
 #   requests:
 #     cpu: 2
@@ -48,86 +70,3 @@ esJvmOptions:
 
 
 
-
-
-
-
-
-
-
-
-
-# security:
-#   enabled: true
-#   existingSecret: elastic
-
-# master:
-#   masterOnly: false
-#   replicaCount: 3
-#   nodeSelector:
-#     system-tag: world-cereal-system
-#   podAntiAffinityPreset: "hard"
-
-#   persistence:
-#     enabled: true
-#     accessModes:
-#       - ReadWriteOnce
-#     size: 10Gi
-
-
-#  heapSize: 4g
-#  resources:
-#    limits:
-#      cpu: 300m
-#      memory: 4096Mi
-#    requests:
-#      cpu: 100m
-#      memory: 2048Mi
-
-
-# data:
-#   replicaCount: 0
-
-#   replicas: 1
-#   podAntiAffinityPreset: "hard"
-
-#   nodeSelector:
-#     system-tag: world-cereal-system
-
-#   persistence:
-#     enabled: true
-#     accessModes:
-#       - ReadWriteOnce
-#     size: 50Gi
-
-# #  heapSize: 2048m
-# #  resources:
-# #    limits:
-# #      memory: 4096Mi
-# #    requests:
-# #      memory: 2048Mi
-
-
-# coordinating:
-#   replicaCount: 0
-#   nodeSelector:
-#     system-tag: world-cereal-system
-
-#   podAntiAffinityPreset: "hard"
-#   replicas: 3
-  
-# #  heapSize: 4096m
-# #  resources:
-# #    limits:
-# #      memory: 4096Mi
-# #    requests:
-# #      memory: 2048Mi
-
-# ingest:
-#   replicaCount: 0
-
-
-# metrics:
-#   enabled: true
-#   nodeSelector:
-#     system-tag: world-cereal-system

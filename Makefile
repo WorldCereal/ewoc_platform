@@ -1,4 +1,4 @@
-.PHONY: init certmgr pgsql kong keycloak monitoring graylog mongo elasticsearch kafka fluentbit rdm deploy delete  
+.PHONY: init certmgr pgsql kong keycloak monitoring mongo elasticsearch graylog graylog-config kafka fluentbit vdm rdm deploy delete-logging delete
 
 
 init:
@@ -95,17 +95,21 @@ elasticsearch:
 graylog:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 
-# 	@kubectl get configmap -n logging graylog-contentpacks \
-# 		|| kubectl create configmap graylog-contentpacks --namespace=logging --from-file=charts/graylog/contentpacks.json
-
-	@sed "s:VALUE_GRAYLOG_VERSION:$(GRAYLOG_VERSION):" charts/graylog/values-graylog.tmpl >values-graylog.yaml
+	@sed "s:VALUE_GRAYLOG_VERSION:$(GRAYLOG_VERSION):; s:VALUE_KUBECTL_VERSION:$(GRAYLOG_KUBECTL_VERSION):; s:VALUE_HOSTNAME:$(HOSTNAME):g" charts/graylog/values-graylog.tmpl >values-graylog.yaml
 	helm upgrade --install graylog kongz/graylog --namespace=logging \
 				--version $(GRAYLOG_CHART_VERSION) --values=values-graylog.yaml
 
 	# Create Ingress
-	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAYLOG_CS:$(GRAYLOG_CS):" charts/graylog/ingress-graylog.tmpl | kubectl apply -n logging -f-
+	#@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAYLOG_CS:$(GRAYLOG_CS):" charts/graylog/ingress-graylog.tmpl | kubectl apply -n logging -f-
 
 	kubectl rollout status -n logging statefulset graylog
+
+graylog-config:
+	# cleaning
+	@kubectl get job -n logging graylog-config && kubectl delete --namespace=logging job.batch/graylog-config && sleep 5 || echo
+
+	kubectl create configmap graylog-config --namespace=logging --from-file=charts/graylog/config.py --dry-run=client -oyaml | kubectl apply -f-
+	kubectl apply -f charts/graylog/config-job.yaml
 
 fluentbit: 
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
@@ -142,6 +146,16 @@ deploy:
 	elasticsearch
 	graylog
 	fluentbit
+
+
+delete-logging:
+	# Deleting logging stack
+	helm uninstall -n logging fluent-bit
+	helm uninstall -n logging graylog
+	helm uninstall -n logging elastic
+	helm uninstall -n logging mongo
+	kubectl delete -n logging cm --all
+	kubectl delete -n logging pvc --all
 
 
 delete:
