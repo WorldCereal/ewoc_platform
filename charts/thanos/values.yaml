@@ -1,0 +1,56 @@
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 2m
+
+  nodeSelector:
+    system-tag: world-cereal-system
+  podAntiAffinityPreset: hard
+
+existingObjstoreSecret: thanos-objstore-config
+
+query:
+  # dnsDiscovery:
+  #   sidecarsService: prometheus-operated
+  #   sidecarsNamespace: monitoring
+  stores:
+  - thanos-storegateway:10901
+  resources:
+    limits:
+      cpu: 500m
+      memory: 8Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+  
+  podAntiAffinityPreset: hard
+  nodeSelector:
+    system-tag: world-cereal-system
+queryFrontend:
+  enabled: false
+
+compactor:
+  enabled: true
+  podAntiAffinityPreset: hard
+  nodeSelector:
+    system-tag: world-cereal-system
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 100Gi
+
+
+storegateway:
+  enabled: true
+  persistence:
+    enabled: false
+  podAntiAffinityPreset: hard
+  nodeSelector:
+    system-tag: world-cereal-system
+ruler:
+  enabled: false
+
+minio:
+  enabled: false

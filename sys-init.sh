@@ -31,7 +31,6 @@ for ns in kong keycloak logging monitoring vdm rdm wctiler; do
 		--dry-run=client -oyaml | kubectl apply -f-
 done
 
-
 # Postgresql secret
 for ns in kong keycloak monitoring; do
 	echo "Namespace: $ns"
@@ -56,5 +55,10 @@ kubectl create secret generic mongodb-access --type=Opaque --namespace=logging \
 	--from-literal="uri=mongodb://graylog:$mongodb@mongo-mongodb-headless/graylog?replicaSet=rs0" \
 	--dry-run=client -oyaml | kubectl apply -f-
 
+# Generate Thanos S3 Bucket secret 
+sed "s:ENDPOINT:${THANOS_S3_BUCKET_ENDPOINT}:;s:ACCESS_KEY:$THANOS_S3_BUCKET_ACCESS_KEY:;s:SECRET_KEY:$THANOS_S3_BUCKET_SECRET_KEY:;s:NAME:$THANOS_S3_BUCKET_NAME:g" charts/kube-prometheus-stack/objstore.tmpl > objstore.yml 
 
+kubectl create secret generic thanos-objstore-config --type=Opaque --namespace=monitoring \
+	--from-file=objstore.yml \
+	--dry-run=client -oyaml | kubectl apply -f-
 

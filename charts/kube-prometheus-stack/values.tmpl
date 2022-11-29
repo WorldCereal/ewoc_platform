@@ -6,9 +6,8 @@ alertmanager:
 
   alertmanagerSpec:
     nodeSelector:
-#      role: kong
       system-tag: world-cereal-system
-  
+
 grafana:
   enabled: true
   defaultDashboardsEnabled: true
@@ -18,13 +17,22 @@ grafana:
       enabled: true
       label: grafana_dashboard
 
+  additionalDataSources: 
+  - name: Thanos
+    type: prometheus
+    access: proxy
+    url: http://thanos-query:9090
+    editable: true
+    jsonData:
+        tlsSkipVerify: true
+
   persistence:
     enabled: false
 
   ingress:
     enabled: false
-#  logLevel: DEBUG
-  grafana.ini: 
+
+  grafana.ini:
     log:
       mode: "console"
       level: "debug"
@@ -67,7 +75,6 @@ grafana:
       ha_peers: kube-prometheus-stack-grafana-headless:3000
   
   nodeSelector:
-#    role: kong
     system-tag: world-cereal-system
 
   affinity:
@@ -81,12 +88,20 @@ grafana:
               - grafana
           topologyKey: kubernetes.io/hostname
 
-  replicas: 3
+  replicas: 1
   headlessService: true
 
 prometheus:
   enabled: true
-  
+  disableCompaction: true
+
+  thanosService:
+    enabled: true
+
+  thanosServiceMonitor:
+      enabled: true
+      interval: 2m
+
   prometheusSpec:
     podMonitorSelectorNilUsesHelmValues: true
     serviceMonitorSelectorNilUsesHelmValues: true
@@ -94,14 +109,26 @@ prometheus:
       matchLabels:
         release: kube-prometheus-stack
     nodeSelector:
-#      role: kong
       system-tag: world-cereal-system
-    retention: 5d
-    
+
+    retention: 2d
+    scrapeInterval: 2m
+
+    thanos:
+      objectStorageConfig:
+        key: objstore.yml
+        name: thanos-objstore-config
+      resources:
+        limits:
+          cpu: 100m
+          memory:  2Gi
+        requests:
+          cpu: 25m
+          memory: 512Mi
+
     storageSpec: 
      volumeClaimTemplate:
        spec:
-         #storageClassName: standard
          accessModes: ["ReadWriteOnce"]
          resources:
            requests:
@@ -120,10 +147,6 @@ prometheus:
               - prometheus
           topologyKey: kubernetes.io/hostname
 
-    scrapeInterval: "60s"
-    evaluationInterval: "60s"
-    shards: 1
-
     resources:
       limits:
         memory: 16000Mi
@@ -137,13 +160,10 @@ prometheusOperator:
   enabled: true
   hostNetwork: false        
   nodeSelector:
-#    role: kong
     system-tag: world-cereal-system
+
 kubelet:
   enabled: true
   namespace: kube-system
   serviceMonitor:
-    ## Enable scraping /metrics/resource from kubelet's service
-    ## This is disabled by default because container metrics are already exposed by cAdvisor
-    ##
     resource: true

@@ -6,7 +6,7 @@ export CS_REGISTRY=501872996718.dkr.ecr.eu-central-1.amazonaws.com
 # export CS_REGISTRY=643vlk6z.gra7.container-registry.ovh.net
 
 export HOSTNAME="cloud.esa-worldcereal.org"
-# export HOSTNAME="ewoc-prod.worldcereal.csgroup.space"
+#export HOSTNAME="demo.esa-worldcereal.org"
 
 # Cert Manager 
 # export CERT_MANAGER_CHART_VERSION="1.5.4"
@@ -35,6 +35,13 @@ export KEYCLOAK_CHART_VERSION="10.1.0"
 #export KUBE_PROMETHEUS_STACK_CHART_VERSION="17.0.2"
 export KUBE_PROMETHEUS_STACK_CHART_VERSION="40.0.0"
 
+# Thanos
+export THANOS_CHART_VERSION="11.6.0"
+export THANOS_S3_BUCKET_NAME=""
+export THANOS_S3_BUCKET_ENDPOINT=""
+export THANOS_S3_BUCKET_ACCESS_KEY=""
+export THANOS_S3_BUCKET_SECRET_KEY=""
+
 # FluentBit
 #export FLUENTBIT_CHART_VERSION="0.16.6"
 export FLUENTBIT_CHART_VERSION="0.20.8"
@@ -55,7 +62,6 @@ export GRAYLOG_CHART_VERSION="2.1.7" # Graylog 4.2.7
 export GRAYLOG_VERSION="4.3.8-1"
 
 #WCTiler
-export WCT_VERSION="1.0.0"
 export WCT_HOST_DB="postgres-postgresql-0.postgres-postgresql-headless.argo.svc.cluster.local"
 export WCT_DB_NAME="world-cereal-wctiler"
 

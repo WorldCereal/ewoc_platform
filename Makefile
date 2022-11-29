@@ -1,4 +1,4 @@
-.PHONY: init certmgr pgsql kong keycloak monitoring mongo elasticsearch graylog graylog-config kafka fluentbit vdm rdm deploy delete-logging delete
+.PHONY: init certmgr pgsql kong keycloak monitoring thanos mongo elasticsearch graylog graylog-config kafka fluentbit vdm rdm deploy delete-logging delete
 
 
 init:
@@ -53,6 +53,12 @@ keycloak:
 	
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):" charts/keycloak/ingress.tmpl | kubectl apply --namespace=keycloak -f-
 	kubectl rollout status -n keycloak statefulset keycloak
+
+thanos:
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+	
+	helm upgrade --install thanos bitnami/thanos --create-namespace --namespace=monitoring  --values=charts/thanos/values.yaml
+
 
 monitoring:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
@@ -124,7 +130,6 @@ rdm:
 	# Ingress
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:RDM_CS:$(RDM_CS):;s:RDM_API_CS:$(RDM_API_CS):g" charts/rdm/ingress.tmpl > rdm-ingress.yaml
 	@kubectl apply -f rdm-ingress.yaml -n rdm 
-
 
 deploy:
 	# Deploy all components for Kong
