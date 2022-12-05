@@ -66,14 +66,14 @@ export WCT_HOST_DB="postgres-postgresql-0.postgres-postgresql-headless.argo.svc.
 export WCT_DB_NAME="world-cereal-wctiler"
 
 # Keycloak Client Secret
-export GRAYLOG_CS=""
-export PROMETHEUS_CS=""
-export GRAFANA_CS=""
-export WCT_CS=""
-export RDM_API_CS=""
-export RDM_CS=""
-export VDM_CS=""
-export VDM_API_CS=""
+export GRAYLOG_CS="${GRAYLOG_CS:-$(openssl rand -base64 32)}"
+export PROMETHEUS_CS="${PROMETHEUS_CS:-$(openssl rand -base64 32)}"
+export GRAFANA_CS="${GRAFANA_CS:-$(openssl rand -base64 32)}"
+export WCT_CS="${WCT_CS:-$(openssl rand -base64 32)}"
+export RDM_API_CS="${RDM_API_CS:-$(openssl rand -base64 32)}"
+export RDM_CS="${RDM_CS:-$(openssl rand -base64 32)}"
+export VDM_CS="${VDM_CS:-$(openssl rand -base64 32)}"
+export VDM_API_CS="${VDM_API_CS:-$(openssl rand -base64 32)}"
 
 
 
