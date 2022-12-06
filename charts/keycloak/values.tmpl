@@ -1,17 +1,9 @@
-# helm install keycloak  bitnami/keycloak --create-namespace --namespace=keycloak -f keycloak-value.yaml
 image:
   registry: docker.io
   repository: bitnami/keycloak
-#  tag: VALUE_KCVERS
   debug: false
 
 extraEnv:
-# - name: KEYCLOAK_LOG_LEVEL
-#   value: DEBUG
-# - name: WILDFLY_LOG_LEVEL
-#   value: DEBUG
-# - name: ROOT_LOG_LEVEL
-#   value: DEBUG
 - name: PROXY_ADDRESS_FORWARDING  
   value: "true"
 

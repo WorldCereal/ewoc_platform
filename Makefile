@@ -43,7 +43,7 @@ keycloak:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 
 	# Generating Keycloak preset realm configuration
-	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):g; s:GRAYLOG_CS:$(GRAYLOG_CS):; s:PROMETHEUS_CS:$(PROMETHEUS_CS):; s:GRAFANA_CS:$(GRAFANA_CS):; s:WCT_CS:$(WCT_CS):; s:RDM_API_CS:$(RDM_API_CS):; s:RDM_CS:$(RDM_CS):; s:VDM_CS:$(VDM_CS):; s:VDM_API_CS:$(VDM_API_CS):;" charts/keycloak/WC-realm.tmpl > WC-realm.json
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):g; s:GRAYLOG_CS:$(GRAYLOG_CS):; s:PROMETHEUS_CS:$(PROMETHEUS_CS):; s:GRAFANA_CS:$(GRAFANA_CS):; s:WCT_CS:$(WCT_CS):; s:RDM_API_CS:$(RDM_API_CS):; s:RDM_CS:$(RDM_CS):; s:VDM_CS:$(VDM_CS):; s:VDM_API_CS:$(VDM_API_CS):; s:API_CS:$(API_CS):;" charts/keycloak/WC-realm.tmpl > WC-realm.json
 	# Create Keycloak realm configuration configmap
 	@kubectl get configmap -n keycloak realm-config || kubectl create configmap realm-config --from-file=WC-realm.json -n keycloak
 	

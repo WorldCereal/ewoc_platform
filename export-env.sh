@@ -5,14 +5,14 @@ export CLUSTER_ENV_LOADED="true"
 export CS_REGISTRY=501872996718.dkr.ecr.eu-central-1.amazonaws.com
 # export CS_REGISTRY=643vlk6z.gra7.container-registry.ovh.net
 
-export HOSTNAME="cloud.esa-worldcereal.org"
-#export HOSTNAME="demo.esa-worldcereal.org"
+#export HOSTNAME="cloud.esa-worldcereal.org"
+export HOSTNAME="demo.esa-worldcereal.org"
 
 # Cert Manager 
 # export CERT_MANAGER_CHART_VERSION="1.5.4"
 export CERT_MANAGER_CHART_VERSION="1.9.1"
-# export CERT_MANAGER_MAIL="quentin.maraval@csgroup.eu"
-export CERT_MANAGER_MAIL="guillaume.dubreule@csgroup.eu"
+ export CERT_MANAGER_MAIL="quentin.maraval@csgroup.eu"
+#export CERT_MANAGER_MAIL="guillaume.dubreule@csgroup.eu"
 # Kong conf
 # export KONG_CHART_VERSION="2.1.0"
 # export KONG_VERSION="2.4-ubuntu"
@@ -28,7 +28,6 @@ export KONG_CHART_VERSION="2.13.0"
 export KONG_VERSION="2.8.1-alpine"
 
 # Keycloak conf
-# export KEYCLOAK_CHART_VERSION="5.0.6"
 export KEYCLOAK_CHART_VERSION="10.1.0"
 
 # Kube-Prometheus-Stack 
@@ -74,6 +73,6 @@ export RDM_API_CS="${RDM_API_CS:-$(openssl rand -base64 32)}"
 export RDM_CS="${RDM_CS:-$(openssl rand -base64 32)}"
 export VDM_CS="${VDM_CS:-$(openssl rand -base64 32)}"
 export VDM_API_CS="${VDM_API_CS:-$(openssl rand -base64 32)}"
-
+export API_CS="${API_CS:-$(openssl rand -base64 32)}"
 
 
