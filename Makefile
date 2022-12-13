@@ -131,6 +131,33 @@ rdm:
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:RDM_CS:$(RDM_CS):;s:RDM_API_CS:$(RDM_API_CS):g" charts/rdm/ingress.tmpl > rdm-ingress.yaml
 	@kubectl apply -f rdm-ingress.yaml -n rdm 
 
+vdm:
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+
+	# Ingress
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:VDM_CS:$(VDM_CS):;s:VDM_API_CS:$(VDM_API_CS):g" charts/vdm/ingress.tmpl > vdm-ingress.yaml
+	@kubectl apply -f vdm-ingress.yaml -n vdm 
+
+wctiler: 
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:WCT_CS:$(WCT_CS):g" charts/wctiler/ingress.tmpl > ingress-wctiler.yaml
+
+	# Create pgsql connexion conf
+	@sed "s:HOST:$(WCT_HOST_DB):;s:PORT:$(WCT_DB_PORT):;s:DBNAME:$(WCT_DB_NAME):;s:USER:$(WCT_DB_USER):;s:PASSWORD:$(WCT_DB_PASSWORD):" charts/wctiler/chart/config/mapfiles/postgres_connection.inc.map.tmpl > charts/wctiler/chart/config/mapfiles/postgres_connection.inc.map.sample
+
+	# Set WMS service URL 
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):" charts/wctiler/chart/config/worldcereal_status.tmpl > charts/wctiler/chart/config/worldcereal_status.html
+
+	# Set Values.yaml
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:CS_REGISTRY:$(CS_REGISTRY):;" charts/wctiler/chart/values.tmpl > values-wctiler.yaml
+
+	# Install chart
+	@helm upgrade --install mapproxy  charts/wctiler/chart/ --namespace=wctiler --values values-wctiler.yaml --set-file mapserver.mapfiles.postgresConnection=charts/wctiler/chart/config/mapfiles/postgres_connection.inc.map.sample
+
+	# create ingress for WCTiler
+	@kubectl apply -f ingress-wctiler.yaml -n wctiler
+
 deploy:
 	# Deploy all components for Kong
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }

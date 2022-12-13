@@ -1,0 +1,58 @@
+image:
+  registry: CS_REGISTRY
+  name: world-cereal/mapproxy
+  tag: dev
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: aws-registry
+
+# fixes Multi-Attach error for volume
+deploymentStrategy:
+  type: Recreate
+
+nodeSelector:
+  system-tag: world-cereal-system
+
+service:
+  type: ClusterIP
+  port:
+    name: mapproxy
+    port: 8080
+    targetPort: nginx
+    protocol: TCP
+
+nginx:
+  image:
+    registry: CS_REGISTRY
+    name: world-cereal/nginx
+    tag: stable
+    pullPolicy: IfNotPresent
+  ports:
+    - name: nginx
+      containerPort: 80
+      protocol: TCP
+
+mapserver:
+  nameOverride: mapserver
+  replicaCount: 1
+  image:
+    registry: CS_REGISTRY
+    name: world-cereal/mapserver
+    tag: dev
+    pullPolicy: IfNotPresent
+  ports:
+    - name: mapserver
+      containerPort: 80
+      protocol: TCP
+  env:
+    - name: "IO_TIMEOUT"
+      value: "60000"
+  service:
+    port:
+      name: mapserver
+      port: 80
+      targetPort: mapserver
+      protocol: TCP
+  nodeSelector:
+    system-tag: world-cereal-system

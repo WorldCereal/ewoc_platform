@@ -5,14 +5,14 @@ export CLUSTER_ENV_LOADED="true"
 export CS_REGISTRY=501872996718.dkr.ecr.eu-central-1.amazonaws.com
 # export CS_REGISTRY=643vlk6z.gra7.container-registry.ovh.net
 
-#export HOSTNAME="cloud.esa-worldcereal.org"
-export HOSTNAME="demo.esa-worldcereal.org"
+export HOSTNAME="cloud.esa-worldcereal.org"
+#export HOSTNAME="demo.esa-worldcereal.org"
 
 # Cert Manager 
 # export CERT_MANAGER_CHART_VERSION="1.5.4"
 export CERT_MANAGER_CHART_VERSION="1.9.1"
- export CERT_MANAGER_MAIL="quentin.maraval@csgroup.eu"
-#export CERT_MANAGER_MAIL="guillaume.dubreule@csgroup.eu"
+#export CERT_MANAGER_MAIL="quentin.maraval@csgroup.eu"
+export CERT_MANAGER_MAIL="guillaume.dubreule@csgroup.eu"
 # Kong conf
 # export KONG_CHART_VERSION="2.1.0"
 # export KONG_VERSION="2.4-ubuntu"
@@ -61,8 +61,12 @@ export GRAYLOG_CHART_VERSION="2.1.7" # Graylog 4.2.7
 export GRAYLOG_VERSION="4.3.8-1"
 
 #WCTiler
-export WCT_HOST_DB="postgres-postgresql-0.postgres-postgresql-headless.argo.svc.cluster.local"
-export WCT_DB_NAME="world-cereal-wctiler"
+export WCT_HOST_DB=""
+export WCT_DB_NAME=""
+export WCT_DB_TABLE=""
+export WCT_DB_USER=""
+export WCT_DB_PASSWORD=""
+export WCT_DB_PORT=""
 
 # Keycloak Client Secret
 export GRAYLOG_CS="${GRAYLOG_CS:-$(openssl rand -base64 32)}"
