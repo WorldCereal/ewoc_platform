@@ -53,37 +53,7 @@ metadata:
   namespace: vdm
 plugin: request-transformer
 ---
-# apiVersion: extensions/v1beta1
-# kind: Ingress
-# metadata:
-#   annotations:
-#     cert-manager.io/cluster-issuer: letsencrypt-prod
-#     konghq.com/plugins: vdm-oidc
-#     konghq.com/strip-path: "true"
-#     kubernetes.io/ingress.class: kong
-#     kubernetes.io/tls-acme: "true"
-#   name: vdm
-#   namespace: vdm
-# spec:
-#   rules:
-#   - host: vdm.VALUE1
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: be
-#           servicePort: 9850
-#         path: /backend
-#       - backend:
-#           serviceName: app-wcpdr
-#           servicePort: 9000
-#         path: /
-#   tls:
-#   - hosts:
-#     - vdm.VALUE1
-#     secretName: vdmtls
-
 apiVersion: networking.k8s.io/v1
-#apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
@@ -119,36 +89,7 @@ spec:
       secretName: vdmtls
 
 ---
-# apiVersion: extensions/v1beta1
-# kind: Ingress
-# metadata:
-#   annotations:
-#     cert-manager.io/cluster-issuer: letsencrypt-prod
-#     konghq.com/https-redirect-status-code: "302"
-#     konghq.com/plugins: vdmapi-oidc, vdmapi-cleaner
-#     konghq.com/protocols: https
-#     konghq.com/strip-path: "true"
-#     kubernetes.io/ingress.class: kong
-#     kubernetes.io/tls-acme: "true"
-#   name: vdmapi
-#   namespace: vdm
-# spec:
-#   rules:
-#   - host: vdmapi.VALUE1
-#     http:
-#       paths:
-#       - backend:
-#           serviceName: be
-#           servicePort: 9850
-#         path: /backend
-#   tls:
-#   - hosts:
-#     - vdmapi.VALUE1
-#     secretName: vdmapitls
-
-
 apiVersion: networking.k8s.io/v1
-#apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
