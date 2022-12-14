@@ -157,6 +157,9 @@ prometheus:
 
 prometheusOperator:
   enabled: true
+  hostNetwork: false        
+  nodeSelector:
+    system-tag: world-cereal-system
 
 kubelet:
   enabled: true
