@@ -57,7 +57,11 @@ keycloak:
 thanos:
 	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
 	
-	helm upgrade --install thanos bitnami/thanos --create-namespace --namespace=monitoring  --values=charts/thanos/values.yaml
+	@sed "s|THANOS_S3_BUCKET_NAME|$(THANOS_S3_BUCKET_NAME)|;s|THANOS_S3_BUCKET_ENDPOINT|$(THANOS_S3_BUCKET_ENDPOINT)|;s|THANOS_S3_BUCKET_ACCESS_KEY|$(THANOS_S3_BUCKET_ACCESS_KEY)|;s|THANOS_S3_BUCKET_SECRET_KEY|$(THANOS_S3_BUCKET_SECRET_KEY)|;" charts/thanos/objstore.tmpl > objstore.yml
+	@kubectl create secret generic thanos-objstore-config -n monitoring --from-file=objstore.yml
+
+	@sed "s|THANOS_S3_BUCKET_ACCESS_KEY|$(THANOS_S3_BUCKET_ACCESS_KEY)|;s|THANOS_S3_BUCKET_SECRET_KEY|$(THANOS_S3_BUCKET_SECRET_KEY)|;s|THANOS_S3_ADMIN_PASSWORD|$(THANOS_S3_ADMIN_PASSWORD)|;" charts/thanos/values.tmpl > thanos-values.yaml
+	helm upgrade --install thanos bitnami/thanos --create-namespace --namespace=monitoring  --values=thanos-values.yaml
 
 
 monitoring:

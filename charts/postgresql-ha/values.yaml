@@ -8,7 +8,7 @@ pgpool:
   nodeSelector: 
     system-tag: world-cereal-system
   podAntiAffinityPreset: hard
-  replicaCount: 1
+  replicaCount: 3
   #existingSecret: pgsqlha-pgpool
   connectionLifeTime: 120
 

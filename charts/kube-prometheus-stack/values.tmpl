@@ -55,8 +55,7 @@ grafana:
       auth_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/auth
       token_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/token
       api_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/userinfo
-      #role_attribute_path: contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
-      role_attribute_strict: false
+      role_attribute_path: contains(groups[*], 'ewoc_platform_admin') && 'Admin' || contains(groups[*], 'ewoc_admin') && 'Admin' || 'Viewer'
       client_secret: GRAFANA_CS
 
     database:
@@ -111,7 +110,7 @@ prometheus:
     nodeSelector:
       system-tag: world-cereal-system
 
-    retention: 2d
+    retention: 12h
     scrapeInterval: 2m
 
     thanos:
@@ -132,9 +131,9 @@ prometheus:
          accessModes: ["ReadWriteOnce"]
          resources:
            requests:
-             storage: 100Gi
+             storage: 30Gi
 
-    replicas: 3
+    replicas: 2
 
     affinity:
       podAntiAffinity:
@@ -158,9 +157,6 @@ prometheus:
 
 prometheusOperator:
   enabled: true
-  hostNetwork: false        
-  nodeSelector:
-    system-tag: world-cereal-system
 
 kubelet:
   enabled: true

@@ -8,8 +8,6 @@ metrics:
     system-tag: world-cereal-system
   podAntiAffinityPreset: hard
 
-existingObjstoreSecret: thanos-objstore-config
-
 query:
   # dnsDiscovery:
   #   sidecarsService: prometheus-operated
@@ -49,8 +47,28 @@ storegateway:
   podAntiAffinityPreset: hard
   nodeSelector:
     system-tag: world-cereal-system
+
 ruler:
   enabled: false
 
+
+existingObjstoreSecret: thanos-objstore-config
+
 minio:
-  enabled: false
+  enabled: true
+  auth:
+    rootUser: "admin"
+    rootPassword: THANOS_S3_ADMIN_PASSWORD
+  defaultBuckets: "thanos"
+
+  provisioning:
+    enabled: true
+    users:
+      - username: THANOS_S3_BUCKET_ACCESS_KEY
+        password: THANOS_S3_BUCKET_SECRET_KEY
+        disabled: false
+        policies:
+          - readwrite
+persistence:
+  enabled: true
+  size: 300Gi
