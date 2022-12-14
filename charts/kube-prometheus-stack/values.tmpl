@@ -56,6 +56,7 @@ grafana:
       token_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/token
       api_url: https://auth.VALUE_HOSTNAME/realms/worldcereal/protocol/openid-connect/userinfo
       role_attribute_path: contains(groups[*], 'ewoc_platform_admin') && 'Admin' || contains(groups[*], 'ewoc_admin') && 'Admin' || 'Viewer'
+      role_attribute_strict: false
       client_secret: GRAFANA_CS
 
     database:

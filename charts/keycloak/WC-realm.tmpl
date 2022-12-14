@@ -614,6 +614,22 @@
         ]
       },
       "subGroups": []
+    },
+    {
+      "id": "3e24efd4-6a8b-4143-ae0a-93a0fe20a800",
+      "name": "rdm_users",
+      "path": "/rdm_users",
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "rdmapi": [
+          "rdmapi_role"
+        ],
+        "rdm": [
+          "rdm_role"
+        ]
+      },
+      "subGroups": []
     }
   ],
   "defaultRole": {
@@ -1184,6 +1200,22 @@
       },
       "fullScopeAllowed": true,
       "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "af817d08-5d4f-4d2a-9f69-cd7ca1301c29",
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "consentRequired": false,
+          "config": {
+            "full.path": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "groups",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ],
       "defaultClientScopes": [
         "web-origins",
         "roles",
@@ -2142,7 +2174,7 @@
       "clientId": "wctiler",
       "name": "",
       "description": "",
-      "rootUrl": "http://wctiler.VALUE_HOSTNAME/",
+      "rootUrl": "https://wctiler.VALUE_HOSTNAME/",
       "adminUrl": "",
       "baseUrl": "",
       "surrogateAuthRequired": false,
@@ -2169,6 +2201,7 @@
         "saml.force.post.binding": "false",
         "post.logout.redirect.uris": "+",
         "oauth2.device.authorization.grant.enabled": "false",
+        "use.jwks.url": "false",
         "backchannel.logout.revoke.offline.tokens": "false",
         "saml.server.signature.keyinfo.ext": "false",
         "use.refresh.tokens": "true",
@@ -2180,6 +2213,7 @@
         "require.pushed.authorization.requests": "false",
         "saml.assertion.signature": "false",
         "id.token.as.detached.signature": "false",
+        "client.secret.creation.time": "1670334719",
         "saml.encrypt": "false",
         "saml$server$signature": "false",
         "saml.server.signature": "false",
@@ -3798,7 +3832,7 @@
           "authenticatorConfig": "check if not in vdm role",
           "authenticator": "conditional-user-role",
           "authenticatorFlow": false,
-          "requirement": "DISABLED",
+          "requirement": "REQUIRED",
           "priority": 1,
           "autheticatorFlow": false,
           "userSetupAllowed": false
