@@ -4,9 +4,11 @@ export CLUSTER_ENV_LOADED="true"
 
 export CS_REGISTRY=501872996718.dkr.ecr.eu-central-1.amazonaws.com
 # export CS_REGISTRY=643vlk6z.gra7.container-registry.ovh.net
+export REGISTRY_USER=AWS
+# Leave empty when using AWS ECR (auto-generated)
+export REGISTRY_PASSWD=
 
 export HOSTNAME="cloud.esa-worldcereal.org"
-#export HOSTNAME="demo.esa-worldcereal.org"
 
 # Cert Manager 
 # export CERT_MANAGER_CHART_VERSION="1.5.4"
@@ -68,7 +70,11 @@ export WCT_DB_USER=""
 export WCT_DB_PASSWORD=""
 export WCT_DB_PORT=""
 
-# Keycloak Client Secret
+
+# Generating System DB password
+export SYSDB_PASSWD="${SYSDB_PASSWD:-$(openssl rand -base64 32)}"
+
+# Keycloak Client Secrets
 export GRAYLOG_CS="${GRAYLOG_CS:-$(openssl rand -base64 32)}"
 export PROMETHEUS_CS="${PROMETHEUS_CS:-$(openssl rand -base64 32)}"
 export GRAFANA_CS="${GRAFANA_CS:-$(openssl rand -base64 32)}"

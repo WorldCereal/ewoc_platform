@@ -2,22 +2,20 @@
 
 set -e
 
-source export-env.sh
+[ -z "$SYSDB_PASSWD" ] && echo 'The env variables should be sourced before running this script' && exit 1
 
 # Creating DB namespace
 kubectl get ns sysdb &>/dev/null || kubectl create namespace sysdb
-# Generating DB password
-dbpasswd=$(openssl rand -base64 32)
 
 # Creating/updating DB secret
 kubectl create secret generic system-db --type=Opaque --namespace=sysdb \
-	--from-literal="postgresql-password=$dbpasswd" \
+	--from-literal="postgresql-password=$SYSDB_PASSWD" \
 	--from-literal="repmgr-password=$(openssl rand -base64 32)" \
 	--dry-run=client -oyaml | kubectl apply -f-
 
 # Generate new AWS ECR credentials
-# aws_token=$(aws ecr get-login-password --region eu-central-1 --profile=admin)
-aws_token=$(aws ecr get-login-password --region eu-central-1)
+# REGISTRY_PASSWD=$(aws ecr get-login-password --region eu-central-1 --profile=admin)
+REGISTRY_PASSWD="${REGISTRY_PASSWD:-$(aws ecr get-login-password --region eu-central-1)}"
 
 # Namespace + AWS ECR credentials
 for ns in kong keycloak logging monitoring vdm rdm wctiler; do
@@ -27,7 +25,7 @@ for ns in kong keycloak logging monitoring vdm rdm wctiler; do
 	#Creating/updating AWS registry secret
 	kubectl create secret docker-registry aws-registry --namespace=$ns \
 		--docker-server=$CS_REGISTRY \
-		--docker-username=AWS --docker-password="$aws_token" \
+		--docker-username=$REGISTRY_USER --docker-password="$REGISTRY_PASSWD" \
 		--dry-run=client -oyaml | kubectl apply -f-
 done
 
@@ -35,7 +33,7 @@ done
 for ns in kong keycloak monitoring; do
 	echo "Namespace: $ns"
 	kubectl create secret generic system-db --type=Opaque --namespace=$ns \
-		--from-literal="postgresql-password=$dbpasswd" \
+		--from-literal="postgresql-password=$SYSDB_PASSWD" \
 		--dry-run=client -oyaml | kubectl apply -f-
 done
 
