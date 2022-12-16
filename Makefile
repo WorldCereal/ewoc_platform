@@ -110,15 +110,15 @@ graylog:
 				--version $(GRAYLOG_CHART_VERSION) --values=values-graylog.yaml
 
 	# Create Ingress
-	#@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAYLOG_CS:$(GRAYLOG_CS):" charts/graylog/ingress-graylog.tmpl | kubectl apply -n logging -f-
+	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAYLOG_CS:$(GRAYLOG_CS):" charts/graylog/ingress-graylog.tmpl | kubectl apply -n logging -f-
 
 	kubectl rollout status -n logging statefulset graylog
 
 graylog-config:
-	# cleaning
-	@kubectl get job -n logging graylog-config && kubectl delete --namespace=logging job.batch/graylog-config && sleep 5 || echo
+	# cleaning previous job if any
+	@kubectl get job -n logging graylog-config && kubectl delete --namespace=logging job/graylog-config && sleep 5 || echo
 
-	kubectl create configmap graylog-config --namespace=logging --from-file=charts/graylog/config.py --dry-run=client -oyaml | kubectl apply -f-
+	kubectl create configmap graylog-config --namespace=logging --from-literal=hostname=$(HOSTNAME) --from-file=charts/graylog/config.py  --dry-run=client -oyaml | kubectl apply -f-
 	kubectl apply -f charts/graylog/config-job.yaml
 
 fluentbit: 
@@ -187,6 +187,7 @@ deploy:
 delete-logging:
 	# Deleting logging stack
 	helm uninstall -n logging fluent-bit
+	kubectl delete jobs graylog-config
 	helm uninstall -n logging graylog
 	helm uninstall -n logging elastic
 	helm uninstall -n logging mongo

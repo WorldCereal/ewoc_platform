@@ -14,11 +14,19 @@ spec:
         - name: graylog
           configMap:
             name: graylog-config
+            items:
+              - key: config.py
+                path: config.py
       containers:
         - name: graylog-config
           image: python:3.10.8-alpine3.16
           command: ['sh', '-c', 'pip install requests && python -u /graylog/config.py']
           env:
+            - name: HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: graylog-config
+                  key: hostname
             - name: ADMIN_PASSWD
               valueFrom:
                 secretKeyRef:
