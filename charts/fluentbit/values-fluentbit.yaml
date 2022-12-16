@@ -1,34 +1,77 @@
-# image:
-#   repository: 643vlk6z.gra7.container-registry.ovh.net/world-cereal/fluent-bit
-#   tag: VALUE1
-#   pullPolicy: "Always"
 
-# imagePullSecrets:
-#     - name: harborcs
+image:
+  # tag: 2.0.5-debug
+  pullPolicy: IfNotPresent
 
-tolerations:
-  - key: node-role.kubernetes.io/master
-    effect: NoSchedule
+# nodeSelector:
+#   system-tag: world-cereal-system
 
-#logLevel: debug
+
+flush: 2
+# logLevel: debug
+
+
+
+# Default config: https://github.com/fluent/helm-charts/blob/main/charts/fluent-bit/values.yaml
+
 
 config:
+  # Modified from default config:
+  #   - Removed the default Systemd_Filter (only retrieving kubelet logs)
+  #   - Mem_Buf_Limit of containers logs (kube.*) set to 64MB to handle thousands of pods
+  # Systemd logs not working (empty message)
+    # [INPUT]
+    #     Name              systemd
+    #     Tag               host.*
+    #     Read_From_Tail    On
   inputs: |
     [INPUT]
-        Name tail
-        Tag system.*
-        Path /var/log/syslog
-        DB /var/log/syslog.db
-        DB.Sync Normal
-        Rotate_Wait 10
-        Mem_Buf_Limit 10MB
-        
+        Name              tail
+        Path              /var/log/containers/*.log
+        multiline.parser  docker, cri
+        Tag               kube.*
+        Mem_Buf_Limit     64MB
+        Skip_Long_Lines   On
+
+  # Modified from default:
+  #   - Added Kube_URL to use API server to get additional info
+  #   - Increased Buffer_Size to 1MB (32k by default)
+  #   - K8S-Logging.Exclude to Off
+  filters: |
+    [FILTER]
+        Name                  kubernetes
+        Match                 kube.*
+        Kube_URL              https://D3A397FAC00ACF48923FB65AF11BC304.gr7.eu-central-1.eks.amazonaws.com
+        # Use_Kubelet           On
+        Buffer_Size           1MB
+        Merge_Log             On
+        Keep_Log              Off
+        K8S-Logging.Parser    On
+        K8S-Logging.Exclude   Off
+
+  # https://github.com/fluent/fluent-bit/issues/2932
   outputs: |
     [OUTPUT]
-        Name kafka
-        Format json
-        Match system.*
-        Brokers kafka-headless.logging.svc.cluster.local:9092
-        Topics system.logs
+        Name                  syslog
+        Match                 host.*
+        Host                  graylog-syslog.logging.svc.cluster.local
+        Port                  30514
+        Mode                  udp
+        Retry_Limit           False
+        syslog_severity_key   severity
+        syslog_facility_key   facility
+        # syslog_appname_key    appname
+        syslog_message_key    message
 
-#Brokers kafka.logging.svc.cluster.local:9092
+    [OUTPUT]
+        Name                  syslog
+        Match                 kube.*
+        Host                  graylog-syslog.logging.svc.cluster.local
+        Port                  31514
+        Mode                  udp
+        Retry_Limit           False
+        syslog_message_key    log
+        # syslog_severity_key   
+
+
+

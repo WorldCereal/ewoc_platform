@@ -43,13 +43,6 @@ export THANOS_S3_BUCKET_ACCESS_KEY="thanos"
 export THANOS_S3_BUCKET_SECRET_KEY="${THANOS_S3_BUCKET_SECRET_KEY:-$(openssl rand -base64 32)}"
 export THANOS_S3_ADMIN_PASSWORD="${THANOS_S3_ADMIN_PASSWORD:-$(openssl rand -base64 32)}"
 
-# FluentBit
-#export FLUENTBIT_CHART_VERSION="0.16.6"
-export FLUENTBIT_CHART_VERSION="0.20.8"
-
-# Kakfa
-export KAFKA_CHART_VERSION="18.4.4"
-
 # Graylog STACK (elastic+mongo+graylog)
 #export MONGO_CHART_VERSION="10.26.1"
 export MONGO_CHART_VERSION="13.1.3"
@@ -58,9 +51,14 @@ export MONGO_CHART_VERSION="13.1.3"
 # export ELASTIC_CHART_VERSION="17.9.29" # Elastic 7.17.3 (bitnami)
 export ELASTIC_CHART_VERSION="7.17.3" # Elastic 7.17.3 (elastic)
 
-#export GRAYLOG_CHART_VERSION="2.1.3"
 export GRAYLOG_CHART_VERSION="2.1.7" # Graylog 4.2.7
 export GRAYLOG_VERSION="4.3.8-1"
+export GRAYLOG_KUBECTL_VERSION="$(kubectl version -o json | jq -r .serverVersion.gitVersion)"
+
+# FluentBit
+export FLUENTBIT_CHART_VERSION="0.21.1" # FluentBit 2.0.5
+# export FLUENTBIT_CHART_VERSION="0.20.8"
+# export FLUENTBIT_VERSION="1.9.9"
 
 #WCTiler
 export WCT_HOST_DB=""

@@ -90,18 +90,6 @@ elasticsearch:
 				--version=$(ELASTIC_CHART_VERSION) --values=charts/elasticsearch/values-elastic.yaml
 	kubectl rollout status -n logging statefulset ewoc-elastic-master
 
-# kafka:
-# 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
-# 	helm upgrade --install kafka bitnami/kafka --namespace=logging \
-# 				--version $(KAFKA_CHART_VERSION) --values=charts/kafka/values-kafka.yaml
-
-# 	kubectl rollout status -n logging statefulset kafka
-
-# 	# Create Topics Kafka 
-# 	# kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic preprocessing.logs --partitions=6 --replication-factor=1 --config cleanup.policy=delete --config retention.ms=3600000 --config retention.bytes="-1"
-# 	# kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic keycloak.logs --partitions=1 --replication-factor=1 --config cleanup.policy=delete --config retention.ms=3600000 --config retention.bytes="-1"
-# 	# kubectl exec -n logging kafka-0 -c kafka -- kafka-topics.sh --bootstrap-server kafka.logging.svc.cluster.local:9092 --create --topic system.logs --partitions=6 --replication-factor=1 --config cleanup.policy=delete --config retention.ms=3600000 --config retention.bytes="-1"
-
 graylog:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 
@@ -122,9 +110,9 @@ graylog-config:
 	kubectl apply -f charts/graylog/config-job.yaml
 
 fluentbit: 
-	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 	helm upgrade --install fluent-bit fluent/fluent-bit --namespace=logging \
-				--version $(FLUENTBIT_CHART_VERSION) --values=charts/fluentbit/values-fluentbit.yaml
+				--version=$(FLUENTBIT_CHART_VERSION) --values=charts/fluentbit/values-fluentbit.yaml
 
 	kubectl rollout status -n logging daemonset fluent-bit
 
