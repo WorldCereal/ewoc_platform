@@ -56,6 +56,10 @@ resources:
 
 
 # # Testcluster:
+# esJvmOptions:
+#   jvm.options: |
+#     -Xms2g
+#     -Xmx2g
 # resources:
 #   requests:
 #     cpu: 2
@@ -63,10 +67,6 @@ resources:
 #   limits:
 #     cpu: 4
 #     memory: 4Gi
-# esJvmOptions:
-#   jvm.options: |
-#     -Xms2g
-#     -Xmx2g
 
 
 

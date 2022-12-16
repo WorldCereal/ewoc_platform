@@ -15,17 +15,10 @@ export HOSTNAME="cloud.esa-worldcereal.org"
 export CERT_MANAGER_CHART_VERSION="1.9.1"
 #export CERT_MANAGER_MAIL="quentin.maraval@csgroup.eu"
 export CERT_MANAGER_MAIL="guillaume.dubreule@csgroup.eu"
-# Kong conf
-# export KONG_CHART_VERSION="2.1.0"
-# export KONG_VERSION="2.4-ubuntu"
 
 
 # Kong conf
-# export POSTGRESQL_CHART_VERSION="10.14.3"
-# export POSTGRESQL_VERSION="11.12.0-debian-10-r13"
 export POSTGRESQL_CHART_VERSION="9.4.2" # -> Postgresql 14.5.0
-# export POSTGRESQL_VERSION="14.5.0-debian-11-r13"
-# export KONG_CHART_VERSION="2.12.0"
 export KONG_CHART_VERSION="2.13.0"
 export KONG_VERSION="2.8.1-alpine"
 
@@ -44,7 +37,6 @@ export THANOS_S3_BUCKET_SECRET_KEY="${THANOS_S3_BUCKET_SECRET_KEY:-$(openssl ran
 export THANOS_S3_ADMIN_PASSWORD="${THANOS_S3_ADMIN_PASSWORD:-$(openssl rand -base64 32)}"
 
 # Graylog STACK (elastic+mongo+graylog)
-#export MONGO_CHART_VERSION="10.26.1"
 export MONGO_CHART_VERSION="13.1.3"
 
 # Limited chart version by Graylog compatibility 

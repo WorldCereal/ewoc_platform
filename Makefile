@@ -13,7 +13,7 @@ init:
 	chmod 755 sys-init.sh && ./sys-init.sh
 
 certmgr:
-	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 	helm upgrade --install cert-manager jetstack/cert-manager \
 		--namespace=cert-manager --create-namespace --set installCRDs=true \
 		--version v$(CERT_MANAGER_CHART_VERSION) --values charts/cert-manager/values.yaml
@@ -22,7 +22,7 @@ certmgr:
 	sed "s:VALUE1:$(CERT_MANAGER_MAIL):" charts/cert-manager/issuer.tmpl | kubectl apply -f-
 
 pgsql:
-	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 	# @sed "s:VALUE_PGTAG:$(POSTGRESQL_VERSION):" charts/postgresql-ha/values.tmpl > postgresql/values.yaml
 	helm upgrade --install pgsqlha bitnami/postgresql-ha --namespace=sysdb \
 				--version=$(POSTGRESQL_CHART_VERSION) --values=charts/postgresql-ha/values.yaml
@@ -30,7 +30,7 @@ pgsql:
 	kubectl rollout status -n sysdb statefulset pgsqlha-postgresql
 
 kong:
-	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 	@sed "s:CS_REGISTRY:$(CS_REGISTRY): ; s:VALUE_KONGTAG:$(KONG_VERSION):" charts/kong/values.tmpl >kong-values.yaml
 	helm upgrade --install kong kong/kong --namespace=kong \
 				--version=$(KONG_CHART_VERSION) --values=kong-values.yaml
@@ -40,13 +40,13 @@ kong:
 	kubectl apply -f charts/kong/plugins/kong-prometheus-plugin.yaml
 
 keycloak:
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be sourced before running this script' && exit 1)
 
 	# Generating Keycloak preset realm configuration
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):g; s:GRAYLOG_CS:$(GRAYLOG_CS):; s:PROMETHEUS_CS:$(PROMETHEUS_CS):; s:GRAFANA_CS:$(GRAFANA_CS):; s:WCT_CS:$(WCT_CS):; s:RDM_API_CS:$(RDM_API_CS):; s:RDM_CS:$(RDM_CS):; s:VDM_CS:$(VDM_CS):; s:VDM_API_CS:$(VDM_API_CS):; s:API_CS:$(API_CS):;" charts/keycloak/WC-realm.tmpl > WC-realm.json
 	# Create Keycloak realm configuration configmap
 	@kubectl get configmap -n keycloak realm-config || kubectl create configmap realm-config --from-file=WC-realm.json -n keycloak
-	
+
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):" charts/keycloak/values.tmpl > keycloak-values.yaml
 	helm upgrade --install keycloak bitnami/keycloak --namespace=keycloak --set=installCRDs=true \
     			--version=$(KEYCLOAK_CHART_VERSION) --values=keycloak-values.yaml
@@ -65,7 +65,7 @@ thanos:
 
 
 monitoring:
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be sourced before running this script' && exit 1)
 
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAFANA_CS:$(GRAFANA_CS):;s:PG_PASS:$(shell kubectl get secret -n monitoring system-db -o=jsonpath={.data.postgresql-password} | base64 -d):g" charts/kube-prometheus-stack/values.tmpl > monitoring-values.yaml
 	helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack  \
@@ -78,20 +78,20 @@ monitoring:
 	kubectl rollout status -n monitoring deployment kube-prometheus-stack-grafana
 
 mongo:
-	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 	helm upgrade --install mongo bitnami/mongodb --namespace=logging \
 				--version=$(MONGO_CHART_VERSION) --values=charts/mongo/values-mongo.yaml
 	kubectl rollout status -n logging statefulset mongo-mongodb
 
 elasticsearch:
-	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 	#helm upgrade --install elastic bitnami/elasticsearch --version=$(ELASTIC_CHART_VERSION) -n logging -f charts/elasticsearch/values-elastic.yaml
 	helm upgrade --install elastic elastic/elasticsearch --namespace=logging \
 				--version=$(ELASTIC_CHART_VERSION) --values=charts/elasticsearch/values-elastic.yaml
 	kubectl rollout status -n logging statefulset ewoc-elastic-master
 
 graylog:
-	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 
 	@sed "s:VALUE_GRAYLOG_VERSION:$(GRAYLOG_VERSION):; s:VALUE_KUBECTL_VERSION:$(GRAYLOG_KUBECTL_VERSION):; s:VALUE_HOSTNAME:$(HOSTNAME):g" charts/graylog/values-graylog.tmpl >values-graylog.yaml
 	helm upgrade --install graylog kongz/graylog --namespace=logging \
@@ -117,7 +117,7 @@ fluentbit:
 	kubectl rollout status -n logging daemonset fluent-bit
 
 rdm:
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be sourced before running this script' && exit 1)
 
 	# Ingress
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:RDM_CS:$(RDM_CS):;s:RDM_API_CS:$(RDM_API_CS):g" charts/rdm/ingress.tmpl > rdm-ingress.yaml
@@ -152,7 +152,7 @@ wctiler:
 
 deploy:
 	# Deploy all components for Kong
-	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 
 	certmgr
 
