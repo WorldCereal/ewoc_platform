@@ -1,4 +1,4 @@
-.PHONY: init certmgr pgsql kong keycloak monitoring thanos mongo elasticsearch graylog graylog-config kafka fluentbit vdm rdm deploy delete-logging delete
+.PHONY: init certmgr pgsql kong keycloak monitoring thanos mongo elasticsearch graylog graylog-config fluentbit vdm rdm wctiler deploy delete-logging delete-monitoring delete
 
 
 init:
@@ -169,13 +169,22 @@ deploy:
 	mongo
 	elasticsearch
 	graylog
+	graylog-config
 	fluentbit
 
+	### Monitoring Stack
+	thanos
+	monitoring
+
+	### Applications
+	rdm
+	vdm
+	wctiler
 
 delete-logging:
 	# Deleting logging stack
 	helm uninstall -n logging fluent-bit
-	kubectl delete jobs graylog-config
+	kubectl delete job -n logging graylog-config
 	helm uninstall -n logging graylog
 	helm uninstall -n logging elastic
 	helm uninstall -n logging mongo
@@ -183,15 +192,15 @@ delete-logging:
 	kubectl delete -n logging pvc --all
 
 
-delete:
+delete-monitoring:
+	helm uninstall -n monitoring kube-prometheus-stack
+	helm uninstall -n monitoring thanos
+	kubectl delete -n monitoring cm --all
+	kubectl delete -n monitoring pvc --all
 
-	# Deleting logging stack
-	helm uninstall -n logging fluent-bit
-	helm uninstall -n logging graylog
-	kubectl delete -n logging cm graylog-contentpacks
-	helm uninstall -n logging elastic
-	helm uninstall -n logging mongo
-	kubectl delete -n logging pvc --all
+delete:
+	delete-monitoring
+	delete-logging
 
 	# Delete ingress
 	kubectl delete -n keycloak ingress keycloak
