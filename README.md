@@ -12,11 +12,12 @@
 - [6. Kong](#kong-deployment)
 - [7. Keycloak](#keycloak-deployment)
 - [8. Kube-Prometheus-Stack](#kube-prometheus-stack-deployment)
-- [9. Logging-Stack](#logging-stack)
-- [10. WCTiler](#wctiler)
-- [11. Reference Data Module (RDM)](#reference-data-module-rdm)
-- [12. Visualization Dissemination Module (VDM)](#visualization-dissemination-module-vdm)
-- [13. PV recovery](#pv-recovery)
+- [9. Thanos](#thanos)
+- [10. Logging-Stack](#logging-stack)
+- [11. WCTiler](#wctiler)
+- [12. Reference Data Module (RDM)](#reference-data-module-rdm)
+- [13. Visualization Dissemination Module (VDM)](#visualization-dissemination-module-vdm)
+- [14. PV recovery](#pv-recovery)
 
 ## Requirements
 
@@ -50,7 +51,7 @@ This cluster is composed of 10 specific namespaces.
 - **keycloak**, SSO handle cluster authentication. 
 - **kong**, Ingress controller used with OIDC to handle user authentication.           
 - **logging**, stack that handle and store the cluster events.            
-- **monitoring**, stack for perfomance monitoring.      
+- **monitoring**, stack plateform monitoring.
 - **rdm**, stack regrouping elements related to the Reference Data Module.
 - **vdm**, stack regrouping elements related to the Visualization and Dissemination Module.             
 - **wctiler**, stack that allows to check tiles processing state.
@@ -104,8 +105,8 @@ config:
   bearer_only: "no"
   client_id: rdm
   client_secret: TheClientSecret
-  discovery: https://YourKeycloakURL/auth/realms/YourRealm/.well-known/openid-configuration
-  introspection_endpoint: https://YourKeycloakURL/auth/realms/YourRealm/protocol/openid-connect/token/introspect
+  discovery: https://YourKeycloakURL/realms/YourRealm/.well-known/openid-configuration
+  introspection_endpoint: https://YourKeycloakURL/realms/YourRealm/protocol/openid-connect/token/introspect
   logout_path: /logout
   realm: YourRealm
   redirect_after_logout_uri: /
@@ -127,17 +128,14 @@ Keycloak is the SSO of the plateform that handle user authentication.
 It uses the postgresql-ha in order to store configuration data.
 Keycloak realm `worldcereal` is pre-initialized during the installation.
 
-To deploy it:
+To deploy:
 ```
 make keycloak
 ```
 
 Once Keycloak is up and running, get the admin password then, connect to the web interface.
-For each client of worldcereal realm, generate a client secret and add it to `export-env.sh` in _CS suffixed variables.
-Finnally, source the file by running:
-```
-source export-env.sh 
-```
+For each client of worldcereal realm, the client id are auto-generated during the deployment of Keycloak.
+
 
 ## Kube-Prometheus-Stack Deployment
 The kube-prometheus stack from community is used to monitor the plateform.
@@ -153,32 +151,41 @@ For infomation:
 - alertmanager-kube-prometheus-stack-alertmanager-0 pod allow to setup and check the prometheus rules.
 - kube-prometheus-stack-grafana is the UI endpoint for the monitoring 
 - kube-prometheus-stack-prometheus-node-exporter-* is a DaemonSet(deploy a instance on every nodes) that allow to expose metrics to Prometheus. 
-- prometheus-kube-prometheus-stack-prometheus-0  this is the heart of prometheus, it fetches the metrics exposed by node-exporter.
+- prometheus-kube-prometheus-stack-prometheus-0 and 1  are the heart of Prometheus, it fetches the metrics exposed by node-exporter.
+
+## Thanos 
+Thanos comes in addition of Prometheus as it is not made to store long term data.
+ 
+Thanos is added as a sidecar on Prometheus pods and send the data to minio (S3 storage).
+(Here minio is used but any S3 providers can be used if you configure it to do so).
+Thanos compactor is used in order to compress data.
+
+Finally, all data are exposed in Grafana as thanos is used as datasource.
+
+NB: Thanos data are available after T+2hours while Prometheus data are available to T0 to T+6Hours. 
+
+To deploy it:
+```
+make thanos
+```
 
 ## Logging Stack
 Check the `logging-stack.md` file.
 
 ## WCTiler
 WcTiler allow users to check the tiles processing status.
-WcTiler is a helm chart that deploy 2 elements, it is required to be plug to one database
+WcTiler is a helm chart that deploys 2 elements, it is required to be plug to one database
 that has specific tables pattern to be read of.
 The database host and name needs to be set in export-en.sh 
 
 To install it run : 
-```cd wctiler```
-
-Create namespace.
 ```sh
- kubectl create ns wctiler 
-```
-then 
-```sh 
-make deploy
+make wctiler
 ```
 
 The application should be accessible at the url wctiler.YOURDOMAIN.
-Some change have been made on the WCtiler container image mapproxy because of the HTTP request size
-that can be blocked if they execess a buffersize. That lead to not display the tiles.
+Some changes have been made on the WCtiler container image mapproxy because of the HTTP request size
+that can be blocked if they excess a buffersize. That lead to not display the tiles.
 To fix that, the docker image have been updated. By changing the uwsgi.ini paramter buffersize,
 the problem is fixed. 
 If the issue persist, log in the container mapproxy and play with uswgi.ini parameters and then update server conf with ```uwsgi --reload /tmp/map.pid uwsgi.ini```.
@@ -186,11 +193,28 @@ If your solution fix the issue then update the dockerfile and push you new conta
 
 
 ## Reference Data Module (RDM)
-Check the readme in rdm folder.
+
+In this repository, only the ingress of RDM is created because it relies on Keycloak configuration (client secret) to work.
+
+To deploy it, clone and follow the instructions availables on the link : 
+https://github.com/WorldCereal/ewoc_rdm_deploy/tree/aws-changes 
+
+The ingress can be deployed using on the current repository.
+```sh
+make rdm
+```
 
 ## Visualization Dissemination Module (VDM)
-Check the readme in vdm folder.
 
+In this repository, only the ingress of VDM is created because it relies on Keycloak configuration (client secret) to work.
+
+To deploy it, clone and follow the instructions availables on the link : 
+https://github.com/WorldCereal/gisat-env-world-cereal/tree/develop
+
+The ingress can be deployed using on the current repository.
+```sh
+make vdm
+```
 
 ## PV recovery
 

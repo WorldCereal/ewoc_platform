@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "bae368f7-61f0-4699-8cb4-0db0c2ebdca2",
-		"name": "TEST",
+		"_postman_id": "acb9632a-7275-40f0-b388-0abdababc972",
+		"name": "TEST Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -16,7 +16,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "",
+							"value": "Your_bearer_token",
 							"type": "string"
 						}
 					]
@@ -28,11 +28,11 @@
 					"urlencoded": []
 				},
 				"url": {
-					"raw": "https://rdmapi.DOMAIN/data/collections",
+					"raw": "https://rdmapi.YOUR_DOMAIN/data/collections",
 					"protocol": "https",
 					"host": [
 						"rdmapi",
-						"DOMAIN"
+						"YOUR_DOMAIN"
 					],
 					"path": [
 						"data",
@@ -52,7 +52,7 @@
 					"urlencoded": [
 						{
 							"key": "username",
-							"value": "YOUR_USER",
+							"value": "YOUR_LOGIN",
 							"type": "text"
 						},
 						{
@@ -73,16 +73,13 @@
 					]
 				},
 				"url": {
-					"raw": "https://auth.demo.esa-worldcereal.org/auth/realms/worldcereal/protocol/openid-connect/token",
+					"raw": "https://auth.YOUR_DOMAIN/realms/worldcereal/protocol/openid-connect/token",
 					"protocol": "https",
 					"host": [
 						"auth",
-						"demo",
-						"esa-worldcereal",
-						"org"
+						"YOUR_DOMAIN"
 					],
 					"path": [
-						"auth",
 						"realms",
 						"worldcereal",
 						"protocol",
