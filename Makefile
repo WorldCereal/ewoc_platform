@@ -1,6 +1,5 @@
 .PHONY: init certmgr pgsql kong keycloak monitoring thanos mongo elasticsearch graylog graylog-config fluentbit vdm rdm wctiler deploy delete-logging delete-monitoring delete
 
-
 init:
 	# Build all components for Kong
 	helm repo add jetstack https://charts.jetstack.io
@@ -9,6 +8,7 @@ init:
 	helm repo add elastic https://helm.elastic.co
 	helm repo add kongz https://charts.kong-z.com
 	helm repo add fluent https://fluent.github.io/helm-charts
+	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	helm repo update
 	chmod 755 sys-init.sh && ./sys-init.sh
 
@@ -40,7 +40,7 @@ kong:
 	kubectl apply -f charts/kong/plugins/kong-prometheus-plugin.yaml
 
 keycloak:
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be sourced before running this script' && exit 1)
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 
 	# Generating Keycloak preset realm configuration
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):g; s:GRAYLOG_CS:$(GRAYLOG_CS):; s:PROMETHEUS_CS:$(PROMETHEUS_CS):; s:GRAFANA_CS:$(GRAFANA_CS):; s:WCT_CS:$(WCT_CS):; s:RDM_API_CS:$(RDM_API_CS):; s:RDM_CS:$(RDM_CS):; s:VDM_CS:$(VDM_CS):; s:VDM_API_CS:$(VDM_API_CS):; s:API_CS:$(API_CS):;" charts/keycloak/WC-realm.tmpl > WC-realm.json
@@ -55,7 +55,7 @@ keycloak:
 	kubectl rollout status -n keycloak statefulset keycloak
 
 thanos:
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 	
 	@sed "s|THANOS_S3_BUCKET_NAME|$(THANOS_S3_BUCKET_NAME)|;s|THANOS_S3_BUCKET_ENDPOINT|$(THANOS_S3_BUCKET_ENDPOINT)|;s|THANOS_S3_BUCKET_ACCESS_KEY|$(THANOS_S3_BUCKET_ACCESS_KEY)|;s|THANOS_S3_BUCKET_SECRET_KEY|$(THANOS_S3_BUCKET_SECRET_KEY)|;" charts/thanos/objstore.tmpl > objstore.yml
 	@kubectl create secret generic thanos-objstore-config -n monitoring --from-file=objstore.yml
@@ -65,7 +65,7 @@ thanos:
 
 
 monitoring:
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be sourced before running this script' && exit 1)
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:GRAFANA_CS:$(GRAFANA_CS):;s:PG_PASS:$(shell kubectl get secret -n monitoring system-db -o=jsonpath={.data.postgresql-password} | base64 -d):g" charts/kube-prometheus-stack/values.tmpl > monitoring-values.yaml
 	helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack  \
@@ -109,7 +109,7 @@ graylog-config:
 	kubectl create configmap graylog-config --namespace=logging --from-literal=hostname=$(HOSTNAME) --from-file=charts/graylog/config.py  --dry-run=client -oyaml | kubectl apply -f-
 	kubectl apply -f charts/graylog/config-job.yaml
 
-fluentbit: 
+fluentbit:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 	helm upgrade --install fluent-bit fluent/fluent-bit --namespace=logging \
 				--version=$(FLUENTBIT_CHART_VERSION) --values=charts/fluentbit/values-fluentbit.yaml
@@ -117,20 +117,20 @@ fluentbit:
 	kubectl rollout status -n logging daemonset fluent-bit
 
 rdm:
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be sourced before running this script' && exit 1)
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be sourced before running this script' && exit 1; }
 
 	# Ingress
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:RDM_CS:$(RDM_CS):;s:RDM_API_CS:$(RDM_API_CS):g" charts/rdm/ingress.tmpl > rdm-ingress.yaml
 	@kubectl apply -f rdm-ingress.yaml -n rdm 
 
 vdm:
-	@test -n "$(CLUSTER_ENV_LOADED)" || (echo 'The env variables should be source before run this script' && exit 1)
+	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 
 	# Ingress
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:VDM_CS:$(VDM_CS):;s:VDM_API_CS:$(VDM_API_CS):g" charts/vdm/ingress.tmpl > vdm-ingress.yaml
 	@kubectl apply -f vdm-ingress.yaml -n vdm 
 
-wctiler: 
+wctiler:
 	@test -n "$(CLUSTER_ENV_LOADED)" || { echo 'The env variables should be source before run this script' && exit 1; }
 
 	@sed "s:VALUE_HOSTNAME:$(HOSTNAME):;s:WCT_CS:$(WCT_CS):g" charts/wctiler/ingress.tmpl > ingress-wctiler.yaml
@@ -149,6 +149,8 @@ wctiler:
 
 	# create ingress for WCTiler
 	@kubectl apply -f ingress-wctiler.yaml -n wctiler
+
+
 
 deploy:
 	# Deploy all components for Kong
